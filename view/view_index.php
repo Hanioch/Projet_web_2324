@@ -12,7 +12,7 @@
     <body class="bg-dark h-100">
         <div class="container h-100">
             <div class="row p-3 h-100 justify-content-center align-items-center">
-                <form class="p-3 border text-white text-center">
+                <form class="p-3 border text-white text-center" action="notes" method="post">
                     <fieldset class="h4">Sign in</fieldset>
                     <hr>
                     <div class="form-group">
@@ -30,6 +30,16 @@
                         <a href="toSignup"><u>New here ? Click here to subscribe !</u></a>
                     </div>
                 </form>
+<!--                --><?php //if (count($errors) != 0): ?>
+<!--                    <div class='errors'>-->
+<!--                        <p>Please correct the following error(s) :</p>-->
+<!--                        <ul>-->
+<!--                            --><?php //foreach ($errors as $error): ?>
+<!--                                <li>--><?php //= $error ?><!--</li>-->
+<!--                            --><?php //endforeach; ?>
+<!--                        </ul>-->
+<!--                    </div>-->
+<!--                --><?php //endif; ?>
             </div>
         </div>
         <footer>
