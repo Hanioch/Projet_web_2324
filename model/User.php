@@ -7,7 +7,7 @@ enum Role {
     case ADMIN;
 }
 
-class User extends Model {
+class User extends MyModel {
 
     public function __construct(public string $mail, public string $hashed_password, public string $full_name, public Role $role) {
 
