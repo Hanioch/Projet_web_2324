@@ -9,27 +9,31 @@ class ControllerMain extends Controller {
     //si l'utilisateur est connecté, redirige vers les notes.
     //sinon, produit la vue de login.
     public function index() : void {
+//        var_dump($this->user_logged());
         if ($this->user_logged()) {
             $this->redirect("notes", "index");
         } else {
-            (new View("index"))->show();
+            $this->redirect("main", "login");
         }
     }
 
     public function login(): void {
         $mail = '';
-        $hashed_password = '';
-        $errors = [];
-        if (isset($_POST['mail']) && isset($_POST['hashed_password'])) {
+        $password = '';
+        $errors = [
+            "mail"=>[],
+            "password"=>[]
+        ];
+        if (isset($_POST['mail']) && isset($_POST['password'])) {
             $mail = $_POST['mail'];
-            $hashed_password = $_POST['hashed_password'];
-
-            $errors = User::validate_login($mail, $hashed_password);
-            if (empty($errors)) {
+            $password = $_POST['password'];
+            $errors = User::validate_login($mail, $password);
+            if (empty($errors["mail"]) && empty($errors["password"])) {
                 $this->log_user(User::get_user_by_mail($mail));
             }
+
         }
-        (new View("notes"))->show(["mail" => $mail, "hashed_password" => $hashed_password, "errors" => $errors]);
+        (new View("login"))->show(["mail" => $mail, "password" => $password, "errors" => $errors]);
     }
 
     public function signup() : void {

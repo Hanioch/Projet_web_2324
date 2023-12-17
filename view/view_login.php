@@ -17,11 +17,29 @@
                     <hr>
                     <div class="form-group">
                         <label class="hide" for="email"></label>
-                        <input type="email" class="form-control" id="email" placeholder="Enter email">
+                        <input type="email" class="form-control <?php if (count($errors["mail"]) > 0): ?>is-invalid<?php endif; ?>" id="mail" name="mail" placeholder="Enter email">
+                        <?php if (count($errors["mail"]) > 0): ?>
+                            <div class="text-left invalid-feedback">
+                                <ul class="list-unstyled">
+                                    <?php foreach ($errors["mail"] as $error): ?>
+                                        <li><?= $error ?></li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </div>
+                        <?php endif; ?>
                     </div>
                     <div class="form-group">
                         <label class="hide" for="password"></label>
-                        <input type="password" class="form-control" id="password" placeholder="Enter password">
+                        <input type="password" class="form-control <?php if (count($errors["password"]) > 0): ?>is-invalid<?php endif; ?>" id="password" name="password" placeholder="Enter password">
+                        <?php if (count($errors["password"]) > 0): ?>
+                            <div class="text-left invalid-feedback">
+                                <ul class="list-unstyled">
+                                    <?php foreach ($errors["password"] as $error): ?>
+                                        <li><?= $error ?></li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </div>
+                        <?php endif; ?>
                     </div>
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary col-12 my-4">Login</button>
@@ -30,16 +48,6 @@
                         <a href="main/signup"><u>New here ? Click here to subscribe !</u></a>
                     </div>
                 </form>
-<!--                --><?php //if (count($errors) != 0): ?>
-<!--                    <div class='errors'>-->
-<!--                        <p>Please correct the following error(s) :</p>-->
-<!--                        <ul>-->
-<!--                            --><?php //foreach ($errors as $error): ?>
-<!--                                <li>--><?php //= $error ?><!--</li>-->
-<!--                            --><?php //endforeach; ?>
-<!--                        </ul>-->
-<!--                    </div>-->
-<!--                --><?php //endif; ?>
             </div>
         </div>
         <footer>
