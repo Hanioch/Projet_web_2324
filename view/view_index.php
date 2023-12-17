@@ -12,7 +12,7 @@
     <body class="bg-dark h-100">
         <div class="container h-100">
             <div class="row p-3 h-100 justify-content-center align-items-center">
-                <form class="p-3 border text-white text-center" action="notes" method="post">
+                <form class="p-3 border text-white text-center" action="main/login" method="post">
                     <fieldset class="h4">Sign in</fieldset>
                     <hr>
                     <div class="form-group">
@@ -27,7 +27,7 @@
                         <button type="submit" class="btn btn-primary col-12 my-4">Login</button>
                     </div>
                     <div class="form-group">
-                        <a href="toSignup"><u>New here ? Click here to subscribe !</u></a>
+                        <a href="main/signup"><u>New here ? Click here to subscribe !</u></a>
                     </div>
                 </form>
 <!--                --><?php //if (count($errors) != 0): ?>
