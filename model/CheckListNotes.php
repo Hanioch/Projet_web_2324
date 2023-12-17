@@ -2,7 +2,7 @@
 
 require_once "Model.php";
 
-class ChecklistNote extends Model {
+class ChecklistNote extends MyModel {
     public function __construct(public int $id) {}
 
     public static function create(array $data) : ChecklistNote {
