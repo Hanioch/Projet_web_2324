@@ -2,9 +2,9 @@
 
 require_once "framework/Model.php";
 
-enum Role {
-    case USER;
-    case ADMIN;
+enum Role: string {
+    case USER = "user";
+    case ADMIN = "admin";
 }
 
 class User extends MyModel {
@@ -29,7 +29,14 @@ class User extends MyModel {
         if ($query->rowCount() == 0) {
             return false;
         } else {
-            return new User($data["mail"], $data["hashed_password"], $data["full_name"], $data["role"]);
+            switch($data["role"]){
+                case "admin" :
+                    $role = Role::ADMIN;
+                default :
+                    $role = Role::USER;
+            }
+//            return new User($data["mail"], $data["hashed_password"], $data["full_name"], $role);
+            return new User($data["mail"], $data["hashed_password"], $data["full_name"], (Role::ADMIN === $data["role"]) ? Role::ADMIN : Role::USER);
         }
     }
 
@@ -125,14 +132,21 @@ class User extends MyModel {
 //    }
 
     public static function validate_login(string $mail, string $password) : array {
-        $errors = [];
+        $errors = [
+            "mail"=>[],
+            "password"=>[]
+        ];
         $user = User::get_user_by_mail($mail);
         if ($user) {
             if (!self::check_password($password, $user->hashed_password)) {
-                $errors[] = "Incorrect password.";
+                $errors["password"][] = "Incorrect password.";
             }
         } else {
-            $errors[] = "'$mail' is not registered yet. Please sign up.";
+            if (empty($mail)) {
+                $errors["mail"][] = "Mail required.";
+            } else {
+                $errors["mail"][] = "'$mail' is not registered yet. Please sign up.";
+            }
         }
         return $errors;
     }
