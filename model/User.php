@@ -9,7 +9,7 @@ enum Role: string {
 
 class User extends Model {
 
-    public function __construct(public string $mail, public string $hashed_password, public string $full_name, public Role $role, public ?int $post_id = NULL) {
+    public function __construct(public string $mail, public string $hashed_password, public string $full_name, public Role $role, public ?int $id = NULL) {
 
     }
 
@@ -29,7 +29,7 @@ class User extends Model {
         if ($query->rowCount() == 0) {
             return false;
         } else {
-            return new User($data["mail"], $data["hashed_password"], $data["full_name"], $data["role"]);
+            return new User($data["mail"], $data["hashed_password"], $data["full_name"], Role::USER);
         }
     }
 
@@ -41,7 +41,7 @@ class User extends Model {
 //        if ($query->rowCount() == 0) {
 //            return false;
 //        } else {
-//            return new User($data["mail"], $data["hashed_password"], $data["full_name"], $data["role"]);
+//            return new User($data["mail"], $data["hashed_password"], $data["full_name"], Role::USER);
 //        }
 //    }
 
