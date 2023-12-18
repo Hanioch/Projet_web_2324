@@ -1,11 +1,10 @@
 <?php
 
-require "framework/Model.php";
 
-class Note extends Model
+class Note extends MyModel
 {
 
-    public function __construct(public ?int $id, protected string $title, protected User $owner, protected ?string $created_at, protected ?string $edited_at, protected  bool $pinned, protected bool $archived, protected int $weight)
+    public function __construct(public ?int $id = NULL, protected string $title, protected User $owner, protected ?string $created_at, protected ?string $edited_at, protected  bool $pinned, protected bool $archived, protected int $weight)
     {
     }
 
