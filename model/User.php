@@ -7,9 +7,9 @@ enum Role: string {
     case ADMIN = "admin";
 }
 
-class User extends MyModel {
+class User extends Model {
 
-    public function __construct(public string $mail, public string $hashed_password, public string $full_name, public Role $role) {
+    public function __construct(public string $mail, public string $hashed_password, public string $full_name, public Role $role, public ?int $post_id = NULL) {
 
     }
 
@@ -29,14 +29,7 @@ class User extends MyModel {
         if ($query->rowCount() == 0) {
             return false;
         } else {
-            switch($data["role"]){
-                case "admin" :
-                    $role = Role::ADMIN;
-                default :
-                    $role = Role::USER;
-            }
-//            return new User($data["mail"], $data["hashed_password"], $data["full_name"], $role);
-            return new User($data["mail"], $data["hashed_password"], $data["full_name"], (Role::ADMIN === $data["role"]) ? Role::ADMIN : Role::USER);
+            return new User($data["mail"], $data["hashed_password"], $data["full_name"], $data["role"]);
         }
     }
 
@@ -62,7 +55,7 @@ class User extends MyModel {
         return $results;
     }
 
-    private static function validate_password(string $password) : array {
+    public static function validate_password(string $password) : array {
         $errors = [];
         if (!strlen($password) > 0) {
             $errors[] = "Password is required.";
@@ -93,7 +86,7 @@ class User extends MyModel {
         }
         return $errors;
     }
-    private static function validate_mail(string $mail) : array {
+    public static function validate_mail(string $mail) : array {
         $regex = '/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/';
         $errors = [];
         if (!strlen($mail) > 0) {
@@ -139,15 +132,24 @@ class User extends MyModel {
         $user = User::get_user_by_mail($mail);
         if ($user) {
             if (!self::check_password($password, $user->hashed_password)) {
-                $errors["password"][] = "Incorrect password.";
+                $errors[] = "Incorrect password.";
             }
         } else {
-            if (empty($mail)) {
-                $errors["mail"][] = "Mail required.";
-            } else {
-                $errors["mail"][] = "'$mail' is not registered yet. Please sign up.";
-            }
+            $errors[] = "'$mail' is not registered yet. Please sign up.";
         }
         return $errors;
+    }
+
+    public static function get_notes(int $id): array
+    {
+
+        //TODO ajouter l'id dans le constructor et faire le get via l'attribut et pas le param
+        $query = self::execute("select * from notes where owner = :owner order by weight", ["owner" => $id]);
+        $data = $query->fetchAll();
+        $notes = [];
+        foreach ($data as $row) {
+            $messages[] = new Note($row('id'), $row['title'], $row['owner'], $row['created_at'], $row['edited_at'], $row['pinned'], $row['archived'], $row['weight']);
+        }
+        return $notes;
     }
 }
