@@ -2,7 +2,7 @@
 
 require_once "Model.php";
 
-class ChecklistNoteItem extends Model {
+class ChecklistNoteItem extends MyModel {
 
     private int $id;
     private int $checklist_note;
