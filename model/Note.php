@@ -18,13 +18,27 @@ class Note extends MyModel
         if (!(strlen($this->title) > 3 && strlen($this->title) < 25)) {
             $errors[] = "Title must be filled";
         }
-        if (!($this->weight > 0)) {
-            //TODOOO ajouter une condition pour verifier qu'il est unique.
-
+        if (!($this->weight > 0 && !$this->is_not_unique_weight())) {
             $errors[] = "Weight must be positif and unique";
         }
 
         return $errors;
+    }
+
+    public function is_not_unique_weight(): bool
+    {
+        $notesByOwner = $this->owner->get_notes();
+        $isNotUnique = false;
+        $i = 0;
+
+        while (!$isNotUnique && $i < count($notesByOwner)) {
+            $note = $notesByOwner[$i];
+            if ($note->weight == $this->weight) {
+                $isNotUnique = true;
+            }
+            $i++;
+        }
+        return $isNotUnique;
     }
 
 
@@ -54,36 +68,45 @@ class Note extends MyModel
         $errors = $this->validate();
         if (empty($errors)) {
             if ($this->id == NULL) {
-                self::execute(
-                    'INSERT INTO notes (title, owner, created_at, edited_at, pinned, archived, weight) VALUES
-                 (:title, :owner, NOW(), null, :pinned, :archived, :weight)',
-                    [
-                        'title' => $this->title,
-                        //TO DOO ici il faut mettre  l'id de l'owner donc le rajouter dans le modèle.
-                        'owner' => $this->owner,
-                        'pinned' => $this->pinned ? 1 : 0,
-                        'archived' => $this->archived ? 1 : 0,
-                        'weight' => $this->weight
-                    ]
-                );
-                $note = self::get_note(self::lastInsertId());
-                $this->id = $note->id;
-                $this->created_at = $note->created_at;
-                $this->edited_at = $note->edited_at;
-                return $this;
+                return self::add_note_in_DB();
             } else {
-                self::execute('UPDATE notes SET title = :title, edited_at = NOW(), pinned = :pinned, archived = :archived, weight = :weight WHERE id = :id', [
-                    'title' => $this->title,
-                    'pinned' => $this->pinned ? 1 : 0,
-                    'archived' => $this->archived ? 1 : 0,
-                    'weight' => $this->weight,
-                    'id' => $this->id
-                ]);
-
-                return $this;
+                return self::modify_note_in_DB();
             }
         } else {
             return $errors;
         }
+    }
+
+    protected function add_note_in_DB(): Note
+    {
+        self::execute(
+            'INSERT INTO notes (title, owner, created_at, edited_at, pinned, archived, weight) VALUES
+         (:title, :owner, NOW(), null, :pinned, :archived, :weight)',
+            [
+                'title' => $this->title,
+                'owner' => $this->owner->id,
+                'pinned' => $this->pinned ? 1 : 0,
+                'archived' => $this->archived ? 1 : 0,
+                'weight' => $this->weight
+            ]
+        );
+        $note = self::get_note(self::lastInsertId());
+        $this->id = $note->id;
+        $this->created_at = $note->created_at;
+        $this->edited_at = $note->edited_at;
+        return $this;
+    }
+
+    protected function modify_note_in_DB(): Note
+    {
+        self::execute('UPDATE notes SET title = :title, edited_at = NOW(), pinned = :pinned, archived = :archived, weight = :weight WHERE id = :id', [
+            'title' => $this->title,
+            'pinned' => $this->pinned ? 1 : 0,
+            'archived' => $this->archived ? 1 : 0,
+            'weight' => $this->weight,
+            'id' => $this->id
+        ]);
+
+        return $this;
     }
 }
