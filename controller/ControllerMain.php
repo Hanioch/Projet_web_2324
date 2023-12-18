@@ -50,16 +50,16 @@ class ControllerMain extends Controller {
             $password_confirm = $_POST['password_confirm'];
 
             $user = new User($mail, Tools::my_hash($password), $fullname, Role::USER);
-            $errors = Member::validate_unicity($pseudo);
-            $errors = array_merge($errors, $member->validate());
-            $errors = array_merge($errors, Member::validate_passwords($password, $password_confirm));
+            $errors = User::validate_unicity($mail);
+            $errors = array_merge($errors, User::validate_mail($mail));
+            $errors = array_merge($errors, User::validate_password($password));
 
             if (count($errors) == 0) {
-                $member->persist(); //sauve l'utilisateur
-                $this->log_user($member);
+                $user->persist(); //sauve l'utilisateur
+                $this->log_user($user);
             }
         }
-        (new View("signup"))->show(["pseudo" => $pseudo, "password" => $password,
+        (new View("signup"))->show(["mail" => $mail, "password" => $password,
             "password_confirm" => $password_confirm, "errors" => $errors]);
     }
 
