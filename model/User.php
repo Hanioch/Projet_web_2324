@@ -56,7 +56,10 @@ class User extends Model {
     }
 
     public static function validate_password(string $password) : array {
-        $errors = [];
+        $errors = [
+            "password"=>[],
+            "password_confirm"=>[]
+        ];
         if (!strlen($password) > 0) {
             $errors[] = "Password is required.";
         } if (strlen($password) < 8) {
@@ -67,8 +70,10 @@ class User extends Model {
         return $errors;
     }
 
-    private static function validate_full_name(string $full_name) : array {
-        $errors = [];
+    public static function validate_fullname(string $full_name) : array {
+        $errors = [
+            "fullname"=>[]
+        ];
         if (!strlen($full_name) > 0) {
             $errors[] = "Name is required.";
         } if (strlen($full_name) < 3) {
@@ -88,7 +93,9 @@ class User extends Model {
     }
     public static function validate_mail(string $mail) : array {
         $regex = '/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/';
-        $errors = [];
+        $errors = [
+            "mail"=>[]
+        ];
         if (!strlen($mail) > 0) {
             $errors[] = "Mail is required.";
         } if (!(preg_match($regex, $mail))) {
@@ -98,7 +105,9 @@ class User extends Model {
     }
 
     public static function validate_unicity(string $mail) : array {
-        $errors = [];
+        $errors = [
+            "mail"=>[]
+        ];
         $user = self::get_user_by_mail($mail);
         if ($user) {
             $errors[] = "This user already exists.";

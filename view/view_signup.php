@@ -22,11 +22,11 @@
     <body class="bg-dark h-100">
         <div class="container h-100">
             <div class="row p-3 h-100 justify-content-center align-items-center">
-                <form class="p-3 border rounded -10 text-white text-center" action="main/login" method="post">
+                <form class="p-3 border rounded -10 text-white text-center" action="main/signup" method="post">
                     <fieldset class="h4">Sign Up</fieldset>
                     <hr>
                     <div class="form-group">
-                        <input type="email" color="bg-dark" class="form-control<?php if (count($errors["mail"]) > 0): ?>is-invalid<?php endif; ?> " id="mail" name="mail" placeholder="Enter email">
+                        <input type="email" color="bg-dark" class="form-control <?php if (count($errors["mail"]) > 0): ?>is-invalid<?php endif; ?>" id="mail" name="mail" placeholder="Enter email">
                         <?php if (count($errors["mail"]) > 0): ?>
                             <div class="text-left invalid-feedback">
                                 <ul class="list-unstyled">
@@ -50,7 +50,7 @@
                         <?php endif; ?>
                     </div>
                     <div class="form-group">
-                        <input type="password" class="form-contro <?php if (count($errors["password"]) > 0): ?>is-invalid<?php endif; ?>l" id="password" name="password" placeholder="Enter password">
+                        <input type="password" class="form-control <?php if (count($errors["password"]) > 0): ?>is-invalid<?php endif; ?>" id="password" name="password" placeholder="Enter password">
                         <?php if (count($errors["password"]) > 0): ?>
                             <div class="text-left invalid-feedback">
                                 <ul class="list-unstyled">
@@ -73,12 +73,11 @@
                             </div>
                         <?php endif; ?>
                     </div>
-
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary col-12 ">Sign Up</button>
                     </div>
                     <div class="form-group">
-                    <button type="submit" class="btn btn-outline-danger col-12 ">Cancel</button>
+                    <button type="button" class="btn btn-outline-danger col-12 ">Cancel</button>
                     </div>
                 </form>
             </div>

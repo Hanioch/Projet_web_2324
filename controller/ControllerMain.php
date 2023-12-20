@@ -11,12 +11,14 @@ class ControllerMain extends Controller {
     public function index() : void {
 //        var_dump($this->user_logged());
         if ($this->user_logged()) {
-            $this->redirect("notes", "index");
+            $this->redirect("main", "test");
         } else {
             $this->redirect("main", "login");
         }
     }
-
+    public function test(): void {
+        echo "<h1>Test !</h1>";
+    }
     public function login(): void {
         $mail = '';
         $password = '';
@@ -41,7 +43,12 @@ class ControllerMain extends Controller {
         $fullname = '';
         $password = '';
         $password_confirm = '';
-        $errors = [];
+        $errors = [
+            "mail"=>[],
+            "fullname"=>[],
+            "password"=>[],
+            "password_confirm"=>[]
+        ];
 
         if (isset($_POST['mail']) && isset($_POST['fullname']) && isset($_POST['password']) && isset($_POST['password_confirm'])) {
             $mail = trim($_POST['mail']);
@@ -51,8 +58,10 @@ class ControllerMain extends Controller {
 
             $user = new User($mail, Tools::my_hash($password), $fullname, Role::USER);
             $errors = User::validate_unicity($mail);
+            $errors = array_merge($errors, User::validate_fullname($fullname));
             $errors = array_merge($errors, User::validate_mail($mail));
             $errors = array_merge($errors, User::validate_password($password));
+            $errors = array_merge($errors, User::validate_password_confirmation($password,$password_confirm));
 
             if (count($errors) == 0) {
                 $user->persist(); //sauve l'utilisateur
