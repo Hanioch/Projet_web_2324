@@ -17,7 +17,12 @@ class ControllerMain extends Controller {
         }
     }
     public function test(): void {
+        $user = $this->get_user_or_false();
         echo "<h1>Test !</h1>";
+        echo "<pre>";
+        var_dump($user);
+        echo "</pre>";
+
     }
     public function login(): void {
         $mail = '';

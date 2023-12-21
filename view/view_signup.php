@@ -62,7 +62,7 @@
                         <?php endif; ?>
                     </div>
                     <div class="form-group">
-                        <input type="password_confirm" class="form-control <?php if (count($errors["password_confirm"]) > 0): ?>is-invalid<?php endif; ?>" id="password_confirm" name="password_confirm" placeholder="Confirm your password">
+                        <input type="password" class="form-control <?php if (count($errors["password_confirm"]) > 0): ?>is-invalid<?php endif; ?>" id="password_confirm" name="password_confirm" placeholder="Confirm your password">
                         <?php if (count($errors["password_confirm"]) > 0): ?>
                             <div class="text-left invalid-feedback">
                                 <ul class="list-unstyled">
