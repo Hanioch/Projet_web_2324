@@ -167,7 +167,7 @@ class User extends Model
         $data = $query->fetchAll();
         $notes = [];
         foreach ($data as $row) {
-            $messages[] = new Note($row('id'), $row['title'], $row['owner'], $row['created_at'], $row['edited_at'], $row['pinned'], $row['archived'], $row['weight']);
+            $notes[] = new Note($row('id'), $row['title'], $row['owner'], $row['created_at'], $row['edited_at'], $row['pinned'], $row['archived'], $row['weight']);
         }
         return $notes;
     }

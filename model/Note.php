@@ -4,7 +4,7 @@
 class Note extends MyModel
 {
 
-    public function __construct(public ?int $id = NULL, protected string $title, protected User $owner, protected ?string $created_at, protected ?string $edited_at, protected  bool $pinned, protected bool $archived, protected int $weight)
+    public function __construct(protected string $title, protected User $owner, protected  bool $pinned, protected bool $archived, protected int $weight, public ?int $id = NULL, protected ?string $created_at = NULL, protected ?string $edited_at = NULL)
     {
     }
 
@@ -50,7 +50,8 @@ class Note extends MyModel
             return false;
         } else {
             $row = $query->fetch();
-            return new Note($row('id'), $row['title'], $row['owner'], $row['created_at'], $row['edited_at'], $row['pinned'], $row['archived'], $row['weight']);
+            // $owner = new User();
+            return new Note($row['title'], $row['owner'], $row['pinned'], $row['archived'], $row['weight'], $row['id'], $row['created_at'], $row['edited_at']);
         }
     }
 

@@ -3,8 +3,9 @@
 class TextNote extends Note
 {
 
-    public function __construct(private string $content)
+    public function __construct(public ?int $id = NULL, protected string $title, protected User $owner, protected ?string $created_at, protected ?string $edited_at, protected  bool $pinned, protected bool $archived, protected int $weight, private string $content)
     {
+        //TODOO mettre tout les champs optionel a la fin et envoyer au parents tout ses attribut
     }
 
     /*public function validate(): array
@@ -38,8 +39,6 @@ class TextNote extends Note
 
     public function persist(): TextNote|array
     {
-        // TODOOO 
-        // il faut tout revoir ici
         $errors = $this->validate();
         if (empty($errors)) {
 
