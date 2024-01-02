@@ -50,8 +50,8 @@ class Note extends MyModel
             return false;
         } else {
             $row = $query->fetch();
-            // $owner = new User();
-            return new Note($row['title'], $row['owner'], $row['pinned'], $row['archived'], $row['weight'], $row['id'], $row['created_at'], $row['edited_at']);
+            $owner = User::get_user_by_id($row['owner']);
+            return new Note($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['id'], $row['created_at'], $row['edited_at']);
         }
     }
 

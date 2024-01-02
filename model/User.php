@@ -171,4 +171,15 @@ class User extends Model
         }
         return $notes;
     }
+
+    public static function get_user_by_id($id): User | false
+    {
+        $query = self::execute("select * from users where id = :id", ["id" => $id]);
+        if ($query->rowCount() == 0) {
+            return false;
+        } else {
+            $row = $query->fetch();
+            return new User($row['mail'], $row['hashed_password'], $row['full_name'], $row['role'], $row['id']);
+        }
+    }
 }

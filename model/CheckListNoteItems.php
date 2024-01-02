@@ -8,12 +8,12 @@ class ChecklistNoteItems extends MyModel
     {
     }
 
-    public function delete(User $initiator): ChecklistNoteItems| false
+    public function delete(User $initiator): ChecklistNoteItems|false
     {
-        //On doit faire un get du checklist_note lié pour verifier l'owner dans un premier temps   et le supprimer aussi.
-        if ($this->owner == $initiator) {
+        $checklistNote = ChecklistNote::get_by_id($this->checklist_note);
+        if ($checklistNote->owner->id == $initiator->id) {
             self::execute("DELETE FROM checklist_note_items WHERE id = :id", ["id" => $this->id]);
-            //parent::delete($initiator);
+            $checklistNote->delete($initiator);
             return $this;
         }
         return false;
@@ -51,17 +51,17 @@ class ChecklistNoteItems extends MyModel
     public function validate(): array
     {
         $errors = [];
-        $errors = array_merge($errors, $this->validateNoteReference($this->checklist_note));
-        $errors = array_merge($errors, $this->validateContent($this->content, $this->checklist_note));
-        $errors = array_merge($errors, $this->validateChecked($this->checked));
+        $errors = array_merge($errors, $this->validate_note_reference($this->checklist_note));
+        $errors = array_merge($errors, $this->validate_content($this->content, $this->checklist_note));
+        $errors = array_merge($errors, $this->validate_checked($this->checked));
 
         return $errors;
     }
 
-    private function validateNoteReference(int $noteId): array
+    private function validate_note_reference(int $noteId): array
     {
         $errors = [];
-        $note = ChecklistNote::getNoteById($noteId);
+        $note = ChecklistNote::get_by_id($noteId);
 
         if (!$note) {
             $errors[] = "La note n'existe pas.";
@@ -70,7 +70,7 @@ class ChecklistNoteItems extends MyModel
         return $errors;
     }
 
-    private function validateContent(string $content, int $noteId): array
+    private function validate_content(string $content, int $noteId): array
     {
         $errors = [];
 
@@ -85,7 +85,7 @@ class ChecklistNoteItems extends MyModel
         return $errors;
     }
 
-    private function validateChecked(bool $checked): array
+    private function validate_checked(bool $checked): array
     {
         $errors = [];
 

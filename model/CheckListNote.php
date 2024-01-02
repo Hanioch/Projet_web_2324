@@ -4,12 +4,13 @@ require_once "Model.php";
 
 class ChecklistNote extends Note
 {
-    public function __construct(protected string $title, protected User $owner, protected  bool $pinned, protected bool $archived, protected int $weight, public ?int $id = NULL, protected ?string $created_at = NULL, protected ?string $edited_at = NULL)
+    public function __construct(protected string $title, public User $owner, protected  bool $pinned, protected bool $archived, protected int $weight, public ?int $id = NULL, protected ?string $created_at = NULL, protected ?string $edited_at = NULL)
     {
+        parent::__construct($title, $owner, $pinned, $archived, $weight, $id, $created_at, $edited_at);
     }
 
 
-    public function getItems(): array | false
+    public function get_items(): array | false
     {
         $query = self::execute("SELECT * FROM checklist_note_items WHERE checklist_note = :checklist_note", ["checklist_note" => $this->id]);
         $data = $query->fetchAll();
@@ -32,14 +33,15 @@ class ChecklistNote extends Note
         return false;
     }
 
-    public static function getById($id): ChecklistNote | false
+    public static function get_by_id($id): ChecklistNote | false
     {
         $query = self::execute("SELECT * FROM checklist_notes WHERE id = :id", ["id" => $id]);
         if ($query->rowCount() == 0) {
             return false;
         } else {
             $row = $query->fetch();
-            return new ChecklistNote($row['title'], $row['owner'], $row['pinned'], $row['archived'], $row['weight'], $row['id'], $row['created_at'], $row['edited_at']);
+            $owner = User::get_user_by_id($row['owner']);
+            return new ChecklistNote($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['id'], $row['created_at'], $row['edited_at']);
         }
     }
 
@@ -52,7 +54,7 @@ class ChecklistNote extends Note
                 self::execute(
                     'INSERT INTO checklist_notes (id) VALUES
                 (:id)',
-                    ['id' => $this->id,]
+                    ['id' => self::lastInsertId(),]
                 );
                 return $this;
             }

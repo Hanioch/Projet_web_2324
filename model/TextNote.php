@@ -3,9 +3,9 @@
 class TextNote extends Note
 {
 
-    public function __construct(public ?int $id = NULL, protected string $title, protected User $owner, protected ?string $created_at, protected ?string $edited_at, protected  bool $pinned, protected bool $archived, protected int $weight, private string $content)
+    public function __construct(protected string $title, protected User $owner, protected  bool $pinned, protected bool $archived, protected int $weight, public string $content, public ?int $id = NULL, protected ?string $created_at = NULL, protected ?string $edited_at = NULL)
     {
-        //TODOO mettre tout les champs optionel a la fin et envoyer au parents tout ses attribut
+        parent::__construct($title, $owner, $pinned, $archived, $weight, $id, $created_at, $edited_at);
     }
 
     /*public function validate(): array
@@ -15,7 +15,6 @@ class TextNote extends Note
     }
     */
 
-
     public static function get_text_note(int $id): Note| false
     {
         $query = self::execute("select * from notes n join text_notes tn ON tn.id = n.id where id= :id", ["id" => $id]);
@@ -23,7 +22,8 @@ class TextNote extends Note
             return false;
         } else {
             $row = $query->fetch();
-            return new TextNote($row('id'), $row['title'], $row['owner'], $row['created_at'], $row['edited_at'], $row['pinned'], $row['archived'], $row['weight'], $row['content']);
+            $owner = User::get_user_by_id($row['owner']);
+            return new TextNote($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['content'], $row['id'], $row['created_at'], $row['edited_at']);
         }
     }
 
