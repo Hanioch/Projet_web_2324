@@ -12,7 +12,9 @@ class ControllerNotes extends Controller {
 
     private function note_list() : void {
         $user = $this->get_user_or_redirect();
-        (new View("notes"))->show(["user" => $user]);
+        $notes = $user->get_notes();
+        var_dump($user);
+        (new View("notes"))->show(["notes" => $notes]);
     }
 
     public function signup() : void {
