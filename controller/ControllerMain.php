@@ -49,10 +49,10 @@ class ControllerMain extends Controller {
         $password = '';
         $password_confirm = '';
         $errors = [
-            //"mail"=>[],
-            //"full_name"=>[],
-            //"password"=>[],
-            //"password_confirm"=>[]
+            "mail"=>[],
+            "full_name"=>[],
+            "password"=>[],
+            "password_confirm"=>[]
         ];
 
         if (isset($_POST['mail']) && isset($_POST['full_name']) && isset($_POST['password']) && isset($_POST['password_confirm'])) {
@@ -62,19 +62,23 @@ class ControllerMain extends Controller {
             $password_confirm = $_POST['password_confirm'];
 
             $user = new User($mail, Tools::my_hash($password), $full_name, Role::USER);
-            $errors = User::validate_unicity($mail);
+            //$errors = array_merge($errors, User::validate_unicity($mail));
             $errors = array_merge($errors, User::validate_full_name($full_name));
             $errors = array_merge($errors, User::validate_mail($mail));
             $errors = array_merge($errors, User::validate_password($password));
             $errors = array_merge($errors, User::validate_password_confirmation($password,$password_confirm));
 
-            if (count($errors) == 0) {
+            if (empty($errors["mail"]) && empty($errors["full_name"]) && empty($errors["password"]) && empty($errors["password_confirm"])) {
                 $user->persist(); //sauve l'utilisateur
                 $this->log_user($user);
             }
         }
-        (new View("signup"))->show(["mail" => $mail,"full_name" => $full_name, "password" => $password,
-            "password_confirm" => $password_confirm, "errors" => $errors]);
+        (new View("signup"))->show([
+            "mail" => $mail,
+            "full_name" => $full_name,
+            "password" => $password,
+            "password_confirm" => $password_confirm,
+            "errors" => $errors]);
     }
 
 }
