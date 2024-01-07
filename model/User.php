@@ -25,7 +25,7 @@ class User extends Model
         else
             self::execute(
                 "INSERT INTO users (mail,hashed_password,full_name,role) VALUES(:mail,:hashed_password,:full_name,:role)",
-                ["mail" => $this->mail, "hashed_password" => $this->hashed_password, "full_name" => $this->full_name, "role" => $this->role]
+                ["mail" => $this->mail, "hashed_password" => $this->hashed_password, "full_name" => $this->full_name, "role" => $this->role->value]
             );
         return $this;
     }
@@ -66,7 +66,9 @@ class User extends Model
 
     public static function validate_password(string $password): array
     {
-        $errors = [];
+        $errors = [
+            //"password" =>[]
+        ];
         if (!strlen($password) > 0) {
             $errors[] = "Password is required.";
         }
@@ -79,9 +81,11 @@ class User extends Model
         return $errors;
     }
 
-    private static function validate_full_name(string $full_name): array
+    public static function validate_full_name(string $full_name): array
     {
-        $errors = [];
+        $errors = [
+            //"full_name" =>[]
+        ];
         if (!strlen($full_name) > 0) {
             $errors[] = "Name is required.";
         }
@@ -93,7 +97,10 @@ class User extends Model
 
     public static function validate_password_confirmation(string $password, string $password_confirm): array
     {
-        $errors = self::validate_password($password);
+        $errors =[
+            //"password" =>[],
+            //"password_confirm" =>[]
+        ];
         if (!strlen($password_confirm) > 0) {
             $errors[] = "Password confirmation is required.";
         }
@@ -106,7 +113,7 @@ class User extends Model
     {
         $regex = '/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/';
         $errors = [
-            "mail"=>[]
+           // "mail"=>[]
         ];
         if (!strlen($mail) > 0) {
             $errors[] = "Mail is required.";
@@ -119,7 +126,9 @@ class User extends Model
 
     public static function validate_unicity(string $mail): array
     {
-        $errors = [];
+        $errors = [
+           // "mail" =>[]
+        ];
         $user = self::get_user_by_mail($mail);
         if ($user) {
             $errors[] = "This user already exists.";

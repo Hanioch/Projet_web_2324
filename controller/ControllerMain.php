@@ -45,25 +45,25 @@ class ControllerMain extends Controller {
 
     public function signup() : void {
         $mail = '';
-        $fullname = '';
+        $full_name = '';
         $password = '';
         $password_confirm = '';
         $errors = [
-            "mail"=>[],
-            "fullname"=>[],
-            "password"=>[],
-            "password_confirm"=>[]
+            //"mail"=>[],
+            //"full_name"=>[],
+            //"password"=>[],
+            //"password_confirm"=>[]
         ];
 
-        if (isset($_POST['mail']) && isset($_POST['fullname']) && isset($_POST['password']) && isset($_POST['password_confirm'])) {
+        if (isset($_POST['mail']) && isset($_POST['full_name']) && isset($_POST['password']) && isset($_POST['password_confirm'])) {
             $mail = trim($_POST['mail']);
-            $fullname = trim($_POST['fullname']);
+            $full_name = trim($_POST['full_name']);
             $password = $_POST['password'];
             $password_confirm = $_POST['password_confirm'];
 
-            $user = new User($mail, Tools::my_hash($password), $fullname, Role::USER);
+            $user = new User($mail, Tools::my_hash($password), $full_name, Role::USER);
             $errors = User::validate_unicity($mail);
-            $errors = array_merge($errors, User::validate_fullname($fullname));
+            $errors = array_merge($errors, User::validate_full_name($full_name));
             $errors = array_merge($errors, User::validate_mail($mail));
             $errors = array_merge($errors, User::validate_password($password));
             $errors = array_merge($errors, User::validate_password_confirmation($password,$password_confirm));
@@ -73,7 +73,7 @@ class ControllerMain extends Controller {
                 $this->log_user($user);
             }
         }
-        (new View("signup"))->show(["mail" => $mail, "password" => $password,
+        (new View("signup"))->show(["mail" => $mail,"full_name" => $full_name, "password" => $password,
             "password_confirm" => $password_confirm, "errors" => $errors]);
     }
 

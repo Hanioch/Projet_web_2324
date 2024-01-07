@@ -26,52 +26,17 @@
                     <fieldset class="h4">Sign Up</fieldset>
                     <hr>
                     <div class="form-group">
-                        <input type="email" color="bg-dark" class="form-control <?php if (count($errors["mail"]) > 0): ?>is-invalid<?php endif; ?>" id="mail" name="mail" placeholder="Enter email">
-                        <?php if (count($errors["mail"]) > 0): ?>
-                            <div class="text-left invalid-feedback">
-                                <ul class="list-unstyled">
-                                    <?php foreach ($errors["mail"] as $error): ?>
-                                        <li><?= $error ?></li>
-                                    <?php endforeach; ?>
-                                </ul>
-                            </div>
-                        <?php endif; ?>
+                        <input type="email" color="bg-dark" class="form-control" id="mail" name="mail" placeholder="Enter email">
                     </div>
                     <div class="form-group">
-                        <input type="fullname" class="form-control <?php if (count($errors["fullname"]) > 0): ?>is-invalid<?php endif; ?>" id="fullname" name="fullname" placeholder="Full Name">
-                        <?php if (count($errors["fullname"]) > 0): ?>
-                            <div class="text-left invalid-feedback">
-                                <ul class="list-unstyled">
-                                    <?php foreach ($errors["fullname"] as $error): ?>
-                                        <li><?= $error ?></li>
-                                    <?php endforeach; ?>
-                                </ul>
-                            </div>
-                        <?php endif; ?>
+                        <input type="full_name" class="form-control" id="full_name" name="full_name" placeholder="Full Name">
                     </div>
                     <div class="form-group">
-                        <input type="password" class="form-control <?php if (count($errors["password"]) > 0): ?>is-invalid<?php endif; ?>" id="password" name="password" placeholder="Enter password">
-                        <?php if (count($errors["password"]) > 0): ?>
-                            <div class="text-left invalid-feedback">
-                                <ul class="list-unstyled">
-                                    <?php foreach ($errors["password"] as $error): ?>
-                                        <li><?= $error ?></li>
-                                    <?php endforeach; ?>
-                                </ul>
-                            </div>
-                        <?php endif; ?>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter password">
+
                     </div>
                     <div class="form-group">
-                        <input type="password" class="form-control <?php if (count($errors["password_confirm"]) > 0): ?>is-invalid<?php endif; ?>" id="password_confirm" name="password_confirm" placeholder="Confirm your password">
-                        <?php if (count($errors["password_confirm"]) > 0): ?>
-                            <div class="text-left invalid-feedback">
-                                <ul class="list-unstyled">
-                                    <?php foreach ($errors["password_confirm"] as $error): ?>
-                                        <li><?= $error ?></li>
-                                    <?php endforeach; ?>
-                                </ul>
-                            </div>
-                        <?php endif; ?>
+                        <input type="password" class="form-control" id="password_confirm" name="password_confirm" placeholder="Confirm your password">
                     </div>
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary col-12 ">Sign Up</button>
@@ -79,6 +44,16 @@
                     <div class="form-group">
                     <button type="button" class="btn btn-outline-danger col-12 ">Cancel</button>
                     </div>
+                    <?php if (count($errors) != 0): ?>
+                        <div class='errors'>
+                            <br><br><p>Please correct the following error(s) :</p>
+                            <ul>
+                                <?php foreach ($errors as $error): ?>
+                                    <li><?= $error ?></li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                    <?php endif; ?>
                 </form>
             </div>
         </div>
