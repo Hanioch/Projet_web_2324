@@ -175,16 +175,14 @@ class User extends MyModel
         LEFT JOIN text_notes tn ON n.id = tn.id
         LEFT JOIN checklist_notes cn ON n.id = cn.id
         LEFT JOIN checklist_note_items cni ON cn.id = cni.checklist_note
-        GROUP BY n.id; where owner = :owner order by weight", ["owner" => $this->id]);
+        GROUP BY n.id where owner = :owner order by weight", ["owner" => $this->id]);
         $data = $query->fetchAll();
         $notes = [];
         foreach ($data as $row) {
             $owner = User::get_user_by_id($row['owner']);
 
-            if ($row['text_content'] == NULL) {
-
-                $current_checklist = new ChecklistNote($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['id'], $row['created_at'], $row['edited_at']);
-                $notes[] = $current_checklist;
+            if ($row['checklist_id'] != NULL) {
+                $notes[] = new ChecklistNote($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['id'], $row['created_at'], $row['edited_at']);
             } else {
                 $notes[] = new TextNote($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['content'], $row['id'], $row['created_at'], $row['edited_at']);
             }
