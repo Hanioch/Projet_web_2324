@@ -13,6 +13,10 @@
         .input-group input {
             background-color: transparent;
         }
+        .input-group-text{
+            background-color: transparent;
+            color: white;
+        }
 
         </style>
     </head>
