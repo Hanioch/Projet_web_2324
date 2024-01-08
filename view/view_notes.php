@@ -12,16 +12,13 @@
 <body class="bg-dark h-100">
     <div class="container h-100">
         <ul>
-            <?php var_dump($notes) ?>
             <?php foreach ($notes as $note): ?>
                 <li>
                     <div class="card border-success mb-3" style="max-width: 18rem;">
-                        <div class="card-header bg-transparent border-success"><?= $note['title'] ?></div>
+                        <div class="card-header bg-transparent border-success"><?= $note->title ?></div>
                         <div class="card-body text-success">
-                            <h5 class="card-title">Success card title</h5>
-                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                            <p class="card-text"><?= $note->content?></p>
                         </div>
-                        <div class="card-footer bg-transparent border-success">Footer</div>
                     </div>
                 </li>
             <?php endforeach; ?>

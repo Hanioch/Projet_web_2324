@@ -12,8 +12,9 @@ class ControllerNotes extends Controller {
 
     private function note_list() : void {
         $user = $this->get_user_or_redirect();
+//        var_dump($this->get_user_or_redirect());
         $notes = $user->get_notes();
-        var_dump($user);
+//        var_dump($notes);
         (new View("notes"))->show(["notes" => $notes]);
     }
 

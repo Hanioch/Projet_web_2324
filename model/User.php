@@ -1,6 +1,7 @@
 <?php
 
-require_once "framework/Model.php";
+require_once "model/MyModel.php";
+require_once "model/Note.php";
 
 enum Role: string
 {
@@ -8,7 +9,7 @@ enum Role: string
     case ADMIN = "admin";
 }
 
-class User extends Model
+class User extends MyModel
 {
 
     public function __construct(public string $mail, public string $hashed_password, public string $full_name, public Role $role, public ?int $id = NULL)
@@ -167,7 +168,12 @@ class User extends Model
         $data = $query->fetchAll();
         $notes = [];
         foreach ($data as $row) {
-            $notes[] = new Note($row('id'), $row['title'], $row['owner'], $row['created_at'], $row['edited_at'], $row['pinned'], $row['archived'], $row['weight']);
+            $owner = User::get_user_by_id($row['owner']);
+
+            $notes[] = new Note($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['id'], $row['created_at'], $row['edited_at']);
+
+//            $notes[] = new Note($row['title'], $row['owner'], $row['pinned'], $row['archived'], $row['weight'], $row['id']);
+//            $notes[] = new Note($row('id'), $row['title'], $row['owner'], $row['created_at'], $row['edited_at'], $row['pinned'], $row['archived'], $row['weight']);
         }
         return $notes;
     }
@@ -179,7 +185,12 @@ class User extends Model
             return false;
         } else {
             $row = $query->fetch();
-            return new User($row['mail'], $row['hashed_password'], $row['full_name'], $row['role'], $row['id']);
+            $role = $row['role'];
+            $new_role=Role::USER;
+            if ($role==Role::ADMIN){
+                $new_role=Role::ADMIN;
+            }
+            return new User($row['mail'], $row['hashed_password'], $row['full_name'], $new_role, $row['id']);
         }
     }
 }

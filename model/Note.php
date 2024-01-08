@@ -1,10 +1,13 @@
 <?php
 
+require_once "model/MyModel.php";
+require_once "model/User.php";
+
 
 class Note extends MyModel
 {
 
-    public function __construct(protected string $title, protected User $owner, protected  bool $pinned, protected bool $archived, protected int $weight, public ?int $id = NULL, protected ?string $created_at = NULL, protected ?string $edited_at = NULL)
+    public function __construct(public string $title, public User $owner, public  bool $pinned, public bool $archived, public int $weight, public ?int $id = NULL, public ?string $created_at = NULL, public ?string $edited_at = NULL)
     {
     }
 
