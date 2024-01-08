@@ -57,6 +57,9 @@ class ChecklistNote extends Note
                     ['id' => self::lastInsertId(),]
                 );
                 return $this;
+            } else {
+                parent::modify_note_in_DB();
+                return $this;
             }
         } else {
             return $errors;
