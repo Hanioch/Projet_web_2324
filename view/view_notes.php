@@ -18,9 +18,26 @@
                     <div class="card border-success mb-3" style="max-width: 18rem;">
                         <div class="card-header bg-transparent border-success"><?= $note->title ?></div>
                         <div class="card-body text-success">
-                            <!-- TODOOOO  ICI IL faut mettre une condition pour verifier que c'est une textNOTE
-                        OU une checklistnote, et afficher une structure differente en fonction.   -->
-                            <p class="card-text"><?= $note->content ?></p>
+                            <?php if (property_exists($note, 'content')) {
+
+                            ?>
+                                <p class='card-text'><?= $note->content ?></p>
+
+                                <?php
+                            } else {
+                                foreach ($note->list_item as $item) :
+                                ?>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" <?php echo $item->checked ? "checked" : ""  ?>>
+                                        <label class="form-check-label" for="flexCheckDefault">
+                                            <?= $item->content ?>
+                                        </label>
+                                    </div>
+                                    <p class="card-text"> </p>
+                            <?php
+                                endforeach;
+                            }
+                            ?>
                         </div>
                     </div>
                 </li>
