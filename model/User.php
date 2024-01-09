@@ -20,7 +20,7 @@ class User extends Model
         if (self::get_user_by_mail($this->mail))
             self::execute(
                 "UPDATE users SET hashed_password=:hashed_password, full_name=:full_name, role=:role WHERE mail=:mail ",
-                ["hashed_password" => $this->hashed_password, "full_name" => $this->full_name, "role" => $this->role]
+                ["mail" => $this->mail,"hashed_password" => $this->hashed_password, "full_name" => $this->full_name, "role" => $this->role->value]
             );
         else
             self::execute(
@@ -29,7 +29,6 @@ class User extends Model
             );
         return $this;
     }
-
     public static function get_user_by_mail(string $mail): User|false
     {
         $query = self::execute("SELECT * FROM users where mail = :mail", ["mail" => $mail]);
@@ -84,13 +83,16 @@ class User extends Model
     public static function validate_full_name(string $full_name): array
     {
         $errors = [
-            "full_name" =>[]
+            "full_name" =>[],
+            "new_name"=>[]
         ];
         if (!strlen($full_name) > 0) {
             $errors ["full_name"][]= "Name is required.";
+            $errors ["new_name"][]= "Name is required.";
         }
         if (strlen($full_name) < 3) {
             $errors["full_name"][] = "Name must be at least 3 characters long";
+            $errors["new_name"][] = "Name must be at least 3 characters long";
         }
         return $errors;
     }

@@ -17,13 +17,35 @@ class ControllerMain extends Controller {
         }
     }
     public function test(): void {
-        $user = $this->get_user_or_false();
-        echo "<h1>Test !</h1>";
-        echo "<pre>";
-        var_dump($user);
-        echo "</pre>";
+        $user = $this->get_user_or_redirect();
+        $new_name ="";
+        $errors = [
+            "new_name"=>[]
+        ];
+        $success = "";
+
+        if (isset($_POST['new_name'])) {
+            $new_name = trim($_POST['new_name']);
+            $errors = User::validate_full_name($new_name);
+
+            if(empty($errors["new_name"])){
+            $user->full_name = $new_name;
+            $user->persist();
+            $success = "Your profile has been successfully updated.";
+            }
+
+            if (count($_POST) > 0 && count($errors["new_name"]) == 0)
+                $this->redirect("main", "test", "ok");
+
+            if (isset($_GET['param1']) && $_GET['param1'] === "ok")
+                $success = "Your profile has been successfully updated.";
+        }
+
+
+        (new View("edit_profile"))->show(["user" => $user, "success" => $success,"new_name"=> $new_name,'errors'=> $errors]);
 
     }
+
     public function login(): void {
         $mail = '';
         $password = '';
