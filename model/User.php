@@ -167,7 +167,6 @@ class User extends MyModel
 
     public function get_notes(): array
     {
-        //on get les textNotes
         $query = self::execute("SELECT
         n.*,
         tn.content AS text_content,
@@ -177,17 +176,29 @@ class User extends MyModel
         notes n
         LEFT JOIN text_notes tn ON n.id = tn.id
         LEFT JOIN checklist_notes cn ON n.id = cn.id
-        LEFT JOIN checklist_note_items cni ON cn.id = cni.checklist_note  where owner = :owner
-        GROUP BY n.id order by weight", ["owner" => $this->id]);
+        LEFT JOIN checklist_note_items cni ON cn.id = cni.checklist_note  
+        where owner = :owner AND n.archived =0 AND   n.id NOT IN
+        (SELECT note FROM note_shares ns INNER JOIN notes n2 On n2.id = ns.note WHERE n2.owner != n.owner )
+        GROUP BY n.id order by  pinned DESC, weight DESC
+       ", ["owner" => $this->id]);
         $data = $query->fetchAll();
+        //$notes = [];
         $notes = [];
+        $notes["pinned"] = [];
+        $notes["other"] = [];
         foreach ($data as $row) {
             $owner = User::get_user_by_id($row['owner']);
 
             if (ChecklistNote::is_checklist_note($row['checklist_id'])) {
-                $notes[] = new ChecklistNote($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['id'], $row['created_at'], $row['edited_at']);
+                $note = new ChecklistNote($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['id'], $row['created_at'], $row['edited_at']);
             } else {
-                $notes[] = new TextNote($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['text_content'], $row['id'], $row['created_at'], $row['edited_at']);
+                $note = new TextNote($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['text_content'], $row['id'], $row['created_at'], $row['edited_at']);
+            }
+
+            if ($row['pinned'] === 1) {
+                $notes["pinned"][] = $note;
+            } else {
+                $notes["other"][] = $note;
             }
         }
         return $notes;
