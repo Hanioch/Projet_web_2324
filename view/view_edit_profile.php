@@ -14,37 +14,48 @@
             background-color: transparent;
 
         }
-        .container h5{
-            margin: 5px;
+        .head{
+            margin-top: px;
+            margin-right: 5px;
             text-align: right;
             color: white;
         }
 
     </style>
 </head>
-<body class="bg-dark">
-<div class="container">
-    <h5>Edit profil</h5>
-</div>
-<div class="container h-70">
-    <div class="row p-2 h-100 justify-content-right align-items-right">
-        <form class=" text-white" action="main/test" method="post">
+<header>
+    <div class="head">
+        <nav class="navbar navbar-dark">
+            <a class="navbar-brand" href="main/test">
+                <i class="bi bi-chevron-left"></i>
+            </a>
+            <h5>Edit profil</h5>
+        </nav>
+    </div>
+</header>
+<body class="bg-dark h-100">
+<div class="container h-100">
+    <div class="row p-3">
+        <form class=" text-white" action="main/edit_profile" method="post">
             <label for="button-addon1" class="form-label">Edit your name</label>
-            <div class="input-group mb-3">
+            <div class="input-group">
                 <button class="btn btn-primary" type="submit" id="button-addon1"><i class="bi bi-floppy"></i></button>
-                <input type="text" name="new_name" class="form-control<?php if (count($errors["new_name"]) > 0): ?>is-invalid<?php endif; ?>" placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1" value="<?= $user->full_name ?>">
-                <?php if (count($errors["new_name"]) > 0): ?>
-                    <div class="text-left invalid-feedback">
-                        <ul class="list-unstyled">
-                            <?php foreach ($errors["new_name"] as $error): ?>
-                                <li><?= $error ?></li>
-                            <?php endforeach; ?>
-                        </ul>
-                    </div>
-                <?php elseif (strlen($success) != 0): ?>
-                    <p><span class='success'><?= $success ?></span></p>
-                <?php endif; ?>
+                <input type="text" name="full_name" class="form-control<?php if (count($errors["full_name"]) > 0): ?> is-invalid<?php endif; ?> " placeholder="" id="full_name" aria-label="Example text with button addon" aria-describedby="button-addon1" value="<?= $user->full_name ?>">
             </div>
+            <?php if (isset($errors) && count($errors["full_name"]) > 0): ?>
+                <ul class="list-unstyled" >
+                    <?php foreach ($errors["full_name"] as $error): ?>
+                        <div class="alert alert-danger" role="alert">
+                            <li><?= $error ?></li>
+                        </div>
+                    <?php endforeach; ?>
+                </ul>
+            <?php endif; ?>
+            <?php if (!empty($success)): ?>
+                <div class="alert alert-success" role="alert">
+                    <?= $success ?>
+                </div>
+            <?php endif; ?>
         </form>
 
     </div>

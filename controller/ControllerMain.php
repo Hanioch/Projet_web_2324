@@ -11,41 +11,50 @@ class ControllerMain extends Controller {
     public function index() : void {
 //        var_dump($this->user_logged());
         if ($this->user_logged()) {
-            $this->redirect("main", "test");
+            $this->redirect("main", "edit_profile");
         } else {
             $this->redirect("main", "login");
         }
     }
-    public function test(): void {
+    public function edit_profile(): void {
         $user = $this->get_user_or_redirect();
-        $new_name ="";
+        $full_name ="";
         $errors = [
-            "new_name"=>[]
+            "full_name"=>[]
         ];
-        $success = "";
+        $success = isset($_GET['param1']) ? "Votre profil a été mis à jour avec succès." : '';
+        if (isset($_POST['full_name'])) {
+            $full_name = trim($_POST['full_name']);
+            $errors = User::validate_full_name($full_name);
 
-        if (isset($_POST['new_name'])) {
-            $new_name = trim($_POST['new_name']);
-            $errors = User::validate_full_name($new_name);
+            if($full_name != $user->full_name){
 
-            if(empty($errors["new_name"])){
-            $user->full_name = $new_name;
-            $user->persist();
-            $success = "Your profile has been successfully updated.";
+                if(empty($errors["full_name"])){
+                    $user->full_name = $full_name;
+                    $user->persist();
+                }
+
+                if (count($_POST) > 0 && empty($errors["full_name"])){
+                    $this->redirect("main", "edit_profile", "ok");
+                    echo "Redirecting to main/test?ok";
+                }
+
+                if (isset($_POST['param1'])){
+                    $success = "Your profile has been successfully updated.";
+
+                }
+
             }
 
-            if (count($_POST) > 0 && count($errors["new_name"]) == 0)
-                $this->redirect("main", "test", "ok");
-
-            if (isset($_GET['param1']) && $_GET['param1'] === "ok")
-                $success = "Your profile has been successfully updated.";
         }
 
 
-        (new View("edit_profile"))->show(["user" => $user, "success" => $success,"new_name"=> $new_name,'errors'=> $errors]);
+        (new View("edit_profile"))->show(["user" => $user, "success" => $success,"full_name"=> $full_name,'errors'=> $errors]);
 
     }
-
+    public function test() : void {
+        echo "<h1>Hello !</h1>";
+    }
     public function login(): void {
         $mail = '';
         $password = '';

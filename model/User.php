@@ -84,15 +84,12 @@ class User extends Model
     {
         $errors = [
             "full_name" =>[],
-            "new_name"=>[]
         ];
         if (!strlen($full_name) > 0) {
             $errors ["full_name"][]= "Name is required.";
-            $errors ["new_name"][]= "Name is required.";
         }
         if (strlen($full_name) < 3) {
             $errors["full_name"][] = "Name must be at least 3 characters long";
-            $errors["new_name"][] = "Name must be at least 3 characters long";
         }
         return $errors;
     }
