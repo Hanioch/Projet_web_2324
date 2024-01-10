@@ -43,7 +43,7 @@ function show_note($arr_notes)
                     }
                     ?>
                 </div>
-                <div class="footer-note">
+                <div class="footer-in-note">
                     <?php if ($i !== 0) {
                     ?>
                         <i class="bi bi-chevron-double-left icon i-left"></i>
@@ -66,7 +66,7 @@ function show_note($arr_notes)
 ?>
 
 <!DOCTYPE html>
-<html lang="fr" class="h-100">
+<html lang="fr">
 
 <head>
     <meta charset="UTF-8">
@@ -78,8 +78,8 @@ function show_note($arr_notes)
     <title>Caduc Notes</title>
 </head>
 
-<body class="bg-dark h-100">
-    <div class="container h-100">
+<body class="bg-dark min-vh-100">
+    <div class=" container" style="margin-bottom: 15rem;">
 
         <?php
         $pinned_notes = $notes['pinned'];
@@ -104,11 +104,13 @@ function show_note($arr_notes)
         }
         ?>
     </div>
-    <footer>
-        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <footer class="footer-note">
+        <i class="bi bi-file-earmark"></i>
+        <i class="bi bi-ui-checks"></i>
     </footer>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 </body>
 
 </html>

@@ -1,19 +1,14 @@
+
 hr {
     border-color: white;
 }
 
 .list-note{
-  /*  display: flex;
-    flex-wrap: wrap;
-    width: 100%;
-    list-style: none;
-    padding: 0%;
-*/
     display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px; /* Espace entre les éléments */
-      list-style: none;
-      padding: 0;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px; 
+    list-style: none;
+    padding: 0;
 }
 
 .note{
@@ -29,12 +24,10 @@ hr {
     background-clip: border-box;
     border: 1px solid rgba(0,0,0,.125);
     border-radius: 0.25rem;
-/*
-    width: 50%;
-    padding: 5px;*/
+
 }
 
-.head-note, .footer-note{
+.head-note, .footer-in-note{
     margin-bottom: 0;
     background-color: rgba(0,0,0,.03);
 }
@@ -51,7 +44,7 @@ hr {
     color: #6c757d;
 }
 
-.footer-note{
+.footer-in-note{
     position: relative;
     height: 2rem;
     border-top: 1px solid rgba(0,0,0,.125);
@@ -72,4 +65,54 @@ hr {
 
 .title-note{
     color: #ddd;
+}
+
+.footer-note{
+   position: fixed;
+   bottom: 2rem;
+   right: 1rem;
+}
+
+.footer-note i {
+    cursor: pointer;
+    padding-right:0.5rem ;
+    color:#F0C300; 
+    font-size: 32px;
+}
+
+@media screen and (min-width: 769px) {
+    .list-note{
+          grid-template-columns: repeat(3, 1fr);
+      }
+
+      .footer-note{
+        right: 4rem;
+     }
+     
+     .footer-note i {
+        cursor: pointer;
+        padding-right:0.5rem ;
+        color:#F0C300; 
+        font-size: 32px;
+    }
+    
+}
+
+/* Media query pour les ordinateurs de bureau */
+@media screen and (min-width: 1024px) {
+    .list-note{
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .footer-note{
+        right: 10rem;
+     }
+
+     .footer-note i {
+        cursor: pointer;
+        padding-right:0.5rem ;
+        color:#F0C300; 
+        font-size: 40px;
+    }
+    
 }
