@@ -11,50 +11,12 @@ class ControllerMain extends Controller {
     public function index() : void {
 //        var_dump($this->user_logged());
         if ($this->user_logged()) {
-            $this->redirect("main", "edit_profile");
+            $this->redirect("settings");
         } else {
             $this->redirect("main", "login");
         }
     }
-    public function edit_profile(): void {
-        $user = $this->get_user_or_redirect();
-        $full_name ="";
-        $errors = [
-            "full_name"=>[]
-        ];
-        $success = isset($_GET['param1']) ? "Votre profil a été mis à jour avec succès." : '';
-        if (isset($_POST['full_name'])) {
-            $full_name = trim($_POST['full_name']);
-            $errors = User::validate_full_name($full_name);
 
-            if($full_name != $user->full_name){
-
-                if(empty($errors["full_name"])){
-                    $user->full_name = $full_name;
-                    $user->persist();
-                }
-
-                if (count($_POST) > 0 && empty($errors["full_name"])){
-                    $this->redirect("main", "edit_profile", "ok");
-                    echo "Redirecting to main/test?ok";
-                }
-
-                if (isset($_POST['param1'])){
-                    $success = "Your profile has been successfully updated.";
-
-                }
-
-            }
-
-        }
-
-
-        (new View("edit_profile"))->show(["user" => $user, "success" => $success,"full_name"=> $full_name,'errors'=> $errors]);
-
-    }
-    public function test() : void {
-        echo "<h1>Hello !</h1>";
-    }
     public function login(): void {
         $mail = '';
         $password = '';
