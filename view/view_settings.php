@@ -41,7 +41,7 @@
         <div class="col-md-6 p-3">
             <a href="Settings/edit_profile" class="text-white link-with-icon"><i class="bi bi-person-gear"> Edit Profile</i></a><br>
             <a href="Settings/change_password" class="text-white link-with-icon"><i class="bi bi-lock"> Change Password</i></a><br>
-            <a href="Settings/logout" class="text-white link-with-icon"><i class="bi bi-box-arrow-right"> Logout</i></a>
+            <a href="Settings/logout_user" class="text-white link-with-icon"><i class="bi bi-box-arrow-right"> Logout</i></a>
         </div>
     </div>
 

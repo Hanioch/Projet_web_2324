@@ -21,6 +21,9 @@ class ControllerSettings extends Controller
 
     }
 
+    public function logout_user():void{
+        $this->logout();
+    }
     public function test(): void
     {
         echo "<h1>Hello !</h1>";
@@ -46,11 +49,6 @@ class ControllerSettings extends Controller
 
                 if (count($_POST) > 0 && empty($errors["full_name"])) {
                     $this->redirect("Settings", "edit_profile", "ok");
-                }
-
-                if (isset($_POST['param1'])) {
-                    $success = "Your profile has been successfully updated.";
-
                 }
 
             }
@@ -93,9 +91,6 @@ class ControllerSettings extends Controller
                 $this->redirect("Settings", "change_password", "ok");
             }
 
-            if (isset($_POST['param1'])) {
-                $success = "Your profile has been successfully updated.";
-            }
         }
 
         (new View("change_password"))->show([
