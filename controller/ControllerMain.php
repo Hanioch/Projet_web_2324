@@ -9,7 +9,6 @@ class ControllerMain extends Controller {
     //si l'utilisateur est connecté, redirige vers les notes.
     //sinon, produit la vue de login.
     public function index() : void {
-//        var_dump($this->user_logged());
         if ($this->user_logged()) {
             $this->redirect("settings");
         } else {

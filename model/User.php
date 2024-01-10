@@ -10,7 +10,6 @@ enum Role: string
 
 class User extends Model
 {
-
     public function __construct(public string $mail, public string $hashed_password, public string $full_name, public Role $role, public ?int $id = NULL)
     {
     }
@@ -197,4 +196,23 @@ class User extends Model
             return new User($row['mail'], $row['hashed_password'], $row['full_name'], $row['role'], $row['id']);
         }
     }
+
+    public function setPassword($hashed_password) {
+        return $this->hashed_password = $hashed_password;
+    }
+    public function getPassword() {
+        return $this->hashed_password;
+    }
+    public $password;
+    public static function change_password(string $old_password,User $user): array {
+        $errors = [
+            "old_password"=>[]
+        ];
+        if (!(Tools::my_hash($old_password) === $user->getPassword() )) {
+            $errors['old_password'][] = "Incorrect old password.";
+        }
+
+        return $errors;
+    }
+
 }
