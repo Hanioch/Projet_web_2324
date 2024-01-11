@@ -2,6 +2,43 @@
 hr {
     border-color: white;
 }
+.container{
+padding: 2rem;    
+}
+
+.header-note{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+}
+.btn-nav{
+    padding: 0;
+}
+
+.nav-icon{
+    border: 1px solid #9d9d9d;
+    color: #9d9d9d;
+    border-radius: 3px;
+    font-size: 32px;
+}
+.title-nav{
+    color: #F0C300;
+}
+
+.nav-link{
+    text-decoration: none;
+    color: #9d9d9d;
+    text-underline-offset: none;
+}
+
+.selected{
+    color: #fff;
+}
+
+.title{
+    color: #9d9d9d;
+}
 
 .list-note{
     display: grid;
@@ -27,12 +64,12 @@ hr {
 
 }
 
-.head-note, .footer-in-note{
+.header-in-note, .footer-in-note{
     margin-bottom: 0;
     background-color: rgba(0,0,0,.03);
 }
 
-.head-note{
+.header-in-note{
     padding: 0.75rem 1.25rem;
     border-bottom: 1px solid rgba(0,0,0,.125);
 }
@@ -77,6 +114,7 @@ hr {
     cursor: pointer;
     padding-right:0.5rem ;
     color:#F0C300; 
+    fill: #6c757d;
     font-size: 32px;
 }
 
@@ -84,35 +122,29 @@ hr {
     .list-note{
           grid-template-columns: repeat(3, 1fr);
       }
-
-      .footer-note{
-        right: 4rem;
-     }
      
      .footer-note i {
-        cursor: pointer;
-        padding-right:0.5rem ;
-        color:#F0C300; 
-        font-size: 32px;
+        font-size: 35px;
     }
     
 }
 
 /* Media query pour les ordinateurs de bureau */
 @media screen and (min-width: 1024px) {
+    
     .list-note{
         grid-template-columns: repeat(4, 1fr);
     }
 
     .footer-note{
-        right: 10rem;
+        right: 0rem;
      }
 
      .footer-note i {
-        cursor: pointer;
-        padding-right:0.5rem ;
-        color:#F0C300; 
+        padding-right:1.5rem ;
         font-size: 40px;
     }
     
 }
+
+

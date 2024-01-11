@@ -182,7 +182,6 @@ class User extends MyModel
         GROUP BY n.id order by  pinned DESC, weight DESC
        ", ["owner" => $this->id]);
         $data = $query->fetchAll();
-        //$notes = [];
         $notes = [];
         $notes["pinned"] = [];
         $notes["other"] = [];
@@ -202,6 +201,23 @@ class User extends MyModel
             }
         }
         return $notes;
+    }
+
+    public function get_users_shared_note(): array
+    {
+        $query = self::execute("SELECT DISTINCT u.full_name
+        FROM users u
+        INNER JOIN note_shares ns ON u.id = ns.user
+        WHERE ns.note IN (SELECT id FROM notes WHERE owner = :owner)
+         ", ["owner" => $this->id]);
+
+        $data = $query->fetchAll();
+        $shared_note = [];
+        foreach ($data as $row) {
+            $shared_note[] = $row['full_name'];
+        }
+
+        return $shared_note;
     }
 
     public static function get_user_by_id($id): User | false
