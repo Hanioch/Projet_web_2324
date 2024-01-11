@@ -83,8 +83,8 @@ if (count($pinned_notes) == 0 && count($other_notes) == 0) {
 ?>
 </div>
 <footer class="footer-note">
-    <i class="bi bi-file-earmark"></i>
-    <i class="bi bi-ui-checks"></i>
+    <a href="http://ajoute_un_text_note"><i class="bi bi-file-earmark"></i></a>
+    <a href="http://ajoute_un_checlist_note"><i class="bi bi-ui-checks"></i></a>
 </footer>
 
 <?php
