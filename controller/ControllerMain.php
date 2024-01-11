@@ -4,12 +4,14 @@ require_once 'model/User.php';
 require_once 'framework/View.php';
 require_once 'framework/Controller.php';
 
-class ControllerMain extends Controller {
+class ControllerMain extends Controller
+{
 
     //si l'utilisateur est connecté, redirige vers les notes.
     //sinon, produit la vue de login.
-    public function index() : void {
-//        var_dump($this->user_logged());
+    public function index(): void
+    {
+        //        var_dump($this->user_logged());
         if ($this->user_logged()) {
             $this->redirect("notes", "index");
         } else {
@@ -17,12 +19,13 @@ class ControllerMain extends Controller {
         }
     }
 
-    public function login(): void {
+    public function login(): void
+    {
         $mail = '';
         $password = '';
         $errors = [
-            "mail"=>[],
-            "password"=>[]
+            "mail" => [],
+            "password" => []
         ];
         if (isset($_POST['mail']) && isset($_POST['password'])) {
             $mail = $_POST['mail'];
@@ -31,36 +34,47 @@ class ControllerMain extends Controller {
             if (empty($errors["mail"]) && empty($errors["password"])) {
                 $this->log_user(User::get_user_by_mail($mail));
             }
-
         }
         (new View("login"))->show(["mail" => $mail, "password" => $password, "errors" => $errors]);
     }
 
-    public function signup() : void {
+    public function signup(): void
+    {
         $mail = '';
-        $fullname = '';
+        $full_name = '';
         $password = '';
         $password_confirm = '';
-        $errors = [];
+        $errors = [
+            "mail" => [],
+            "full_name" => [],
+            "password" => [],
+            "password_confirm" => []
+        ];
 
-        if (isset($_POST['mail']) && isset($_POST['fullname']) && isset($_POST['password']) && isset($_POST['password_confirm'])) {
+        if (isset($_POST['mail']) && isset($_POST['full_name']) && isset($_POST['password']) && isset($_POST['password_confirm'])) {
             $mail = trim($_POST['mail']);
-            $fullname = trim($_POST['fullname']);
+            $full_name = trim($_POST['full_name']);
             $password = $_POST['password'];
             $password_confirm = $_POST['password_confirm'];
 
-            $user = new User($mail, Tools::my_hash($password), $fullname, Role::USER);
-            $errors = User::validate_unicity($mail);
+            $user = new User($mail, Tools::my_hash($password), $full_name, Role::USER);
+            //$errors = array_merge($errors, User::validate_unicity($mail));
+            $errors = array_merge($errors, User::validate_full_name($full_name));
             $errors = array_merge($errors, User::validate_mail($mail));
             $errors = array_merge($errors, User::validate_password($password));
+            $errors = array_merge($errors, User::validate_password_confirmation($password, $password_confirm));
 
-            if (count($errors) == 0) {
+            if (empty($errors["mail"]) && empty($errors["full_name"]) && empty($errors["password"]) && empty($errors["password_confirm"])) {
                 $user->persist(); //sauve l'utilisateur
                 $this->log_user($user);
             }
         }
-        (new View("signup"))->show(["mail" => $mail, "password" => $password,
-            "password_confirm" => $password_confirm, "errors" => $errors]);
+        (new View("signup"))->show([
+            "mail" => $mail,
+            "full_name" => $full_name,
+            "password" => $password,
+            "password_confirm" => $password_confirm,
+            "errors" => $errors
+        ]);
     }
-
 }

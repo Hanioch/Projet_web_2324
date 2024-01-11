@@ -29,7 +29,7 @@ class User extends MyModel
         else
             self::execute(
                 "INSERT INTO users (mail,hashed_password,full_name,role) VALUES(:mail,:hashed_password,:full_name,:role)",
-                ["mail" => $this->mail, "hashed_password" => $this->hashed_password, "full_name" => $this->full_name, "role" => $this->role]
+                ["mail" => $this->mail, "hashed_password" => $this->hashed_password, "full_name" => $this->full_name, "role" => $this->role->value]
             );
         return $this;
     }
@@ -70,61 +70,77 @@ class User extends MyModel
 
     public static function validate_password(string $password): array
     {
-        $errors = [];
-        if (!strlen($password) > 0) {
-            $errors[] = "Password is required.";
+        $errors = [
+            "password" =>[]
+        ];
+        if (strlen($password) === 0) {
+            $errors["password"][] = "Password is required.";
         }
         if (strlen($password) < 8) {
-            $errors[] = "Password must be at least 8 characters long";
+            $errors["password"][] = "Password must be at least 8 characters long";
         }
         if (!((preg_match("/[A-Z]/", $password)) && preg_match("/\d/", $password) && preg_match("/['\";:,.\/?!\\-]/", $password))) {
-            $errors[] = "Password must contain one uppercase letter, one number and one punctuation mark.";
+            $errors["password"][] = "Password must contain one uppercase letter, one number and one punctuation mark.";
         }
         return $errors;
     }
 
-    private static function validate_full_name(string $full_name): array
+    public static function validate_full_name(string $full_name): array
     {
-        $errors = [];
+        $errors = [
+            "full_name" =>[]
+        ];
         if (!strlen($full_name) > 0) {
-            $errors[] = "Name is required.";
+            $errors ["full_name"][]= "Name is required.";
         }
         if (strlen($full_name) < 3) {
-            $errors[] = "Name must be at least 3 characters long";
+            $errors["full_name"][] = "Name must be at least 3 characters long";
         }
         return $errors;
     }
 
     public static function validate_password_confirmation(string $password, string $password_confirm): array
     {
-        $errors = self::validate_password($password);
+        $errors =[
+            "password_confirm" =>[]
+        ];
         if (!strlen($password_confirm) > 0) {
-            $errors[] = "Password confirmation is required.";
+            $errors["password_confirm"][] = "Password confirmation is required.";
         }
         if ($password != $password_confirm) {
-            $errors[] = "Confirmation must match password above";
+            $errors["password_confirm"][] = "Confirmation must match password above";
         }
         return $errors;
     }
     public static function validate_mail(string $mail): array
     {
         $regex = '/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/';
-        $errors = [];
+        $errors = [
+            "mail"=>[]
+        ];
+        $user = self::get_user_by_mail($mail);
+        if($user){
+            $errors["mail"][] = "This user already exists.";
+        }else{
+
         if (!strlen($mail) > 0) {
-            $errors[] = "Mail is required.";
+            $errors["mail"][] = "Mail is required.";
         }
         if (!(preg_match($regex, $mail))) {
-            $errors[] = "Must be a valid mail address.";
+            $errors["mail"][] = "Must be a valid mail address.";
+        }
         }
         return $errors;
     }
 
     public static function validate_unicity(string $mail): array
     {
-        $errors = [];
+        $errors = [
+            "mail" =>[]
+        ];
         $user = self::get_user_by_mail($mail);
         if ($user) {
-            $errors[] = "This user already exists.";
+            $errors["mail"][] = "This user already exists.";
         }
         return $errors;
     }
