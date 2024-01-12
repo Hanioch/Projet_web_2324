@@ -20,6 +20,7 @@ include('./utils/head.php')
                     <?php
                     $nav_list = [];
                     $base_url = "notes/";
+                    $settings_url = "settings/";
                     $nav_list[] = array(
                         "title" => Page::Notes->value,
                         "url" => $base_url
@@ -37,7 +38,7 @@ include('./utils/head.php')
                     }
                     $nav_list[] = array(
                         "title" => Page::Settings->value,
-                        "url" => $base_url . "settings"
+                        "url" => $settings_url . "settings"
                     );
 
                     foreach ($nav_list as $elem) {
