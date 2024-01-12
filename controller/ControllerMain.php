@@ -6,9 +6,6 @@ require_once 'framework/Controller.php';
 
 class ControllerMain extends Controller
 {
-
-    //si l'utilisateur est connecté, redirige vers les notes.
-    //sinon, produit la vue de login.
     public function index(): void
     {
         //        var_dump($this->user_logged());
@@ -21,6 +18,10 @@ class ControllerMain extends Controller
 
     public function login(): void
     {
+        if ($this->user_logged()) {
+            $this->redirect("notes");
+        }
+
         $mail = '';
         $password = '';
         $errors = [
@@ -40,6 +41,10 @@ class ControllerMain extends Controller
 
     public function signup(): void
     {
+        if ($this->user_logged()) {
+            $this->redirect("notes");
+        }
+
         $mail = '';
         $full_name = '';
         $password = '';
@@ -58,14 +63,13 @@ class ControllerMain extends Controller
             $password_confirm = $_POST['password_confirm'];
 
             $user = new User($mail, Tools::my_hash($password), $full_name, Role::USER);
-            //$errors = array_merge($errors, User::validate_unicity($mail));
             $errors = array_merge($errors, User::validate_full_name($full_name));
             $errors = array_merge($errors, User::validate_mail($mail));
             $errors = array_merge($errors, User::validate_password($password));
             $errors = array_merge($errors, User::validate_password_confirmation($password, $password_confirm));
 
             if (empty($errors["mail"]) && empty($errors["full_name"]) && empty($errors["password"]) && empty($errors["password_confirm"])) {
-                $user->persist(); //sauve l'utilisateur
+                $user->persist();
                 $this->log_user($user);
             }
         }
