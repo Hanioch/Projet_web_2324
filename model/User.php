@@ -14,7 +14,6 @@ enum Role: string
 
 class User extends MyModel
 {
-
     public function __construct(public string $mail, public string $hashed_password, public string $full_name, public Role $role, public ?int $id = NULL)
     {
     }
@@ -24,7 +23,7 @@ class User extends MyModel
         if (self::get_user_by_mail($this->mail))
             self::execute(
                 "UPDATE users SET hashed_password=:hashed_password, full_name=:full_name, role=:role WHERE mail=:mail ",
-                ["hashed_password" => $this->hashed_password, "full_name" => $this->full_name, "role" => $this->role]
+                ["mail" => $this->mail,"hashed_password" => $this->hashed_password, "full_name" => $this->full_name, "role" => $this->role->value]
             );
         else
             self::execute(
@@ -33,7 +32,6 @@ class User extends MyModel
             );
         return $this;
     }
-
     public static function get_user_by_mail(string $mail): User|false
     {
         $query = self::execute("SELECT * FROM users where mail = :mail", ["mail" => $mail]);
@@ -88,7 +86,7 @@ class User extends MyModel
     public static function validate_full_name(string $full_name): array
     {
         $errors = [
-            "full_name" =>[]
+            "full_name" =>[],
         ];
         if (!strlen($full_name) > 0) {
             $errors ["full_name"][]= "Name is required.";
@@ -251,4 +249,22 @@ class User extends MyModel
             return new User($row['mail'], $row['hashed_password'], $row['full_name'], $new_role, $row['id']);
         }
     }
+
+    public function setPassword($hashed_password) {
+        return $this->hashed_password = $hashed_password;
+    }
+    public function getPassword() {
+        return $this->hashed_password;
+    }
+    public static function change_password(string $old_password,User $user): array {
+        $errors = [
+            "old_password"=>[]
+        ];
+        if (!(Tools::my_hash($old_password) === $user->getPassword() )) {
+            $errors['old_password'][] = "Incorrect old password.";
+        }
+
+        return $errors;
+    }
+
 }
