@@ -203,7 +203,6 @@ class User extends Model
     public function getPassword() {
         return $this->hashed_password;
     }
-    public $password;
     public static function change_password(string $old_password,User $user): array {
         $errors = [
             "old_password"=>[]

@@ -36,7 +36,7 @@
         </nav>
     </div>
 </header>
-<body class="bg-dark h-100">
+<body class="bg-dark min-vh-100">
 <div class="container h-100">
     <div class="row p-3 h-100 justify-content-center ">
         <form class=" text-white" action="Settings/change_password" method="post">
