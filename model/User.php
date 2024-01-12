@@ -195,7 +195,7 @@ class User extends MyModel
         LEFT JOIN checklist_note_items cni ON cn.id = cni.checklist_note  
         where owner = :owner AND n.archived =0 AND   n.id NOT IN
         (SELECT note FROM note_shares ns INNER JOIN notes n2 On n2.id = ns.note WHERE n2.owner != n.owner )
-        GROUP BY n.id order by  pinned DESC, weight DESC
+        GROUP BY n.id, n.title, n.pinned, n.archived, n.weight, tn.content, cn.id, n.owner, n.created_at, n.edited_at order by  pinned DESC, weight DESC
        ", ["owner" => $this->id]);
         $data = $query->fetchAll();
         $notes = [];

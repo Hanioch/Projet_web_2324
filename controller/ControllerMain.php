@@ -13,7 +13,7 @@ class ControllerMain extends Controller
     {
         //        var_dump($this->user_logged());
         if ($this->user_logged()) {
-            $this->redirect("notes", "index");
+            $this->redirect("notes");
         } else {
             $this->redirect("main", "login");
         }

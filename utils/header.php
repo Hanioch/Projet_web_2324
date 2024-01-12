@@ -1,5 +1,5 @@
 <?php
-include('/Applications/MAMP/htdocs/prwb_2324_a04/utils/head.php')
+include('./utils/head.php')
 ?>
 
 <body class="bg-dark min-vh-100">

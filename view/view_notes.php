@@ -64,7 +64,7 @@ function show_note($arr_notes, $title)
 <?php
 }
 $title_page = "My notes";
-include("/Applications/MAMP/htdocs/prwb_2324_a04/utils/header.php");
+include("./utils/header.php");
 
 $pinned_notes = $notes['pinned'];
 $other_notes = $notes['other'];
@@ -88,4 +88,4 @@ if (count($pinned_notes) == 0 && count($other_notes) == 0) {
 </footer>
 
 <?php
-include('/Applications/MAMP/htdocs/prwb_2324_a04/utils/footer.php'); ?>
+include('./utils/footer.php'); ?>
