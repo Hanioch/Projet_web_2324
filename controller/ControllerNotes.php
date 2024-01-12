@@ -32,34 +32,4 @@ class ControllerNotes extends Controller
         //        var_dump($notes);
         (new View("archives"))->show(["notes_archives" => $notes_archives, "users_shared_notes" => $users_shared_notes]);
     }
-
-    public function signup(): void
-    {
-        $mail = '';
-        $fullname = '';
-        $password = '';
-        $password_confirm = '';
-        $errors = [];
-
-        if (isset($_POST['mail']) && isset($_POST['fullname']) && isset($_POST['password']) && isset($_POST['password_confirm'])) {
-            $mail = trim($_POST['mail']);
-            $fullname = trim($_POST['fullname']);
-            $password = $_POST['password'];
-            $password_confirm = $_POST['password_confirm'];
-
-            $user = new User($mail, Tools::my_hash($password), $fullname, Role::USER);
-            $errors = User::validate_unicity($mail);
-            $errors = array_merge($errors, User::validate_mail($mail));
-            $errors = array_merge($errors, User::validate_password($password));
-
-            if (count($errors) == 0) {
-                $user->persist(); //sauve l'utilisateur
-                $this->log_user($user);
-            }
-        }
-        (new View("signup"))->show([
-            "mail" => $mail, "password" => $password,
-            "password_confirm" => $password_confirm, "errors" => $errors
-        ]);
-    }
 }

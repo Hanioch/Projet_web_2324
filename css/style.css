@@ -117,6 +117,22 @@ padding: 2rem;
     fill: #6c757d;
     font-size: 32px;
 }
+.link-with-icon {
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
+.input-group input {
+    background-color: transparent;
+    color: white;
+}
+
+.invalid-feedback {
+    display: block;
+}
+a {
+    text-decoration: none;
+}
 
 @media screen and (min-width: 769px) {
     .list-note{
@@ -128,7 +144,9 @@ padding: 2rem;
     }
     
 }
-
+.bold-text {
+    font-weight: bold;
+}
 /* Media query pour les ordinateurs de bureau */
 @media screen and (min-width: 1024px) {
     
