@@ -36,7 +36,7 @@ include('./utils/head.php')
                     }
                     $nav_list[] = array(
                         "title" => "Settings",
-                        "url" => "https://settings.be"
+                        "url" => "./settings/settings"
                     );
 
                     foreach ($nav_list as $elem) {
