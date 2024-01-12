@@ -9,7 +9,7 @@ include('./utils/head.php')
                 <i class="bi bi-list nav-icon"></i>
             </button>
 
-            <h2 class="title"> <?= $title_page ?></h2>
+            <h2 class="title"> <?= $title_page->value ?></h2>
 
             <div class="offcanvas  offcanvas-start text-bg-dark" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions" aria-labelledby="offcanvasWithBothOptionsLabel">
                 <div class="offcanvas-header">
@@ -19,31 +19,32 @@ include('./utils/head.php')
                 <div class="offcanvas-body">
                     <?php
                     $nav_list = [];
+                    $base_url = "notes/";
                     $nav_list[] = array(
-                        "title" => "My notes",
-                        "url" => "https://mynotes.be"
+                        "title" => Page::Notes->value,
+                        "url" => $base_url
                     );
                     $nav_list[] = array(
-                        "title" => "My archives",
-                        "url" => "https://myarchives.be"
+                        "title" => Page::Archives->value,
+                        "url" => $base_url . "archives"
                     );
 
                     foreach ($users_shared_notes as $u) {
                         $nav_list[] = array(
                             "title" => "Shared by " . $u,
-                            "url" => "https://sharedby" . $u
+                            "url" => $base_url . "shared_by_" . $u
                         );
                     }
                     $nav_list[] = array(
-                        "title" => "Settings",
-                        "url" => "./settings/settings"
+                        "title" => Page::Settings->value,
+                        "url" => $base_url . "settings"
                     );
 
                     foreach ($nav_list as $elem) {
                         $url = $elem["url"];
                         $title = $elem["title"];
                     ?>
-                        <a class="nav-link <?= $title === $title_page ?  "selected" : "" ?> " href=<?= $url ?>> <?= $title ?></a>
+                        <a class="nav-link <?= $title === $title_page->value ?  "selected" : "" ?> " href=<?= $url ?>> <?= $title ?></a>
                         <br>
 
                     <?php
