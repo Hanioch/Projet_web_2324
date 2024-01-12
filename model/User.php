@@ -71,7 +71,7 @@ class User extends MyModel
     public static function validate_password(string $password): array
     {
         $errors = [
-            "password" =>[]
+            "password" => []
         ];
         if (strlen($password) === 0) {
             $errors["password"][] = "Password is required.";
@@ -88,10 +88,10 @@ class User extends MyModel
     public static function validate_full_name(string $full_name): array
     {
         $errors = [
-            "full_name" =>[]
+            "full_name" => []
         ];
         if (!strlen($full_name) > 0) {
-            $errors ["full_name"][]= "Name is required.";
+            $errors["full_name"][] = "Name is required.";
         }
         if (strlen($full_name) < 3) {
             $errors["full_name"][] = "Name must be at least 3 characters long";
@@ -101,8 +101,8 @@ class User extends MyModel
 
     public static function validate_password_confirmation(string $password, string $password_confirm): array
     {
-        $errors =[
-            "password_confirm" =>[]
+        $errors = [
+            "password_confirm" => []
         ];
         if (!strlen($password_confirm) > 0) {
             $errors["password_confirm"][] = "Password confirmation is required.";
@@ -116,19 +116,19 @@ class User extends MyModel
     {
         $regex = '/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/';
         $errors = [
-            "mail"=>[]
+            "mail" => []
         ];
         $user = self::get_user_by_mail($mail);
-        if($user){
+        if ($user) {
             $errors["mail"][] = "This user already exists.";
-        }else{
+        } else {
 
-        if (!strlen($mail) > 0) {
-            $errors["mail"][] = "Mail is required.";
-        }
-        if (!(preg_match($regex, $mail))) {
-            $errors["mail"][] = "Must be a valid mail address.";
-        }
+            if (!strlen($mail) > 0) {
+                $errors["mail"][] = "Mail is required.";
+            }
+            if (!(preg_match($regex, $mail))) {
+                $errors["mail"][] = "Must be a valid mail address.";
+            }
         }
         return $errors;
     }
@@ -136,7 +136,7 @@ class User extends MyModel
     public static function validate_unicity(string $mail): array
     {
         $errors = [
-            "mail" =>[]
+            "mail" => []
         ];
         $user = self::get_user_by_mail($mail);
         if ($user) {
@@ -181,6 +181,17 @@ class User extends MyModel
         return $errors;
     }
 
+    private function get_text_note_or_checklist_note(array $row): Note
+    {
+        $owner = User::get_user_by_id($row['owner']);
+
+        if (ChecklistNote::is_checklist_note($row['checklist_id'])) {
+            return  new ChecklistNote($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['id'], $row['created_at'], $row['edited_at']);
+        } else {
+            return  new TextNote($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['text_content'], $row['id'], $row['created_at'], $row['edited_at']);
+        }
+    }
+
     public function get_notes(): array
     {
         $query = self::execute("SELECT
@@ -202,13 +213,7 @@ class User extends MyModel
         $notes["pinned"] = [];
         $notes["other"] = [];
         foreach ($data as $row) {
-            $owner = User::get_user_by_id($row['owner']);
-
-            if (ChecklistNote::is_checklist_note($row['checklist_id'])) {
-                $note = new ChecklistNote($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['id'], $row['created_at'], $row['edited_at']);
-            } else {
-                $note = new TextNote($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['text_content'], $row['id'], $row['created_at'], $row['edited_at']);
-            }
+            $note = $this->get_text_note_or_checklist_note($row);
 
             if ($row['pinned'] === 1) {
                 $notes["pinned"][] = $note;
@@ -234,6 +239,29 @@ class User extends MyModel
         }
 
         return $shared_note;
+    }
+    public function get_notes_archives(): array
+    {
+        $query = self::execute("SELECT n.*,
+        tn.content AS text_content,
+        cn.id AS checklist_id,
+        GROUP_CONCAT(cni.id) AS checklist_items
+        FROM
+        notes n
+        LEFT JOIN text_notes tn ON n.id = tn.id
+        LEFT JOIN checklist_notes cn ON n.id = cn.id
+        LEFT JOIN checklist_note_items cni ON cn.id = cni.checklist_note  
+        where owner = :owner AND n.archived =1 
+        GROUP BY n.id, n.title, n.pinned, n.archived, n.weight, tn.content, cn.id, n.owner, n.created_at, n.edited_at
+         order by  pinned DESC, weight DESC", ["owner" => $this->id]);
+
+        $data = $query->fetchAll();
+        $archives_notes = [];
+        foreach ($data as $row) {
+            $archives_notes[] = $this->get_text_note_or_checklist_note($row);
+        }
+
+        return $archives_notes;
     }
 
     public static function get_user_by_id($id): User | false

@@ -22,6 +22,17 @@ class ControllerNotes extends Controller
         (new View("notes"))->show(["notes" => $notes, "users_shared_notes" => $users_shared_notes]);
     }
 
+    public function archives(): void
+    {
+        $user = $this->get_user_or_redirect();
+        //        var_dump($this->get_user_or_redirect());
+        $notes_archives = $user->get_notes_archives();
+        $users_shared_notes = $user->get_users_shared_note();
+
+        //        var_dump($notes);
+        (new View("archives"))->show(["notes_archives" => $notes_archives, "users_shared_notes" => $users_shared_notes]);
+    }
+
     public function signup(): void
     {
         $mail = '';
