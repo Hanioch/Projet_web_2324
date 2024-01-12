@@ -1,6 +1,10 @@
 <?php
 
-require_once "framework/Model.php";
+require_once "model/MyModel.php";
+require_once "model/CheckListNote.php";
+require_once "model/CheckListNoteItems.php";
+require_once "model/TextNote.php";
+
 
 enum Role: string
 {
@@ -8,7 +12,7 @@ enum Role: string
     case ADMIN = "admin";
 }
 
-class User extends Model
+class User extends MyModel
 {
     public function __construct(public string $mail, public string $hashed_password, public string $full_name, public Role $role, public ?int $id = NULL)
     {
@@ -35,7 +39,7 @@ class User extends Model
         if ($query->rowCount() == 0) {
             return false;
         } else {
-            return new User($data["mail"], $data["hashed_password"], $data["full_name"], Role::USER);
+            return new User($data["mail"], $data["hashed_password"], $data["full_name"], Role::USER, $data["id"]);
         }
     }
 
@@ -57,7 +61,7 @@ class User extends Model
         $data = $query->fetchAll();
         $results = [];
         foreach ($data as $row) {
-            $results[] = new User($row["mail"], $row["hashed_password"], $row["full_name"], $row["role"]);
+            $results[] = new User($row["mail"], $row["hashed_password"], $row["full_name"], $row["role"], $row["id"]);
         }
         return $results;
     }
@@ -177,13 +181,57 @@ class User extends Model
 
     public function get_notes(): array
     {
-        $query = self::execute("select * from notes where owner = :owner order by weight", ["owner" => $this->id]);
+        $query = self::execute("SELECT
+        n.*,
+        tn.content AS text_content,
+        cn.id AS checklist_id,
+        GROUP_CONCAT(cni.id) AS checklist_items
+        FROM
+        notes n
+        LEFT JOIN text_notes tn ON n.id = tn.id
+        LEFT JOIN checklist_notes cn ON n.id = cn.id
+        LEFT JOIN checklist_note_items cni ON cn.id = cni.checklist_note  
+        where owner = :owner AND n.archived =0 AND   n.id NOT IN
+        (SELECT note FROM note_shares ns INNER JOIN notes n2 On n2.id = ns.note WHERE n2.owner != n.owner )
+        GROUP BY n.id, n.title, n.pinned, n.archived, n.weight, tn.content, cn.id, n.owner, n.created_at, n.edited_at order by  pinned DESC, weight DESC
+       ", ["owner" => $this->id]);
         $data = $query->fetchAll();
         $notes = [];
+        $notes["pinned"] = [];
+        $notes["other"] = [];
         foreach ($data as $row) {
-            $notes[] = new Note($row('id'), $row['title'], $row['owner'], $row['created_at'], $row['edited_at'], $row['pinned'], $row['archived'], $row['weight']);
+            $owner = User::get_user_by_id($row['owner']);
+
+            if (ChecklistNote::is_checklist_note($row['checklist_id'])) {
+                $note = new ChecklistNote($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['id'], $row['created_at'], $row['edited_at']);
+            } else {
+                $note = new TextNote($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['text_content'], $row['id'], $row['created_at'], $row['edited_at']);
+            }
+
+            if ($row['pinned'] === 1) {
+                $notes["pinned"][] = $note;
+            } else {
+                $notes["other"][] = $note;
+            }
         }
         return $notes;
+    }
+
+    public function get_users_shared_note(): array
+    {
+        $query = self::execute("SELECT DISTINCT u.full_name
+        FROM users u
+        INNER JOIN note_shares ns ON u.id = ns.user
+        WHERE ns.note IN (SELECT id FROM notes WHERE owner = :owner)
+         ", ["owner" => $this->id]);
+
+        $data = $query->fetchAll();
+        $shared_note = [];
+        foreach ($data as $row) {
+            $shared_note[] = $row['full_name'];
+        }
+
+        return $shared_note;
     }
 
     public static function get_user_by_id($id): User | false
@@ -193,7 +241,12 @@ class User extends Model
             return false;
         } else {
             $row = $query->fetch();
-            return new User($row['mail'], $row['hashed_password'], $row['full_name'], $row['role'], $row['id']);
+            $role = $row['role'];
+            $new_role = Role::USER;
+            if ($role == Role::ADMIN) {
+                $new_role = Role::ADMIN;
+            }
+            return new User($row['mail'], $row['hashed_password'], $row['full_name'], $new_role, $row['id']);
         }
     }
 

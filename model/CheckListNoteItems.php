@@ -1,10 +1,10 @@
 <?php
 
-require_once "Model.php";
+require_once "model/MyModel.php";
 
 class ChecklistNoteItems extends MyModel
 {
-    public function __construct(private string $content = "", private bool $checked = false, private ?int $id = NULL, private ?int $checklist_note = NULL)
+    public function __construct(public string $content = "", public bool $checked = false, public ?int $id = NULL, public ?int $checklist_note = NULL)
     {
     }
 
@@ -101,5 +101,16 @@ class ChecklistNoteItems extends MyModel
         $query = self::execute("SELECT COUNT(*) FROM checklist_note_items WHERE checklist_note = :noteId AND content = :content", ["noteId" => $noteId, "content" => $content]);
         $count = (int)$query->fetchColumn();
         return $count > 0;
+    }
+
+    public static function get_checklist_note_item_by_id(int $id): ChecklistNoteItems |false
+    {
+        $query = self::execute("SELECT * FROM checklist_note_items WHERE id = :id", ["id" => $id]);
+        if ($query->rowCount() == 0) {
+            return false;
+        } else {
+            $row = $query->fetch();
+            return new ChecklistNoteItems($row['content'], $row['checked'], $row['id'], $row['checklist_note']);
+        }
     }
 }

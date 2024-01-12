@@ -3,7 +3,7 @@
 class TextNote extends Note
 {
 
-    public function __construct(protected string $title, protected User $owner, protected  bool $pinned, protected bool $archived, protected int $weight, public string $content, public ?int $id = NULL, protected ?string $created_at = NULL, protected ?string $edited_at = NULL)
+    public function __construct(public string $title, public User $owner, public  bool $pinned, public bool $archived, public int $weight, public ?string $content, public ?int $id = NULL, public ?string $created_at = NULL, public ?string $edited_at = NULL)
     {
         parent::__construct($title, $owner, $pinned, $archived, $weight, $id, $created_at, $edited_at);
     }
