@@ -1,7 +1,7 @@
 <?php
 require_once "tools.php";
 
-$title_page = Page::Archives;
+$title_page = Page::Archives->value;
 include("./utils/header.php");
 
 if (count($notes_archives) > 0) {

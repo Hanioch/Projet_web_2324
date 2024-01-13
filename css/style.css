@@ -29,7 +29,8 @@ padding: 2rem;
 .nav-link{
     text-decoration: none;
     color: #9d9d9d;
-    text-underline-offset: none;
+    background: none;
+    border: none;
 }
 
 .selected{
