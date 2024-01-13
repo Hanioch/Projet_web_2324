@@ -278,7 +278,7 @@ class User extends MyModel
     LEFT JOIN checklist_note_items cni ON cn.id = cni.checklist_note
     LEFT JOIN note_shares ns ON n.id = ns.note
     WHERE ns.user = :owner AND n.owner = :sender
-    GROUP BY n.id, n.title, n.owner, n.created_at, n.edited_at, n.pinned, n.archived, n.weight
+    GROUP BY n.id, n.title, n.owner, n.created_at, n.edited_at, n.pinned, n.archived, n.weight,tn.content,cn.id,ns.editor
     ORDER BY pinned DESC, weight DESC;", ["owner" => $this->id, "sender" => $sender_id]);
 
         $data = $query->fetchAll();
