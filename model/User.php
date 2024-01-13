@@ -224,19 +224,22 @@ class User extends MyModel
 
     public function get_users_shared_note(): array
     {
-        $query = self::execute("SELECT DISTINCT u.full_name
+        $query = self::execute("SELECT u.*
         FROM users u
         INNER JOIN note_shares ns ON u.id = ns.user
         WHERE ns.note IN (SELECT id FROM notes WHERE owner = :owner)
+        GROUP BY u.id, u.mail,u.hashed_password, u.full_name, u.role;
+        
          ", ["owner" => $this->id]);
 
         $data = $query->fetchAll();
-        $shared_note = [];
+        $user_shared = [];
         foreach ($data as $row) {
-            $shared_note[] = $row['full_name'];
+            $role = User::get_role_format($row["role"]);
+            $user_shared[] = new User($row["mail"], $row["hashed_password"], $row["full_name"], $role, $row["id"]);
         }
 
-        return $shared_note;
+        return $user_shared;
     }
     public function get_notes_archives(): array
     {
@@ -261,6 +264,38 @@ class User extends MyModel
 
         return $archives_notes;
     }
+    public function get_notes_shared_by($sender_id): array
+    {
+        $query = self::execute("SELECT
+        n.*,
+        tn.content AS text_content,
+        cn.id AS checklist_id,
+        ns.editor,
+        GROUP_CONCAT(cni.id) AS checklist_items
+    FROM notes n
+    LEFT JOIN text_notes tn ON n.id = tn.id
+    LEFT JOIN checklist_notes cn ON n.id = cn.id
+    LEFT JOIN checklist_note_items cni ON cn.id = cni.checklist_note
+    LEFT JOIN note_shares ns ON n.id = ns.note
+    WHERE ns.user = :owner AND n.owner = :sender
+    GROUP BY n.id, n.title, n.owner, n.created_at, n.edited_at, n.pinned, n.archived, n.weight
+    ORDER BY pinned DESC, weight DESC;", ["owner" => $this->id, "sender" => $sender_id]);
+
+        $data = $query->fetchAll();
+        $shared_notes = [];
+        $shared_notes["editor"] = [];
+        $shared_notes["reader"] = [];
+        foreach ($data as $row) {
+            $note = $this->get_text_note_or_checklist_note($row);
+            if ($row["editor"] === 1) {
+                $shared_notes["editor"][] = $note;
+            } else {
+                $shared_notes["reader"][] = $note;
+            }
+        }
+
+        return $shared_notes;
+    }
 
     public static function get_user_by_id($id): User | false
     {
@@ -269,13 +304,18 @@ class User extends MyModel
             return false;
         } else {
             $row = $query->fetch();
-            $role = $row['role'];
-            $new_role = Role::USER;
-            if ($role == Role::ADMIN) {
-                $new_role = Role::ADMIN;
-            }
+            $new_role = User::get_role_format($row["role"]);
             return new User($row['mail'], $row['hashed_password'], $row['full_name'], $new_role, $row['id']);
         }
+    }
+
+    public static  function get_role_format(string $role): Role
+    {
+        $new_role = Role::USER;
+        if ($role == Role::ADMIN) {
+            $new_role = Role::ADMIN;
+        }
+        return $new_role;
     }
 
     public function setPassword($hashed_password)
@@ -285,6 +325,11 @@ class User extends MyModel
     public function getPassword()
     {
         return $this->hashed_password;
+    }
+
+    public function get_full_name()
+    {
+        return $this->full_name;
     }
     public static function change_password(string $old_password, User $user): array
     {

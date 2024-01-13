@@ -9,7 +9,7 @@ include('./utils/head.php')
                 <i class="bi bi-list nav-icon"></i>
             </button>
 
-            <h2 class="title"> <?= $title_page->value ?></h2>
+            <h2 class="title"> <?= $title_page ?></h2>
 
             <div class="offcanvas  offcanvas-start text-bg-dark" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions" aria-labelledby="offcanvasWithBothOptionsLabel">
                 <div class="offcanvas-header">
@@ -31,9 +31,11 @@ include('./utils/head.php')
                     );
 
                     foreach ($users_shared_notes as $u) {
+                        $name = $u->full_name;
+                        $id_sender = $u->id;
                         $nav_list[] = array(
-                            "title" => "Shared by " . $u,
-                            "url" => $base_url . "shared_by_" . $u
+                            "title" => "Shared by " . $name,
+                            "url" => $base_url . "shared_by/" . $id_sender
                         );
                     }
                     $nav_list[] = array(
@@ -45,7 +47,7 @@ include('./utils/head.php')
                         $url = $elem["url"];
                         $title = $elem["title"];
                     ?>
-                        <a class="nav-link <?= $title === $title_page->value ?  "selected" : "" ?> " href=<?= $url ?>> <?= $title ?></a>
+                        <a class="nav-link <?= $title === $title_page ?  "selected" : "" ?> " href=<?= $url ?>> <?= $title ?></a>
                         <br>
 
                     <?php

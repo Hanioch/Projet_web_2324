@@ -33,6 +33,22 @@ class ControllerNotes extends Controller
         (new View("archives"))->show(["notes_archives" => $notes_archives, "users_shared_notes" => $users_shared_notes]);
     }
 
+    public function shared_by(): void
+    {
+        $user = $this->get_user_or_redirect();
+        if (isset($_GET['param1'])) {
+            $id_sender = $_GET['param1'];
+            $sender = User::get_user_by_id($id_sender);
+            $notes_shared = $user->get_notes_shared_by($id_sender);
+            $users_shared_notes = $user->get_users_shared_note();
+
+            (new View("shared_notes"))->show(["notes_shared" => $notes_shared, "users_shared_notes" => $users_shared_notes, "sender" => $sender]);
+        } else {
+            echo "Les paramètres ne sont pas définis.";
+            print_r($_GET);
+        }
+    }
+
     public function signup(): void
     {
         $mail = '';

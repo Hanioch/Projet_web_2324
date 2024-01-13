@@ -1,5 +1,5 @@
 <?php
-function show_note(array $arr_notes, String $title, Page $titlePage): void
+function show_note(array $arr_notes, string $title, string $titlePage): void
 {
 ?>
     <h4 class=" title-note"><?= $title ?></h4>
@@ -44,7 +44,7 @@ function show_note(array $arr_notes, String $title, Page $titlePage): void
                     ?>
                 </div>
                 <?php
-                if ($titlePage === Page::Notes) {
+                if ($titlePage === Page::Notes->value) {
                 ?>
                     <div class="footer-in-note">
                         <?php if ($i !== 0) {
@@ -74,5 +74,6 @@ enum Page: string
 {
     case Notes = "My notes";
     case Archives = "My archives";
+    case Shared_by = "Shared by";
     case Settings = "Settings";
 }
