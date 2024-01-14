@@ -97,6 +97,12 @@ body, html {
     border-top: 1px solid rgba(0,0,0,.125);
 }
 
+.button-mv-note{
+    padding: 0;
+    border: 0;
+    background: none;
+}
+
 .icon{
     position: absolute;
     cursor: pointer;

@@ -60,7 +60,7 @@ class ChecklistNote extends Note
         }
     }
 
-    public function persist(): ChecklistNote|array
+    public function persist(?Note $second_note = NULL): ChecklistNote|array
     {
         $errors = $this->validate();
         if (empty($errors)) {
