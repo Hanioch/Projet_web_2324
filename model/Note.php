@@ -42,16 +42,19 @@ class Note extends MyModel
 
         $row = $query->fetch();
         $owner = User::get_user_by_id($row['owner']);
+        var_dump("juste avant la casse" . $is_more);
         return new Note($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['id'], $row['created_at'], $row['edited_at']);
     }
 
     public function validate(): array
     {
         $errors = [];
+        $user = User::get_user_by_mail($this->owner->mail);
+        // TO DO: check si l'id de l'user correspond à l'id de l'user connnecter. 
+        // if ($user->id === ) {
+        //     $errors[] = "Incorrect owner";
+        // }
 
-        if (User::get_user_by_mail($this->owner->mail)) {
-            $errors[] = "Incorrect owner";
-        }
         if (!(strlen($this->title) > 3 && strlen($this->title) < 25)) {
             $errors[] = "Title must be filled";
         }
@@ -73,7 +76,7 @@ class Note extends MyModel
         }
         while (!$isNotUnique && $i < count($notes)) {
             $note = $notes[$i];
-            if ($note->weight == $this->weight) {
+            if ($note->weight == $this->weight && $note->id != $this->id) {
                 var_dump("msg erreur :" . $note->id);
                 $isNotUnique = true;
             }
@@ -156,7 +159,7 @@ class Note extends MyModel
         return $this;
     }
 
-    public function move_note_in_DB(Note $second_note): Note
+    protected function move_note_in_DB(Note $second_note): Note
     {
         $second_weight = $second_note->get_weight();
         $second_id = $second_note->get_id();

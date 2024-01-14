@@ -37,19 +37,14 @@ class ControllerNotes extends Controller
     {
         $current_note = Note::get_note($note_id);
         $other_notes = $current_note->get_nearest_note($is_more);
-        //TODOOOO le faire fonctionner avec le persist.
-        // $modif = $current_note->persist($other_notes);
-        $current_note->move_note_in_DB($other_notes);
+        $current_note->persist($other_notes);
     }
 
     public function archives(): void
     {
         $user = $this->get_user_or_redirect();
-        //        var_dump($this->get_user_or_redirect());
         $notes_archives = $user->get_notes_archives();
         $users_shared_notes = $user->get_users_shared_note();
-
-        //        var_dump($notes);
         (new View("archives"))->show(["notes_archives" => $notes_archives, "users_shared_notes" => $users_shared_notes]);
     }
 
