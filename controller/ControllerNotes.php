@@ -14,22 +14,38 @@ class ControllerNotes extends Controller
 
     private function note_list(): void
     {
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (isset($_POST['action']) && isset($_POST['id'])) {
+                $action = $_POST['action'];
+                $note_id = $_POST['id'];
+
+                if ($action === 'increment') {
+                    $this->modif_weight(true, $note_id);
+                } elseif ($action === 'decrement') {
+                    $this->modif_weight(false, $note_id);
+                }
+            }
+        }
+
         $user = $this->get_user_or_redirect();
-        //        var_dump($this->get_user_or_redirect());
         $notes = $user->get_notes();
         $users_shared_notes = $user->get_users_shared_note();
-        //        var_dump($notes);
         (new View("notes"))->show(["notes" => $notes, "users_shared_notes" => $users_shared_notes]);
+    }
+
+    private function modif_weight(bool $is_more, int $note_id)
+    {
+        $current_note = Note::get_note($note_id);
+        $other_notes = $current_note->get_nearest_note($is_more);
+        $current_note->persist($other_notes);
     }
 
     public function archives(): void
     {
         $user = $this->get_user_or_redirect();
-        //        var_dump($this->get_user_or_redirect());
         $notes_archives = $user->get_notes_archives();
         $users_shared_notes = $user->get_users_shared_note();
-
-        //        var_dump($notes);
         (new View("archives"))->show(["notes_archives" => $notes_archives, "users_shared_notes" => $users_shared_notes]);
     }
 

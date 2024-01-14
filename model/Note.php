@@ -2,22 +2,60 @@
 
 require_once "model/MyModel.php";
 require_once "model/User.php";
+require_once "model/Note.php";
 
 
 class Note extends MyModel
 {
 
-    public function __construct(public string $title, public User $owner, public  bool $pinned, public bool $archived, public int $weight, public ?int $id = NULL, public ?string $created_at = NULL, public ?string $edited_at = NULL)
+    public function __construct(public string $title, public User $owner, public  bool $pinned, public bool $archived, private int $weight, public ?int $id = NULL, public ?string $created_at = NULL, public ?string $edited_at = NULL)
     {
+    }
+
+    public function get_id(): int
+    {
+        return $this->id;
+    }
+
+    public function get_weight(): int
+    {
+        return $this->weight;
+    }
+
+    public function set_weight(int $weight): void
+    {
+        $this->weight = $weight;
+    }
+
+    public  function get_nearest_note(bool $is_more): Note
+    {
+        $operator = $is_more ? '>' : '<';
+
+        $query = self::execute("
+            SELECT n.* FROM notes n
+            INNER JOIN users u ON u.id = n.owner
+            WHERE u.id = :owner AND weight $operator :weight
+            AND pinned = :pinned AND archived = false
+            ORDER BY ABS(weight - :weight)
+            LIMIT 1
+            ", ["owner" => $this->owner->id, "weight" => $this->weight, "pinned" => $this->pinned]);
+
+        $row = $query->fetch();
+        $owner = User::get_user_by_id($row['owner']);
+
+        return new Note($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['id'], $row['created_at'], $row['edited_at']);
     }
 
     public function validate(): array
     {
         $errors = [];
+        $user = User::get_user_by_mail($this->owner->mail);
+        // TO DO: check si l'id de l'user correspond à l'id de l'user connnecter. 
 
-        if (User::get_user_by_mail($this->owner->mail)) {
-            $errors[] = "Incorrect owner";
-        }
+        // if ($user->id === ) {
+        //     $errors[] = "Incorrect owner";
+        // }
+
         if (!(strlen($this->title) > 3 && strlen($this->title) < 25)) {
             $errors[] = "Title must be filled";
         }
@@ -33,10 +71,15 @@ class Note extends MyModel
         $notesByOwner = $this->owner->get_notes();
         $isNotUnique = false;
         $i = 0;
+        $notes = $notesByOwner["pinned"];
 
-        while (!$isNotUnique && $i < count($notesByOwner)) {
-            $note = $notesByOwner[$i];
-            if ($note->weight == $this->weight) {
+        if ($this->pinned == 0) {
+            $notes = $notesByOwner["other"];
+        }
+
+        while (!$isNotUnique && $i < count($notes)) {
+            $note = $notes[$i];
+            if ($note->weight == $this->weight && $note->id != $this->id) {
                 $isNotUnique = true;
             }
             $i++;
@@ -67,14 +110,18 @@ class Note extends MyModel
         return false;
     }
 
-    public function persist(): Note|array
+    public function persist(?Note $second_note = NULL): Note|array
     {
         $errors = $this->validate();
         if (empty($errors)) {
             if ($this->id == NULL) {
                 return self::add_note_in_DB();
             } else {
-                return self::modify_note_in_DB();
+                if ($second_note == NULL) {
+                    return self::modify_note_in_DB();
+                } else {
+                    return $this->move_note_in_DB($second_note);
+                }
             }
         } else {
             return $errors;
@@ -111,6 +158,19 @@ class Note extends MyModel
             'id' => $this->id
         ]);
 
+        return $this;
+    }
+
+    protected function move_note_in_DB(Note $second_note): Note
+    {
+        $second_weight = $second_note->get_weight();
+        $second_id = $second_note->get_id();
+        self::execute('UPDATE notes n1, notes n2 SET n1.weight = :second_weight, n2.weight= :weight WHERE n1.id= :id AND n2.id=:second_id', [
+            'weight' => $this->weight,
+            'second_weight' => $second_weight,
+            'id' => $this->id,
+            'second_id' => $second_id,
+        ]);
         return $this;
     }
 }

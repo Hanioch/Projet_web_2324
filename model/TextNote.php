@@ -37,7 +37,7 @@ class TextNote extends Note
         return false;
     }
 
-    public function persist(): TextNote|array
+    public function persist(?Note $second_note = NULL): TextNote|array
     {
         $errors = $this->validate();
         if (empty($errors)) {

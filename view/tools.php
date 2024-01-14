@@ -46,19 +46,25 @@ function show_note(array $arr_notes, string $title, string $titlePage): void
                 <?php
                 if ($titlePage === Page::Notes->value) {
                 ?>
-                    <div class="footer-in-note">
+                    <form class="footer-in-note" action="notes/" method="post">
                         <?php if ($i !== 0) {
                         ?>
-                            <i class="bi bi-chevron-double-left icon i-left"></i>
+                            <button class="button-mv-note" type="submit" name="action" value="increment">
+                                <i class="bi bi-chevron-double-left icon i-left"></i>
+                            </button>
                         <?php
                         }
                         if ($note->id != end($arr_notes)->id) {
                         ?>
-                            <i class="bi bi-chevron-double-right icon i-right"></i>
+                            <button class="button-mv-note" type="submit" name="action" value="decrement">
+                                <i class="bi bi-chevron-double-right icon i-right"></i>
+                            </button>
                         <?php
                         }
                         ?>
-                    </div>
+                        <input type="hidden" name="id" value=<?= $note->id ?>>
+
+                    </form>
                 <?php
                 }
                 ?>
