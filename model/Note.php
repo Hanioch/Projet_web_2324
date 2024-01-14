@@ -27,7 +27,7 @@ class Note extends MyModel
         $this->weight = $weight;
     }
 
-    public  function get_nearest_note(bool $is_more): Note
+    public  function get_nearest_note(bool $is_more): Note | false
     {
         $operator = $is_more ? '>' : '<';
 
@@ -41,8 +41,12 @@ class Note extends MyModel
             ", ["owner" => $this->owner->id, "weight" => $this->weight, "pinned" => $this->pinned]);
 
         $row = $query->fetch();
-        $owner = User::get_user_by_id($row['owner']);
 
+        if (!$row) {
+            return false;
+        }
+
+        $owner = User::get_user_by_id($row['owner']);
         return new Note($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['id'], $row['created_at'], $row['edited_at']);
     }
 
