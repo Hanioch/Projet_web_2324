@@ -42,7 +42,7 @@ class Note extends MyModel
 
         $row = $query->fetch();
         $owner = User::get_user_by_id($row['owner']);
-        var_dump("juste avant la casse" . $is_more);
+
         return new Note($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['id'], $row['created_at'], $row['edited_at']);
     }
 
@@ -51,6 +51,7 @@ class Note extends MyModel
         $errors = [];
         $user = User::get_user_by_mail($this->owner->mail);
         // TO DO: check si l'id de l'user correspond à l'id de l'user connnecter. 
+
         // if ($user->id === ) {
         //     $errors[] = "Incorrect owner";
         // }
@@ -71,13 +72,14 @@ class Note extends MyModel
         $isNotUnique = false;
         $i = 0;
         $notes = $notesByOwner["pinned"];
+
         if ($this->pinned == 0) {
             $notes = $notesByOwner["other"];
         }
+
         while (!$isNotUnique && $i < count($notes)) {
             $note = $notes[$i];
             if ($note->weight == $this->weight && $note->id != $this->id) {
-                var_dump("msg erreur :" . $note->id);
                 $isNotUnique = true;
             }
             $i++;
@@ -108,7 +110,7 @@ class Note extends MyModel
         return false;
     }
 
-    public function persist(Note $second_note = NULL): Note|array
+    public function persist(?Note $second_note = NULL): Note|array
     {
         $errors = $this->validate();
         if (empty($errors)) {
