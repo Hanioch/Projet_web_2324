@@ -81,4 +81,7 @@ class ControllerMain extends Controller
             "errors" => $errors
         ]);
     }
+    public function addchecklistnote(): void {
+        (new View("addchecklistnote"))->show();
+    }
 }
