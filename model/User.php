@@ -171,10 +171,10 @@ class User extends MyModel
         $user = User::get_user_by_mail($mail);
         if ($user) {
             if (!self::check_password($password, $user->hashed_password)) {
-                $errors[] = "Incorrect password.";
+                $errors["password"][] = "Incorrect password.";
             }
         } else {
-            $errors[] = "'$mail' is not registered yet. Please sign up.";
+            $errors["mail"][] = "'$mail' is not registered yet. Please sign up.";
         }
         return $errors;
     }
