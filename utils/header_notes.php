@@ -24,12 +24,12 @@ include('./utils/head.php')
             ?>
             </div>
             <div class="">
-            <?php
-            $chevronLink = "./notes";
-            echo '<a class="navbar-brand" href="' . $chevronLink . '">
-                        <i class="bi bi-pin"></i>
-                    </a>';
-            ?>
+                <?php
+                $pinIcon = $note->pinned ? "bi-pin-fill" : "bi-pin";
+                echo '<a class="navbar-brand" href="#" onclick="<togglePin()">
+                          <i class="bi ' . $pinIcon . '"></i>
+                      </a>';
+                ?>
             </div>
             <div class="">
             <?php
@@ -51,3 +51,11 @@ include('./utils/head.php')
 
 
     </header>
+    <script>
+        function togglePin()
+        {
+            <?php
+            ($this)->togglePin();
+            ?>
+        }
+    </script>

@@ -87,8 +87,6 @@ class Note extends MyModel
         return $isNotUnique;
     }
 
-
-
     public static function get_note(int $id): Note| false
     {
         $query = self::execute("select * from notes where id= :id", ["id" => $id]);
@@ -172,5 +170,13 @@ class Note extends MyModel
             'second_id' => $second_id,
         ]);
         return $this;
+    }
+    public static function is_checklist_note(int $id): bool {
+        $query = self::execute("SELECT id FROM checklist_notes WHERE id = :id", ["id" => $id]);
+        return $query->rowCount() > 0;
+    }
+    public function togglePin() {
+        $this->pinned = !$this->pinned;
+        return $this->modify_note_in_DB();
     }
 }

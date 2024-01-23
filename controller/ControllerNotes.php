@@ -94,9 +94,21 @@ class ControllerNotes extends Controller
             "password_confirm" => $password_confirm, "errors" => $errors
         ]);
     }
-    public function open_note(): void{
-        $note = Note::get_note(23);
-        (new View("open_note"))->show(["note"=> $note]);
+    public function open_note(){
+        $noteId = $_GET['param1'];
+        $noteType = $_GET['param2'];
+        $note = Note::get_note($noteId);
+        if (!$note) {
+            die("Note not found");
+        }
+        $isChecklistNote = Note::is_checklist_note($noteId);
+
+        if ($isChecklistNote) {
+            (new View("open_checklist_note"))->show(['note' => $note, 'noteType' => $noteType]);
+        } else {
+
+            (new View("open_text_note"))->show(['note' => $note, 'noteType' => $noteType]);
+        }
     }
 
 }

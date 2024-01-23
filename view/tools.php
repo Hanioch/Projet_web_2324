@@ -7,11 +7,11 @@ function show_note(array $arr_notes, string $title, string $titlePage): void
         <?php
         for ($i = 0; $i < count($arr_notes); $i++) {
             $note = $arr_notes[$i];
-        ?>
-            <li class="note">
-                <a href="Notes/open_note">
+            $noteType = determineNoteType($titlePage);
+            $openNoteUrl = "./Notes/open_note/" . $note->id . "/" . $noteType;
+            ?>
+            <li class="note" onclick="window.location='<?= $openNoteUrl ?>'">
                 <div class="header-in-note"><?= $note->title ?></div>
-                </a>
                 <div class="body-note">
                     <?php if (property_exists($note, 'content')) {
                         $max_lg = 75;
@@ -84,4 +84,12 @@ enum Page: string
     case Archives = "My archives";
     case Shared_by = "Shared by";
     case Settings = "Settings";
-}
+};?>
+<?php
+function determineNoteType(string $titlePage): string {
+
+    return match ($titlePage) {
+        Page::Notes->value => 'notes',
+        Page::Archives->value => 'archives',
+        default => 'shared_by'
+    };} ?>
