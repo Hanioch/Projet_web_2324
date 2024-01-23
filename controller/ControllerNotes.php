@@ -94,4 +94,9 @@ class ControllerNotes extends Controller
             "password_confirm" => $password_confirm, "errors" => $errors
         ]);
     }
+    public function open_note(): void{
+        $note = Note::get_note(23);
+        (new View("open_note"))->show(["note"=> $note]);
+    }
+
 }

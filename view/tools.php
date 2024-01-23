@@ -9,7 +9,9 @@ function show_note(array $arr_notes, string $title, string $titlePage): void
             $note = $arr_notes[$i];
         ?>
             <li class="note">
+                <a href="Notes/open_note">
                 <div class="header-in-note"><?= $note->title ?></div>
+                </a>
                 <div class="body-note">
                     <?php if (property_exists($note, 'content')) {
                         $max_lg = 75;
