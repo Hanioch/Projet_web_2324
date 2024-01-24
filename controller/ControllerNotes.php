@@ -123,7 +123,7 @@ class ControllerNotes extends Controller
             $note = Note::get_note($noteId);
 
             if ($note && $note->delete($user)) {
-                $this->refresh("./index");
+                $this->refresh("./archives");
             } else {
 
                 $this->refresh("./index");

@@ -8,11 +8,19 @@ include('./utils/head.php')
 
         <nav class="navbar navbar-dark">
             <?php
-            $chevronLink = "./notes";
+            if (isset($id_send)) {
+                $chevronLink = "./notes/shared_by/$id_send";
+            } else {
+                $chevronLink = "./notes";
+            }
             echo '<a class="navbar-brand" href="' . $chevronLink . '">
                         <i class="bi bi-chevron-left"></i>
+                        
                     </a>';
+            var_dump($id_send);
+
             ?>
+
         </nav>
         <nav class="navbar navbar-dark ">
              <div class="">
