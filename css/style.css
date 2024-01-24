@@ -1,4 +1,7 @@
-
+.created{
+    color: white;
+    display: block;
+}
 hr {
     border-color: white;
 }

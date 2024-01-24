@@ -11,5 +11,10 @@ if (isset($noteType)) {
     include("utils/header_default.php");
 }
 ?>
+    <div class="created">
+        <small>Created <?=$note->created_at ?></small>
+        <small>Edited <?= $note->edited_at ?></small>
+    </div>
+</div>
 <?php
 include('./utils/footer.php'); ?>

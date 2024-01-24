@@ -17,19 +17,16 @@ include('./utils/head.php')
                         <i class="bi bi-chevron-left"></i>
                         
                     </a>';
-            var_dump($id_send);
-
             ?>
 
         </nav>
         <nav class="navbar navbar-dark ">
              <div class="">
-            <?php
-            $chevronLink = "./notes";
-            echo '<a class="navbar-brand" href="' . $chevronLink . '">
-                       <i class="bi bi-pencil"></i>
-                    </a>';
-            ?>
+                 <?php if ($canEdit): ?>
+                     <a class="navbar-brand" href="path/to/edit/note/<?= $note->id ?>">
+                         <i class="bi bi-pencil"></i>
+                     </a>
+                 <?php endif; ?>
              </div>
         </nav>
 

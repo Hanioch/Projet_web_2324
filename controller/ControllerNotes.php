@@ -3,7 +3,7 @@
 require_once 'model/User.php';
 require_once 'framework/View.php';
 require_once 'framework/Controller.php';
-
+require_once "model/NoteShare.php";
 class ControllerNotes extends Controller
 {
 
@@ -68,17 +68,20 @@ class ControllerNotes extends Controller
     public function open_note(){
         $noteId = $_GET['param1'];
         $noteType = $_GET['param2'];
+        $userId = $this->get_user_or_redirect()->id;
+        $canEdit = NoteShare::canEdit($noteId,$userId);
         $note = Note::get_note($noteId);
+
         if (!$note) {
             die("Note not found");
         }
         $isChecklistNote = Note::is_checklist_note($noteId);
 
         if ($isChecklistNote) {
-            (new View("open_checklist_note"))->show(['note' => $note, 'noteType' => $noteType]);
+            (new View("open_checklist_note"))->show(['note' => $note, 'noteType' => $noteType,'canEdit' => $canEdit]);
         } else {
 
-            (new View("open_text_note"))->show(['note' => $note, 'noteType' => $noteType]);
+            (new View("open_text_note"))->show(['note' => $note, 'noteType' => $noteType, 'canEdit' => $canEdit]);
         }
     }
     public function togglePin() {

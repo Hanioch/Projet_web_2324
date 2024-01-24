@@ -54,11 +54,3 @@ include('./utils/head.php')
 
 
     </header>
-    <script>
-        function togglePin()
-        {
-            <?php
-            $this->togglePin();
-            ?>
-        }
-    </script>
