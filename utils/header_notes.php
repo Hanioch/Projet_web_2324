@@ -26,18 +26,21 @@ include('./utils/head.php')
             <div class="">
                 <?php
                 $pinIcon = $note->pinned ? "bi-pin-fill" : "bi-pin";
-                echo '<a class="navbar-brand" href="#" onclick="<togglePin()">
-                          <i class="bi ' . $pinIcon . '"></i>
-                      </a>';
                 ?>
+                <form action="notes/togglePin" method="POST" class="navbar-brand"  >
+                    <input type="hidden" name="note_id" value="<?= $note->id ?>">
+                        <button type="submit" class="btn-icon" style="background: none; border: none; color: inherit; ">
+                            <i class="bi <?= $pinIcon ?>"></i>
+                        </button>
+                </form>
             </div>
             <div class="">
-            <?php
-            $chevronLink = "./notes";
-            echo '<a class="navbar-brand" href="' . $chevronLink . '">
+                <form action="notes/setArchive" method="POST" class="navbar-brand"  >
+                    <input type="hidden" name="note_id" value="<?= $note->id ?>">
+                    <button type="submit" class="btn-icon" style="background: none; border: none; color: inherit; ">
                         <i class="bi bi-arrow-down-square"></i>
-                    </a>';
-            ?>
+                    </button>
+                </form>
             </div>
              <div class="">
             <?php
@@ -55,7 +58,7 @@ include('./utils/head.php')
         function togglePin()
         {
             <?php
-            ($this)->togglePin();
+            $this->togglePin();
             ?>
         }
     </script>

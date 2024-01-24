@@ -8,7 +8,7 @@ include('./utils/head.php')
 
         <nav class="navbar navbar-dark">
             <?php
-            $chevronLink = "./notes";
+            $chevronLink = "./notes/archives";
             echo '<a class="navbar-brand" href="' . $chevronLink . '">
                         <i class="bi bi-chevron-left"></i>
                     </a>';
@@ -16,21 +16,21 @@ include('./utils/head.php')
         </nav>
         <nav class="navbar navbar-dark ">
             <div class="">
-            <?php
-            $chevronLink = "./notes";
-            echo '<a class="navbar-brand" href="' . $chevronLink . '">
+                <form action="notes/delete" method="POST" class="navbar-brand">
+                    <input type="hidden" name="note_id" value="<?= $note->id ?>">
+                    <button type="submit" class="btn-icon" style="background: none; border: none; color: inherit; ">
                         <i class="bi bi-trash text-danger"></i>
-                    </a>';
-            ?>
+                    </button>
+                </form>
             </div>
-             <div class="">
-            <?php
-            $chevronLink = "./notes";
-            echo '<a class="navbar-brand" href="' . $chevronLink . '">
-                       <i class="bi bi-box-arrow-up"></i>
-                    </a>';
-            ?>
-             </div>
+            <div class="">
+                <form action="notes/setArchive" method="POST" class="navbar-brand"  >
+                    <input type="hidden" name="note_id" value="<?= $note->id ?>">
+                    <button type="submit" class="btn-icon" style="background: none; border: none; color: inherit; ">
+                        <i class="bi bi-box-arrow-up"></i>
+                    </button>
+                </form>
+            </div>
         </nav>
 
 

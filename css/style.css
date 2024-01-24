@@ -173,6 +173,7 @@ a {
 .bg-dark {
     align-content: end;
 }
+
 /* Media query pour les ordinateurs de bureau */
 @media screen and (min-width: 1024px) {
     

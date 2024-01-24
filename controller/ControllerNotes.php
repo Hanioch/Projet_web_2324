@@ -65,35 +65,6 @@ class ControllerNotes extends Controller
         }
     }
 
-    public function signup(): void
-    {
-        $mail = '';
-        $fullname = '';
-        $password = '';
-        $password_confirm = '';
-        $errors = [];
-
-        if (isset($_POST['mail']) && isset($_POST['fullname']) && isset($_POST['password']) && isset($_POST['password_confirm'])) {
-            $mail = trim($_POST['mail']);
-            $fullname = trim($_POST['fullname']);
-            $password = $_POST['password'];
-            $password_confirm = $_POST['password_confirm'];
-
-            $user = new User($mail, Tools::my_hash($password), $fullname, Role::USER);
-            $errors = User::validate_unicity($mail);
-            $errors = array_merge($errors, User::validate_mail($mail));
-            $errors = array_merge($errors, User::validate_password($password));
-
-            if (count($errors) == 0) {
-                $user->persist(); //sauve l'utilisateur
-                $this->log_user($user);
-            }
-        }
-        (new View("signup"))->show([
-            "mail" => $mail, "password" => $password,
-            "password_confirm" => $password_confirm, "errors" => $errors
-        ]);
-    }
     public function open_note(){
         $noteId = $_GET['param1'];
         $noteType = $_GET['param2'];
@@ -109,6 +80,63 @@ class ControllerNotes extends Controller
 
             (new View("open_text_note"))->show(['note' => $note, 'noteType' => $noteType]);
         }
+    }
+    public function togglePin() {
+        $noteId = $_POST['note_id'];
+        if ($noteId === null) {
+        }
+
+        $note = Note::get_note($noteId);
+        if (!$note) {
+
+        }
+
+        $note->togglePin();
+
+        $this->refresh();
+    }
+    public function setArchive() {
+        $noteId = $_POST['note_id'];
+        if ($noteId === null) {
+        }
+
+        $note = Note::get_note($noteId);
+        if (!$note) {
+
+        }
+
+        $note->setArchive();
+
+        if($note->archived) {
+            $this->refresh("./open_note/$noteId/archives");
+        }else{
+            $this->refresh("./open_note/$noteId/notes");
+        }
+
+
+    }
+    public function delete() {
+        $user = $this->get_user_or_redirect();
+
+        if (isset($_POST['note_id'])) {
+            $noteId = $_POST['note_id'];
+            $note = Note::get_note($noteId);
+
+            if ($note && $note->delete($user)) {
+                $this->refresh("./index");
+            } else {
+
+                $this->refresh("./index");
+            }
+        }
+    }
+    function refresh($url = null) {
+        if ($url) {
+            header('Location: ' . $url);
+        } else {
+            header('Location: ' . $_SERVER['HTTP_REFERER']);
+        }
+        exit;
     }
 
 }

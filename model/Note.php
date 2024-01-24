@@ -175,8 +175,13 @@ class Note extends MyModel
         $query = self::execute("SELECT id FROM checklist_notes WHERE id = :id", ["id" => $id]);
         return $query->rowCount() > 0;
     }
-    public function togglePin() {
+    public function togglePin(): static
+    {
         $this->pinned = !$this->pinned;
+        return $this->modify_note_in_DB();
+    }
+    public function setArchive(): static{
+        $this->archived = !$this->archived;
         return $this->modify_note_in_DB();
     }
 }
