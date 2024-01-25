@@ -113,4 +113,35 @@ class ChecklistNoteItems extends MyModel
             return new ChecklistNoteItems($row['content'], $row['checked'], $row['id'], $row['checklist_note']);
         }
     }
+    public static function get_items_by_checklist_note_id(int $checklistNoteId):array {
+        $query = self::execute(
+            "SELECT cni.*, n.title, n.owner, n.pinned, n.archived, n.weight, n.created_at, n.edited_at FROM checklist_note_items cni JOIN notes n ON n.id = cni.checklist_note WHERE checklist_note = :checklist_note ORDER BY cni.checked ASC, n.created_at ASC",
+            ["checklist_note" => $checklistNoteId]
+        );
+        $data = $query->fetchAll();
+        $items = [];
+        foreach ($data as $row) {
+            $items[] = new ChecklistNoteItems($row['content'], $row['checked'], $row['id'], $row['checklist_note']);
+        }
+        return $items;
+    }
+    protected function modify_item_in_DB(): ChecklistNoteItems
+    {
+        self::execute('UPDATE checklist_note_items SET content = :content, checked = :checked, checklist_note = :checklist_note WHERE id = :id', [
+            'content' => $this->content,
+            'checked' => $this->checked ? 1 : 0,
+            'checklist_note' => $this->checklist_note,
+            'id' => $this->id
+        ]);
+
+        return $this;
+    }
+
+    public function toggleCheckbox(): ChecklistNoteItems
+    {
+        $this->checked = !$this->checked;
+        $this->modify_item_in_DB();
+        return $this;
+    }
+
 }
