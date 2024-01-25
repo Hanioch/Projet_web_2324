@@ -71,6 +71,8 @@ class ControllerNotes extends Controller
         $userId = $this->get_user_or_redirect()->id;
         $canEdit = NoteShare::canEdit($noteId,$userId);
         $note = Note::get_note($noteId);
+        $text = TextNote::get_text_note($noteId);
+        $id_sender = $note->owner->id;
 
         if (!$note) {
             die("Note not found");
@@ -78,10 +80,10 @@ class ControllerNotes extends Controller
         $isChecklistNote = Note::is_checklist_note($noteId);
 
         if ($isChecklistNote) {
-            (new View("open_checklist_note"))->show(['note' => $note, 'noteType' => $noteType,'canEdit' => $canEdit]);
+            (new View("open_checklist_note"))->show(['note' => $note, 'noteType' => $noteType,'canEdit' => $canEdit,'text' => $text,'id_sender' => $id_sender]);
         } else {
 
-            (new View("open_text_note"))->show(['note' => $note, 'noteType' => $noteType, 'canEdit' => $canEdit]);
+            (new View("open_text_note"))->show(['note' => $note, 'noteType' => $noteType, 'canEdit' => $canEdit, 'text' => $text,'id_sender' => $id_sender]);
         }
     }
     public function togglePin() {

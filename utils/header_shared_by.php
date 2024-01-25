@@ -8,8 +8,8 @@ include('./utils/head.php')
 
         <nav class="navbar navbar-dark">
             <?php
-            if (isset($id_send)) {
-                $chevronLink = "./notes/shared_by/$id_send";
+            if (isset($id_sender)) {
+                $chevronLink = "./notes/shared_by/$id_sender";
             } else {
                 $chevronLink = "./notes";
             }

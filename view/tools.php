@@ -8,7 +8,7 @@ function show_note(array $arr_notes, string $title, string $titlePage): void
         for ($i = 0; $i < count($arr_notes); $i++) {
             $note = $arr_notes[$i];
             $noteType = determineNoteType($titlePage);
-            $openNoteUrl = "./Notes/open_note/" . $note->id . "/" . $noteType;
+            $openNoteUrl = "./Notes/open_note/" . $note->id . "/" . $noteType ;
             ?>
             <li class="note" onclick="window.location='<?= $openNoteUrl ?>'">
                 <div class="header-in-note"><?= $note->title ?></div>
