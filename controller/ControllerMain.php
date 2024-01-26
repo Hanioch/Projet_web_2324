@@ -8,7 +8,6 @@ class ControllerMain extends Controller
 {
     public function index(): void
     {
-        //        var_dump($this->user_logged());
         if ($this->user_logged()) {
             $this->redirect("notes");
         } else {
@@ -81,7 +80,7 @@ class ControllerMain extends Controller
             "errors" => $errors
         ]);
     }
-    public function addchecklistnote(): void {
-        (new View("addchecklistnote"))->show();
+    public function add_checklist_note(): void {
+        (new View("add_checklist_note"))->show();
     }
 }

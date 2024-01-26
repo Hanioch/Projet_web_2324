@@ -3,7 +3,7 @@ include("./utils/header_login.php");
 ?>
 
     <div class="row justify-content-center align-items-center">
-        <form class="p-3 border rounded-4 text-white text-center" action="main/addchecklistnote" method="post">
+        <form class="p-3 border rounded-4 text-white text-center" action="main/add_checklist_note" method="post">
             <div class="mb-3">
                 <div class="input-group">
                     <label class="input-group" for="title">Title</label>
