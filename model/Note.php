@@ -7,27 +7,84 @@ require_once "model/Note.php";
 
 class Note extends MyModel
 {
-
-    public function __construct(public string $title, public User $owner, public  bool $pinned, public bool $archived, private int $weight, public ?int $id = NULL, public ?string $created_at = NULL, public ?string $edited_at = NULL)
+    public function __construct(private string $title, private User $owner, private  bool $pinned, private bool $archived, private int $weight, private ?int $id = NULL, private ?string $created_at = NULL, private ?string $edited_at = NULL)
     {
     }
+    public function getOwner(): User
+    {
+        return $this->owner;
+    }
 
-    public function get_id(): int
+    public function setOwner(User $owner): void
+    {
+        $this->owner = $owner;
+    }
+    public function getEditedAt(): ?string
+    {
+        return $this->edited_at;
+    }
+
+    public function setEditedAt(?string $edited_at): void
+    {
+        $this->edited_at = $edited_at;
+    }
+
+    public function getCreatedAt(): ?string
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(?string $created_at): void
+    {
+        $this->created_at = $created_at;
+    }
+
+    public function isArchived(): bool
+    {
+        return $this->archived;
+    }
+
+    public function setArchived(bool $archived): void
+    {
+        $this->archived = $archived;
+    }
+
+    public function isPinned(): bool
+    {
+        return $this->pinned;
+    }
+
+    public function setPinned(bool $pinned): void
+    {
+        $this->pinned = $pinned;
+    }
+
+    public function getTitle(): string
+    {
+        return $this->title;
+    }
+
+    public function setTitle(string $title): void
+    {
+        $this->title = $title;
+    }
+
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function get_weight(): int
+    public function getWeight(): int
     {
         return $this->weight;
     }
 
-    public function set_weight(int $weight): void
+    public function setWeight(int $weight): void
     {
         $this->weight = $weight;
     }
 
-    public  function get_nearest_note(bool $is_more): Note
+    public function get_nearest_note(bool $is_more): Note
     {
         $operator = $is_more ? '>' : '<';
 
@@ -38,7 +95,7 @@ class Note extends MyModel
             AND pinned = :pinned AND archived = false
             ORDER BY ABS(weight - :weight)
             LIMIT 1
-            ", ["owner" => $this->owner->id, "weight" => $this->weight, "pinned" => $this->pinned]);
+            ", ["owner" => $this->owner->getId(), "weight" => $this->weight, "pinned" => $this->pinned]);
 
         $row = $query->fetch();
         $owner = User::get_user_by_id($row['owner']);
@@ -49,7 +106,7 @@ class Note extends MyModel
     public function validate(): array
     {
         $errors = [];
-        $user = User::get_user_by_mail($this->owner->mail);
+        $user = User::get_user_by_mail($this->owner->getMail());
         // TO DO: check si l'id de l'user correspond à l'id de l'user connnecter. 
 
         // if ($user->id === ) {
@@ -133,7 +190,7 @@ class Note extends MyModel
          (:title, :owner, NOW(), null, :pinned, :archived, :weight)',
             [
                 'title' => $this->title,
-                'owner' => $this->owner->id,
+                'owner' => $this->owner->getId(),
                 'pinned' => $this->pinned ? 1 : 0,
                 'archived' => $this->archived ? 1 : 0,
                 'weight' => $this->weight
@@ -161,8 +218,8 @@ class Note extends MyModel
 
     protected function move_note_in_DB(Note $second_note): Note
     {
-        $second_weight = $second_note->get_weight();
-        $second_id = $second_note->get_id();
+        $second_weight = $second_note->getWeight();
+        $second_id = $second_note->getId();
         self::execute('UPDATE notes n1, notes n2 SET n1.weight = :second_weight, n2.weight= :weight WHERE n1.id= :id AND n2.id=:second_id', [
             'weight' => $this->weight,
             'second_weight' => $second_weight,

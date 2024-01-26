@@ -40,10 +40,10 @@ class ControllerSettings extends Controller
             $full_name = trim($_POST['full_name']);
             $errors = User::validate_full_name($full_name);
 
-            if ($full_name != $user->full_name) {
+            if ($full_name != $user->getFullName()) {
 
                 if (empty($errors["full_name"])) {
-                    $user->full_name = $full_name;
+                    $user->setFullName($full_name);
                     $user->persist();
                 }
 

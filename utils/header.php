@@ -31,8 +31,8 @@ include('./utils/head.php')
                     );
 
                     foreach ($users_shared_notes as $u) {
-                        $name = $u->full_name;
-                        $id_sender = $u->id;
+                        $name = $u->getFullName();
+                        $id_sender = $u->getId();
                         $nav_list[] = array(
                             "title" => "Shared by " . $name,
                             "url" => $base_url . "shared_by/" . $id_sender

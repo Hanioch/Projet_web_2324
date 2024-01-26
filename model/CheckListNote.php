@@ -4,10 +4,90 @@ require_once "model/Note.php";
 
 class ChecklistNote extends Note
 {
-    public function __construct(public string $title, public User $owner, public  bool $pinned, public bool $archived, public int $weight, public ?int $id = NULL, public ?string $created_at = NULL, public ?string $edited_at = NULL, public ?array $list_item = NULL)
+    public function __construct(private string $title, private User $owner, private  bool $pinned, private bool $archived, private int $weight, private ?int $id = NULL, private ?string $created_at = NULL, private ?string $edited_at = NULL, private ?array $list_item = NULL)
     {
         parent::__construct($title, $owner, $pinned, $archived, $weight, $id, $created_at, $edited_at);
         $this->fetch_list_item();
+    }
+
+    public function getTitle(): string
+    {
+        return $this->title;
+    }
+
+    public function setTitle(string $title): void
+    {
+        $this->title = $title;
+    }
+
+    public function getOwner(): User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(User $owner): void
+    {
+        $this->owner = $owner;
+    }
+
+    public function isPinned(): bool
+    {
+        return $this->pinned;
+    }
+
+    public function setPinned(bool $pinned): void
+    {
+        $this->pinned = $pinned;
+    }
+
+    public function isArchived(): bool
+    {
+        return $this->archived;
+    }
+
+    public function setArchived(bool $archived): void
+    {
+        $this->archived = $archived;
+    }
+
+    public function getWeight(): int
+    {
+        return $this->weight;
+    }
+
+    public function setWeight(int $weight): void
+    {
+        $this->weight = $weight;
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function setId(?int $id): void
+    {
+        $this->id = $id;
+    }
+
+    public function getCreatedAt(): ?string
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(?string $created_at): void
+    {
+        $this->created_at = $created_at;
+    }
+
+    public function getEditedAt(): ?string
+    {
+        return $this->edited_at;
+    }
+
+    public function setEditedAt(?string $edited_at): void
+    {
+        $this->edited_at = $edited_at;
     }
 
 
@@ -36,6 +116,10 @@ class ChecklistNote extends Note
     public function set_list_item(array $list)
     {
         $this->list_item = $list;
+    }
+    public function getListItem()
+    {
+        return $this->list_item ;
     }
 
     public function delete(User $initiator): Note |false
