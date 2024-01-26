@@ -57,10 +57,11 @@ class Note extends MyModel
         // }
 
         if (!(strlen($this->title) > 3 && strlen($this->title) < 25)) {
-            $errors[] = "Title must be filled";
+
+            $errors["title"] = "Title length must be between 3 and 25 ";
         }
         if (!($this->weight > 0 && !$this->is_not_unique_weight())) {
-            $errors[] = "Weight must be positif and unique";
+            $errors["weight"] = "Weight must be positif and unique";
         }
 
         return $errors;

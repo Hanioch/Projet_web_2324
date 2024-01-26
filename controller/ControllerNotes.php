@@ -65,33 +65,30 @@ class ControllerNotes extends Controller
         }
     }
 
-    public function signup(): void
+    public function add_text_note(): void
     {
-        $mail = '';
-        $fullname = '';
-        $password = '';
-        $password_confirm = '';
+        $user = $this->get_user_or_redirect();
+        $default_title = "";
+        $default_text = "";
         $errors = [];
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (isset($_POST['title'])) {
+                $title = trim($_POST['title']);
+                $text = isset($_POST['text']) ? trim($_POST['text']) : "";
+                $weight = $user->get_heaviest_note() + 1;
+                $new_text_note = new TextNote($title, $user, false, false, $weight, $text);
+                $note = $new_text_note->persist();
 
-        if (isset($_POST['mail']) && isset($_POST['fullname']) && isset($_POST['password']) && isset($_POST['password_confirm'])) {
-            $mail = trim($_POST['mail']);
-            $fullname = trim($_POST['fullname']);
-            $password = $_POST['password'];
-            $password_confirm = $_POST['password_confirm'];
-
-            $user = new User($mail, Tools::my_hash($password), $fullname, Role::USER);
-            $errors = User::validate_unicity($mail);
-            $errors = array_merge($errors, User::validate_mail($mail));
-            $errors = array_merge($errors, User::validate_password($password));
-
-            if (count($errors) == 0) {
-                $user->persist(); //sauve l'utilisateur
-                $this->log_user($user);
+                if (!($note instanceof TextNote)) {
+                    $errors = $note;
+                    $default_title = $title;
+                    $default_text = $text;
+                }
+            } else {
+                "Les parametre ne sont pas définis.";
             }
         }
-        (new View("signup"))->show([
-            "mail" => $mail, "password" => $password,
-            "password_confirm" => $password_confirm, "errors" => $errors
-        ]);
+
+        (new View("add_text_note"))->show(["errors" => $errors, "default_title" => $default_title, "default_text" => $default_text]);
     }
 }

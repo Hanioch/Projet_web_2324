@@ -103,6 +103,7 @@ body, html {
     background: none;
 }
 
+
 .icon{
     position: absolute;
     cursor: pointer;
@@ -156,6 +157,31 @@ a {
     background-color: transparent;
     color: white;
 }
+
+
+.form-add-text-note{
+    color: #6c757d;
+}
+.button-add-text-note{
+    padding: 0;
+    border: 0;
+    background: none;
+    display: flex;
+
+
+}
+
+#icon-save{
+    color: white;
+   font-size: 32px;
+}
+
+.error-add-note{
+    color: red;
+    font-size: 12px;
+}
+
+
 @media screen and (min-width: 769px) {
     .list-note{
           grid-template-columns: repeat(3, 1fr);
