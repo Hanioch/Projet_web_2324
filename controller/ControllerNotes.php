@@ -38,7 +38,10 @@ class ControllerNotes extends Controller
     {
         $current_note = Note::get_note($note_id);
         $other_notes = $current_note->get_nearest_note($is_more);
-        $current_note->persist($other_notes);
+
+        if ($other_notes instanceof Note) {
+            $current_note->persist($other_notes);
+        }
     }
 
     public function archives(): void
@@ -65,7 +68,8 @@ class ControllerNotes extends Controller
         }
     }
 
-    public function open_note(){
+    public function open_note()
+    {
         $noteId = $_GET['param1'];
         $noteType = $_GET['param2'];
         $userId = $this->get_user_or_redirect()->getId();
@@ -76,7 +80,7 @@ class ControllerNotes extends Controller
         if ($noteType == 'shared_by') {
             $canEdit = NoteShare::canEdit($noteId, $userId);
         } else {
-            $canEdit = 1 ;
+            $canEdit = 1;
         }
         if (!$note) {
             die("Note not found");
@@ -84,20 +88,20 @@ class ControllerNotes extends Controller
         $isChecklistNote = Note::is_checklist_note($noteId);
 
         if ($isChecklistNote) {
-            (new View("open_checklist_note"))->show(['note' => $note, 'noteType' => $noteType,'canEdit' => $canEdit,'text' => $text,'id_sender' => $id_sender,'checklistItems' => $checklistItems]);
+            (new View("open_checklist_note"))->show(['note' => $note, 'noteType' => $noteType, 'canEdit' => $canEdit, 'text' => $text, 'id_sender' => $id_sender, 'checklistItems' => $checklistItems]);
         } else {
 
-            (new View("open_text_note"))->show(['note' => $note, 'noteType' => $noteType, 'canEdit' => $canEdit, 'text' => $text,'id_sender' => $id_sender]);
+            (new View("open_text_note"))->show(['note' => $note, 'noteType' => $noteType, 'canEdit' => $canEdit, 'text' => $text, 'id_sender' => $id_sender]);
         }
     }
-    public function togglePin() {
+    public function togglePin()
+    {
         $noteId = $_POST['note_id'];
         if ($noteId === null) {
         }
 
         $note = Note::get_note($noteId);
         if (!$note) {
-
         }
 
         $note->togglePin();
@@ -114,27 +118,26 @@ class ControllerNotes extends Controller
 
         $this->refresh();
     }
-    public function setArchive() {
+    public function setArchive()
+    {
         $noteId = $_POST['note_id'];
         if ($noteId === null) {
         }
 
         $note = Note::get_note($noteId);
         if (!$note) {
-
         }
 
         $note->setArchive();
 
-        if($note->isArchived()) {
+        if ($note->isArchived()) {
             $this->refresh("./open_note/$noteId/archives");
-        }else{
+        } else {
             $this->refresh("./open_note/$noteId/notes");
         }
-
-
     }
-    public function delete() {
+    public function delete()
+    {
         $user = $this->get_user_or_redirect();
 
         if (isset($_POST['note_id'])) {
@@ -150,7 +153,8 @@ class ControllerNotes extends Controller
         }
     }
 
-    function refresh($url = null) {
+    function refresh($url = null)
+    {
         if ($url) {
             header('Location: ' . $url);
         } else {
@@ -158,5 +162,4 @@ class ControllerNotes extends Controller
         }
         exit;
     }
-
 }

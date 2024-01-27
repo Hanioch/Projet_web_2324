@@ -84,7 +84,7 @@ class Note extends MyModel
         $this->weight = $weight;
     }
 
-    public function get_nearest_note(bool $is_more): Note
+    public function get_nearest_note(bool $is_more): Note | false
     {
         $operator = $is_more ? '>' : '<';
 
@@ -98,6 +98,11 @@ class Note extends MyModel
             ", ["owner" => $this->owner->getId(), "weight" => $this->weight, "pinned" => $this->pinned]);
 
         $row = $query->fetch();
+
+        if (!$row) {
+            return false;
+        }
+
         $owner = User::get_user_by_id($row['owner']);
 
         return new Note($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['id'], $row['created_at'], $row['edited_at']);
@@ -228,7 +233,8 @@ class Note extends MyModel
         ]);
         return $this;
     }
-    public static function is_checklist_note(int $id): bool {
+    public static function is_checklist_note(int $id): bool
+    {
         $query = self::execute("SELECT id FROM checklist_notes WHERE id = :id", ["id" => $id]);
         return $query->rowCount() > 0;
     }
@@ -237,11 +243,13 @@ class Note extends MyModel
         $this->pinned = !$this->pinned;
         return $this->modify_note_in_DB();
     }
-    public function setArchive(): static{
+    public function setArchive(): static
+    {
         $this->archived = !$this->archived;
         return $this->modify_note_in_DB();
     }
-    public static function time_elapsed_string($datetime, $full = false) {
+    public static function time_elapsed_string($datetime, $full = false)
+    {
         $now = new DateTime;
         $ago = new DateTime($datetime);
         $diff = $now->diff($ago);
