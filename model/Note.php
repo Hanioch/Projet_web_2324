@@ -88,8 +88,6 @@ class Note extends MyModel
         return $isNotUnique;
     }
 
-
-
     public static function get_note(int $id): Note| false
     {
         $query = self::execute("select * from notes where id= :id", ["id" => $id]);
@@ -173,5 +171,50 @@ class Note extends MyModel
             'second_id' => $second_id,
         ]);
         return $this;
+    }
+    public static function is_checklist_note(int $id): bool {
+        $query = self::execute("SELECT id FROM checklist_notes WHERE id = :id", ["id" => $id]);
+        return $query->rowCount() > 0;
+    }
+    public function togglePin(): static
+    {
+        $this->pinned = !$this->pinned;
+        return $this->modify_note_in_DB();
+    }
+    public function setArchive(): static{
+        $this->archived = !$this->archived;
+        return $this->modify_note_in_DB();
+    }
+    public static function time_elapsed_string($datetime, $full = false) {
+        $now = new DateTime;
+        $ago = new DateTime($datetime);
+        $diff = $now->diff($ago);
+
+        $weeks = floor($diff->d / 7);
+        $diff->d -= $weeks * 7;
+
+        $string = array(
+            'y' => 'year',
+            'm' => 'month',
+            'w' => 'week',
+            'd' => 'day',
+            'h' => 'hour',
+            'i' => 'minute',
+            's' => 'second',
+        );
+        foreach ($string as $k => &$v) {
+            if ($k === 'w') {
+                if ($weeks) {
+                    $v = $weeks . ' ' . $v . ($weeks > 1 ? 's' : '');
+                }
+            } elseif ($diff->$k) {
+                $v = $diff->$k . ' ' . $v . ($diff->$k > 1 ? 's' : '');
+            } else {
+                unset($string[$k]);
+            }
+        }
+
+        if (!$full) $string = array_slice($string, 0, 1);
+        return $string ? implode(', ', $string) . ' ago' : 'just now';
     }
 }

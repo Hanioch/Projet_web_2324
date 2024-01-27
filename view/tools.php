@@ -7,8 +7,10 @@ function show_note(array $arr_notes, string $title, string $titlePage): void
         <?php
         for ($i = 0; $i < count($arr_notes); $i++) {
             $note = $arr_notes[$i];
+            $noteType = determineNoteType($titlePage);
+            $openNoteUrl = "./Notes/open_note/" . $note->id . "/" . $noteType;
         ?>
-            <li class="note">
+            <li class="note" onclick="window.location='<?= $openNoteUrl ?>'">
                 <div class="header-in-note"><?= $note->title ?></div>
                 <div class="body-note">
                     <?php if (property_exists($note, 'content')) {
@@ -50,14 +52,14 @@ function show_note(array $arr_notes, string $title, string $titlePage): void
                         <?php if ($i !== 0) {
                         ?>
                             <button class="button-mv-note" type="submit" name="action" value="increment">
-                                <i class="bi bi-chevron-double-left icon i-left"></i>
+                                <i class="bi bi-chevron-double-left icon-mv-note i-left"></i>
                             </button>
                         <?php
                         }
                         if ($note->id != end($arr_notes)->id) {
                         ?>
                             <button class="button-mv-note" type="submit" name="action" value="decrement">
-                                <i class="bi bi-chevron-double-right icon i-right"></i>
+                                <i class="bi bi-chevron-double-right icon-mv-note i-right"></i>
                             </button>
                         <?php
                         }
@@ -82,4 +84,14 @@ enum Page: string
     case Archives = "My archives";
     case Shared_by = "Shared by";
     case Settings = "Settings";
-}
+}; ?>
+<?php
+function determineNoteType(string $titlePage): string
+{
+
+    return match ($titlePage) {
+        Page::Notes->value => 'notes',
+        Page::Archives->value => 'archives',
+        default => 'shared_by'
+    };
+} ?>
