@@ -127,16 +127,16 @@ class TextNote extends Note
         if (empty($errors)) {
 
             if ($this->id == NULL) {
+                $note = parent::add_note_in_DB();
 
                 self::execute(
                     'INSERT INTO text_notes (id,content) VALUES
                  (:id,:content)',
                     [
-                        'id' => $this->id,
+                        'id' => $note->get_id(),
                         'content' => $this->content,
                     ]
                 );
-                parent::add_note_in_DB();
                 return $this;
             } else {
                 self::execute('UPDATE text_notes SET  content = :content WHERE id = :id', [
