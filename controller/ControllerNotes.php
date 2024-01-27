@@ -68,34 +68,6 @@ class ControllerNotes extends Controller
         }
     }
 
-    public function add_text_note(): void
-    {
-        $user = $this->get_user_or_redirect();
-        $default_title = "";
-        $default_text = "";
-        $errors = [];
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if (isset($_POST['title'])) {
-                $title = trim($_POST['title']);
-                $text = isset($_POST['text']) ? trim($_POST['text']) : "";
-                $weight = $user->get_heaviest_note() + 1;
-                $new_text_note = new TextNote($title, $user, false, false, $weight, $text);
-                $note = $new_text_note->persist();
-
-                if (!($note instanceof TextNote)) {
-                    $errors = $note;
-                    $default_title = $title;
-                    $default_text = $text;
-                }
-            } else {
-                "Les parametre ne sont pas définis.";
-            }
-        }
-
-        (new View("add_text_note"))->show(["errors" => $errors, "default_title" => $default_title, "default_text" => $default_text]);
-    }
-
-
     public function open_note()
     {
         $noteId = $_GET['param1'];
@@ -158,7 +130,7 @@ class ControllerNotes extends Controller
 
         $note->setArchive();
 
-        if($note->archived) {
+        if ($note->isArchived()) {
             $this->refresh("./open_note/$noteId/archives");
         } else {
             $this->refresh("./open_note/$noteId/notes");
