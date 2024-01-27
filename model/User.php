@@ -304,6 +304,7 @@ class User extends MyModel
 
         return $archives_notes;
     }
+
     public function get_notes_shared_by($sender_id): array
     {
         $query = self::execute("SELECT
@@ -312,14 +313,14 @@ class User extends MyModel
         cn.id AS checklist_id,
         ns.editor,
         GROUP_CONCAT(cni.id) AS checklist_items
-    FROM notes n
-    LEFT JOIN text_notes tn ON n.id = tn.id
-    LEFT JOIN checklist_notes cn ON n.id = cn.id
-    LEFT JOIN checklist_note_items cni ON cn.id = cni.checklist_note
-    LEFT JOIN note_shares ns ON n.id = ns.note
-    WHERE ns.user = :owner AND n.owner = :sender
-    GROUP BY n.id, n.title, n.owner, n.created_at, n.edited_at, n.pinned, n.archived, n.weight,tn.content,cn.id,ns.editor
-    ORDER BY pinned DESC, weight DESC;", ["owner" => $this->id, "sender" => $sender_id]);
+        FROM notes n
+        LEFT JOIN text_notes tn ON n.id = tn.id
+        LEFT JOIN checklist_notes cn ON n.id = cn.id
+        LEFT JOIN checklist_note_items cni ON cn.id = cni.checklist_note
+        LEFT JOIN note_shares ns ON n.id = ns.note
+        WHERE ns.user = :owner AND n.owner = :sender
+        GROUP BY n.id, n.title, n.owner, n.created_at, n.edited_at, n.pinned, n.archived, n.weight,tn.content,cn.id,ns.editor
+        ORDER BY pinned DESC, weight DESC;", ["owner" => $this->id, "sender" => $sender_id]);
 
         $data = $query->fetchAll();
         $shared_notes = [];
@@ -335,6 +336,22 @@ class User extends MyModel
         }
 
         return $shared_notes;
+    }
+    
+   public function get_heaviest_note(): int
+    {
+        $query = self::execute("
+        SELECT weight FROM notes
+        WHERE owner = :owner
+        ORDER BY weight DESC
+        LIMIT 1;    
+        ", ["owner" => $this->id]);
+        if ($query->rowCount() == 0) {
+            return 0;
+        } else {
+            $row = $query->fetch();
+            return $row['weight'];
+        }
     }
 
     public static function get_user_by_id($id): User | false

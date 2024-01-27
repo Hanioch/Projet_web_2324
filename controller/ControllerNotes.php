@@ -38,7 +38,10 @@ class ControllerNotes extends Controller
     {
         $current_note = Note::get_note($note_id);
         $other_notes = $current_note->get_nearest_note($is_more);
-        $current_note->persist($other_notes);
+        
+        if ($other_notes instanceof Note) {
+            $current_note->persist($other_notes);
+        }
     }
 
     public function archives(): void
