@@ -48,9 +48,8 @@ class ChecklistNote extends Note
         return false;
     }
 
-    public static function get_by_id($id): ChecklistNote | false
-    {
-        $query = self::execute("SELECT * FROM checklist_notes WHERE id = :id", ["id" => $id]);
+    public static function get_by_id($id): ChecklistNote | false {
+        $query = self::execute("SELECT n.*, cn.* FROM notes n JOIN checklist_notes cn ON n.id = cn.id WHERE n.id = :id", ["id" => $id]);
         if ($query->rowCount() == 0) {
             return false;
         } else {
