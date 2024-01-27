@@ -38,10 +38,7 @@ class ControllerNotes extends Controller
     {
         $current_note = Note::get_note($note_id);
         $other_notes = $current_note->get_nearest_note($is_more);
-
-        if ($other_notes instanceof Note) {
-            $current_note->persist($other_notes);
-        }
+        $current_note->persist($other_notes);
     }
 
     public function archives(): void
@@ -68,14 +65,42 @@ class ControllerNotes extends Controller
         }
     }
 
+    public function add_text_note(): void
+    {
+        $user = $this->get_user_or_redirect();
+        $default_title = "";
+        $default_text = "";
+        $errors = [];
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (isset($_POST['title'])) {
+                $title = trim($_POST['title']);
+                $text = isset($_POST['text']) ? trim($_POST['text']) : "";
+                $weight = $user->get_heaviest_note() + 1;
+                $new_text_note = new TextNote($title, $user, false, false, $weight, $text);
+                $note = $new_text_note->persist();
+
+                if (!($note instanceof TextNote)) {
+                    $errors = $note;
+                    $default_title = $title;
+                    $default_text = $text;
+                }
+            } else {
+                "Les parametre ne sont pas définis.";
+            }
+        }
+
+        (new View("add_text_note"))->show(["errors" => $errors, "default_title" => $default_title, "default_text" => $default_text]);
+    }
+
+
     public function open_note()
     {
         $noteId = $_GET['param1'];
         $noteType = $_GET['param2'];
-        $userId = $this->get_user_or_redirect()->getId();
+        $userId = $this->get_user_or_redirect()->id;
         $note = Note::get_note($noteId);
         $text = TextNote::get_text_note($noteId);
-        $id_sender = $note->getOwner()->getId();
+        $id_sender = $note->owner->id;
         $checklistItems = ChecklistNoteItems::get_items_by_checklist_note_id($noteId);
         if ($noteType == 'shared_by') {
             $canEdit = NoteShare::canEdit($noteId, $userId);
@@ -130,7 +155,7 @@ class ControllerNotes extends Controller
 
         $note->setArchive();
 
-        if ($note->isArchived()) {
+        if ($note->archived) {
             $this->refresh("./open_note/$noteId/archives");
         } else {
             $this->refresh("./open_note/$noteId/notes");
