@@ -8,56 +8,6 @@ class TextNote extends Note
         parent::__construct($title, $owner, $pinned, $archived, $weight, $id, $created_at, $edited_at);
     }
 
-    public function getTitle(): string
-    {
-        return $this->title;
-    }
-
-    public function setTitle(string $title): void
-    {
-        $this->title = $title;
-    }
-
-    public function getOwner(): User
-    {
-        return $this->owner;
-    }
-
-    public function setOwner(User $owner): void
-    {
-        $this->owner = $owner;
-    }
-
-    public function isPinned(): bool
-    {
-        return $this->pinned;
-    }
-
-    public function setPinned(bool $pinned): void
-    {
-        $this->pinned = $pinned;
-    }
-
-    public function isArchived(): bool
-    {
-        return $this->archived;
-    }
-
-    public function setArchived(bool $archived): void
-    {
-        $this->archived = $archived;
-    }
-
-    public function getWeight(): int
-    {
-        return $this->weight;
-    }
-
-    public function setWeight(int $weight): void
-    {
-        $this->weight = $weight;
-    }
-
     public function getContent(): ?string
     {
         return $this->content;
@@ -68,35 +18,6 @@ class TextNote extends Note
         $this->content = $content;
     }
 
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    public function setId(?int $id): void
-    {
-        $this->id = $id;
-    }
-
-    public function getCreatedAt(): ?string
-    {
-        return $this->created_at;
-    }
-
-    public function setCreatedAt(?string $created_at): void
-    {
-        $this->created_at = $created_at;
-    }
-
-    public function getEditedAt(): ?string
-    {
-        return $this->edited_at;
-    }
-
-    public function setEditedAt(?string $edited_at): void
-    {
-        $this->edited_at = $edited_at;
-    }
 
 
     public static function get_text_note(int $id): Note| false
@@ -128,12 +49,11 @@ class TextNote extends Note
 
             if ($this->id == NULL) {
                 $note = parent::add_note_in_DB();
-
                 self::execute(
                     'INSERT INTO text_notes (id,content) VALUES
                  (:id,:content)',
                     [
-                        'id' => $this->getId(),
+                        'id' => $note->getId(),
                         'content' => $this->getContent(),
                     ]
                 );

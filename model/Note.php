@@ -202,9 +202,17 @@ class Note extends MyModel
             ]
         );
         $note = self::get_note(self::lastInsertId());
+        // var_dump("check last");
+        //var_dump(self::lastInsertId());
+        //var_dump("check note getid");
+        //var_dump($note->getId());
+
         $this->id = $note->getId();
         $this->created_at = $note->getCreatedAt();
         $this->edited_at = $note->getEditedAt();
+        //var_dump("check this");
+        //var_dump($this->getId());
+
         return $this;
     }
 
