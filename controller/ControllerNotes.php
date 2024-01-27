@@ -169,7 +169,7 @@ class ControllerNotes extends Controller
             $noteId = $_POST['note_id'];
             $note = Note::get_note($noteId);
 
-            if ($note && $note->delete($user)) {
+            if ($note && $note->deleteAll($user)) {
                 $this->refresh("./archives");
             } else {
 
