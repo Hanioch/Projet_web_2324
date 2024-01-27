@@ -100,10 +100,10 @@ class ControllerNotes extends Controller
     {
         $noteId = $_GET['param1'];
         $noteType = $_GET['param2'];
-        $userId = $this->get_user_or_redirect()->id;
+        $userId = $this->get_user_or_redirect()->getId();
         $note = Note::get_note($noteId);
         $text = TextNote::get_text_note($noteId);
-        $id_sender = $note->owner->id;
+        $id_sender = $note->getOwner()->getId();
         $checklistItems = ChecklistNoteItems::get_items_by_checklist_note_id($noteId);
         if ($noteType == 'shared_by') {
             $canEdit = NoteShare::canEdit($noteId, $userId);
@@ -158,7 +158,7 @@ class ControllerNotes extends Controller
 
         $note->setArchive();
 
-        if ($note->archived) {
+        if ($note->isArchived()) {
             $this->refresh("./open_note/$noteId/archives");
         } else {
             $this->refresh("./open_note/$noteId/notes");

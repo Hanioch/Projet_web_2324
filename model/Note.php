@@ -69,7 +69,7 @@ class Note extends MyModel
         $this->title = $title;
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -202,9 +202,9 @@ class Note extends MyModel
             ]
         );
         $note = self::get_note(self::lastInsertId());
-        $this->id = $note->id;
-        $this->created_at = $note->created_at;
-        $this->edited_at = $note->edited_at;
+        $this->id = $note->getId();
+        $this->created_at = $note->getCreatedAt();
+        $this->edited_at = $note->getEditedAt();
         return $this;
     }
 

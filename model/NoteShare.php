@@ -12,7 +12,7 @@ class NoteShare extends MyModel{
 
     public function __construct(private int $id, private int $noteId, private int $userId, private int $isEditor) {}
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }

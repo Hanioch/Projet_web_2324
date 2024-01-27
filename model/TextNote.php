@@ -133,15 +133,15 @@ class TextNote extends Note
                     'INSERT INTO text_notes (id,content) VALUES
                  (:id,:content)',
                     [
-                        'id' => $this->get_id(),
-                        'content' => $this->content,
+                        'id' => $this->getId(),
+                        'content' => $this->getContent(),
                     ]
                 );
                 return $this;
             } else {
                 self::execute('UPDATE text_notes SET  content = :content WHERE id = :id', [
-                    'content' => $this->content,
-                    'id' => $this->id
+                    'content' => $this->getContent(),
+                    'id' => $this->getId()
                 ]);
                 parent::modify_note_in_DB();
                 return $this;
