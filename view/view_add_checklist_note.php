@@ -30,7 +30,7 @@ include("./utils/header_add_note.php");
                 <ul>
                     <?php for ($i = 0 ; $i < 5 ; $i++){ ?>
                     <li class="mb-2">
-                        <input type="text" name="item" class="form-control" id="item<?php $i ?>">
+                        <input type="text" name="item<?php echo $i ?>" class="form-control" id="item<?php echo $i ?>">
                     </li>
                     <?php } ?>
                 </ul>
