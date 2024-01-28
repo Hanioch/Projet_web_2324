@@ -17,7 +17,7 @@ class TextNote extends Note
 
     public static function get_text_note(int $id): Note| false
     {
-        $query = self::execute("select * from notes n join text_notes tn ON tn.id = n.id where id= :id", ["id" => $id]);
+        $query = self::execute("select * from notes n join text_notes tn ON tn.id = n.id where n.id= :id", ["id" => $id]);
         if ($query->rowCount() == 0) {
             return false;
         } else {
@@ -43,16 +43,16 @@ class TextNote extends Note
         if (empty($errors)) {
 
             if ($this->id == NULL) {
+                $note = parent::add_note_in_DB();
 
                 self::execute(
                     'INSERT INTO text_notes (id,content) VALUES
                  (:id,:content)',
                     [
-                        'id' => $this->id,
+                        'id' => $note->get_id(),
                         'content' => $this->content,
                     ]
                 );
-                parent::add_note_in_DB();
                 return $this;
             } else {
                 self::execute('UPDATE text_notes SET  content = :content WHERE id = :id', [

@@ -2,7 +2,7 @@
 require_once "tools.php";
 //adapter avec un getter
 $full_name =  $sender->full_name;
-
+$id_send= $sender->id;
 $title_page = Page::Shared_by->value . " " . $full_name;
 include("./utils/header.php");
 
@@ -17,7 +17,6 @@ if (count($reader_note) > 0) {
     $title_component = $base_title_component . "reader";
     show_note($reader_note, $title_component, $title_page);
 }
-
 ?>
 </div>
 <?php

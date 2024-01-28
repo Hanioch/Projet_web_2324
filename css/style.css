@@ -1,4 +1,7 @@
-
+.created{
+    color: white;
+    display: block;
+}
 hr {
     border-color: white;
 }
@@ -59,12 +62,10 @@ body, html {
 }
 
 .note{
+    cursor: pointer;
     box-sizing: border-box;
     padding: 5px;
     border: 1px solid #ddd;
-    display: flex;
-    -ms-flex-direction: column;
-    flex-direction: column;
     min-width: 0;
     word-wrap: break-word;
     background-color: #fff;
@@ -72,6 +73,15 @@ body, html {
     border: 1px solid rgba(0,0,0,.125);
     border-radius: 0.25rem;
 
+}
+
+.note a{
+    color: black;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    -ms-flex-direction: column;
+    flex-direction: column;
 }
 
 .header-in-note, .footer-in-note{
@@ -103,10 +113,17 @@ body, html {
     background: none;
 }
 
-.icon{
+
+
+.icon-mv-note{
     position: absolute;
     cursor: pointer;
     top: 25%;
+    color:#9d9d9d;
+}
+
+.icon-mv-note:hover{
+    color:#1f1f1f;
 }
 .i-left{
     left: 10px;
@@ -156,6 +173,31 @@ a {
     background-color: transparent;
     color: white;
 }
+
+
+.form-add-text-note{
+    color: #6c757d;
+}
+.button-add-text-note{
+    padding: 0;
+    border: 0;
+    background: none;
+    display: flex;
+
+
+}
+
+#icon-save{
+    color: white;
+   font-size: 32px;
+}
+
+.error-add-note{
+    color: red;
+    font-size: 12px;
+}
+
+
 @media screen and (min-width: 769px) {
     .list-note{
           grid-template-columns: repeat(3, 1fr);
@@ -173,6 +215,11 @@ a {
 .bg-dark {
     align-content: end;
 }
+
+.cursor-pointer{
+    cursor: pointer;
+}
+
 /* Media query pour les ordinateurs de bureau */
 @media screen and (min-width: 1024px) {
     
