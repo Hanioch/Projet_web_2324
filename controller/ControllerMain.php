@@ -80,7 +80,4 @@ class ControllerMain extends Controller
             "errors" => $errors
         ]);
     }
-    public function add_checklist_note(): void {
-        (new View("add_checklist_note"))->show();
-    }
 }

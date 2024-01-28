@@ -92,6 +92,33 @@ class ControllerNotes extends Controller
         (new View("add_text_note"))->show(["errors" => $errors, "default_title" => $default_title, "default_text" => $default_text]);
     }
 
+    public function add_checklist_note(): void
+    {
+        $user = $this->get_user_or_redirect();
+        $default_title = "";
+        $default_text = "";
+        $errors = [];
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (isset($_POST['title'])) {
+                $title = trim($_POST['title']);
+                $text = isset($_POST['text']) ? trim($_POST['text']) : "";
+                $weight = $user->get_heaviest_note() + 1;
+                $new_checklist_note = new CheckListNote($title, $user, false, false, $weight, $text);
+                $note = $new_checklist_note->persist();
+
+                if (!($note instanceof ChecklistNote)) {
+                    $errors = $note;
+                    $default_title = $title;
+                    $default_text = $text;
+                }
+            } else {
+                "Les parametre ne sont pas définis.";
+            }
+        }
+
+        (new View("add_checklist_note"))->show(["errors" => $errors, "default_title" => $default_title, "default_text" => $default_text]);
+    }
+
 
     public function open_note()
     {
