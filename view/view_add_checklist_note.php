@@ -12,28 +12,31 @@ include("./utils/header_add_note.php");
         <div class="mb-3">
             <div class="">
                 <label for="title_add_checklist_note" class="form-label">Title</label>
-                <input required type="text" value='<?= $default_title ?>' name="title" class="form-control" id="title-add-text-note">
+                <input required type="text" value='<?= $default_title ?>' name="title" class="form-control" id="title_add_checklist_note">
                 <?php
-                if (array_key_exists('title', $errors)) {
-                    ?>
-                    <span class="error-add-note">
-                        <?= $errors["title"] ?>
-                    </span>
-                    <?php
-                }
+                    if (array_key_exists('title', $errors)) {
+                ?>
+                <span class="error-add-note">
+                    <?= $errors["title"] ?>
+                </span>
+                <?php
+                    }
                 ?>
             </div>
         </div>
         <div class="mb-3">
             <div class="">
-                <label for="text_add_text_note" class="form-label">Text</label>
-                <textarea name="text" class="form-control" id="text-add-text-note" cols="30" rows="10"><?= $default_text ?></textarea>
+                <label for="item" class="form-label">Items</label>
+                <ul>
+                    <?php for ($i = 0 ; $i < 5 ; $i++){ ?>
+                    <li class="mb-2">
+                        <input type="text" name="item" class="form-control" id="item<?php $i ?>">
+                    </li>
+                    <?php } ?>
+                </ul>
             </div>
         </div>
         </form>
-
-
-
     </div>
-<?php
-include('./utils/footer.php'); ?>
+
+<?php include('./utils/footer.php'); ?>
