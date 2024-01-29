@@ -118,7 +118,7 @@ class Note extends MyModel
         //     $errors[] = "Incorrect owner";
         // }
 
-        if (!(strlen($this->title) > 3 && strlen($this->title) < 25)) {
+        if (!(strlen($this->title) > 2 && strlen($this->title) < 26)) {
             $errors["title"] = "Title length must be between 3 and 25 ";
         }
         if (!($this->weight > 0 && !$this->is_not_unique_weight())) {
