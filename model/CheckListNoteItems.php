@@ -4,7 +4,7 @@ require_once "model/MyModel.php";
 
 class ChecklistNoteItems extends MyModel
 {
-    public function __construct(public string $content = "", public bool $checked = false, public ?int $id = NULL, public ?int $checklist_note = NULL)
+    public function __construct(public string $content = "", public bool $checked = false, public ?int $checklist_note = NULL, public ?int $id = NULL)
     {
     }
 
@@ -110,7 +110,7 @@ class ChecklistNoteItems extends MyModel
             return false;
         } else {
             $row = $query->fetch();
-            return new ChecklistNoteItems($row['content'], $row['checked'], $row['id'], $row['checklist_note']);
+            return new ChecklistNoteItems($row['content'], $row['checked'], $row['checklist_note'], $row['id']);
         }
     }
     public static function get_items_by_checklist_note_id(int $checklistNoteId):array {
@@ -121,7 +121,7 @@ class ChecklistNoteItems extends MyModel
         $data = $query->fetchAll();
         $items = [];
         foreach ($data as $row) {
-            $items[] = new ChecklistNoteItems($row['content'], $row['checked'], $row['id'], $row['checklist_note']);
+            $items[] = new ChecklistNoteItems($row['content'], $row['checked'], $row['checklist_note'], $row['id']);
         }
         return $items;
     }

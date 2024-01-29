@@ -113,7 +113,7 @@ class ControllerNotes extends Controller
                     for ($i = 0; $i < 5; $i++) {
                         if (isset($_POST['item' . $i])) {
                             $item_content = trim($_POST['item' . $i]);
-                            $new_checklist_item = new ChecklistNoteItems($item_content, false, $note->id);
+                            $new_checklist_item = new ChecklistNoteItems($item_content, false, $note->get_id());
                             $item = $new_checklist_item->persist();
                             if (!$item instanceof ChecklistNoteItems) {
                                 // Gérez les erreurs si la création de l'élément échoue
