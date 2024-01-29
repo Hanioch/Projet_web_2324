@@ -17,7 +17,11 @@ include("./utils/header_add_note.php");
                     if (array_key_exists('title', $errors)) {
                 ?>
                 <span class="error-add-note">
-                    <?= $errors["title"] ?>
+                    <?php
+                        foreach ($errors['title'] as $error) {
+                            echo $error;
+                        }
+                    ?>
                 </span>
                 <?php
                     }

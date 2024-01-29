@@ -107,27 +107,22 @@ class ControllerNotes extends Controller
                 $new_checklist_note = new ChecklistNote($title, $user, false, false, $weight);
                 $note = $new_checklist_note->persist();
 
-                // Vérifiez si la note a été correctement ajoutée avant d'ajouter les éléments
                 if ($note instanceof ChecklistNote) {
-                    // Parcourez les éléments de la liste et créez un enregistrement dans la table checklist_note_items pour chacun
                     for ($i = 0; $i < 5; $i++) {
                         if (isset($_POST['item' . $i])) {
                             $item_content = trim($_POST['item' . $i]);
                             $new_checklist_item = new ChecklistNoteItems($item_content, false, $note->get_id());
                             $item = $new_checklist_item->persist();
                             if (!$item instanceof ChecklistNoteItems) {
-                                // Gérez les erreurs si la création de l'élément échoue
-                                $errors[] = "Erreur lors de la création de l'élément de la liste de contrôle.";
+                                $errors['items'] = $item;
                             }
                         }
                     }
                 } else {
-                    // Gérez les erreurs si la création de la note échoue
-                    $errors[] = "Erreur lors de la création de la note de liste de contrôle.";
+                    $errors['title'] = $note;
                 }
             } else {
-                // Gérez les erreurs si le titre n'est pas défini
-                $errors[] = "Le titre de la note de liste de contrôle n'est pas défini.";
+                $errors['title'] = "Title must be defined.";
             }
         }
 
