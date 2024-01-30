@@ -44,7 +44,14 @@ class NoteShare extends MyModel{
         $query = self::execute("SELECT n.* FROM note_shares ns JOIN notes n ON ns.note = n.id WHERE ns.user = :user_id", ['user_id' => $userId]);
         return $query->fetchAll();
     }
-
+    public static function isNoteSharedWithUser($noteId, $userId) {
+        $query = self::execute("SELECT COUNT(*) FROM note_shares WHERE note = :note_id AND user = :user_id", [
+            'note_id' => $noteId,
+            'user_id' => $userId
+        ]);
+        $count = (int)$query->fetchColumn();
+        return $count > 0;
+    }
     public static function canEdit($noteId, $userId) {
         $query = self::execute("SELECT editor FROM note_shares WHERE note = :note_id AND user = :user_id", [
             'note_id' => $noteId,
