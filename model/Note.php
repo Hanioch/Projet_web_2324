@@ -201,29 +201,22 @@ class Note extends MyModel
         $this->archived = !$this->archived;
         return $this->modify_note_in_DB();
     }
+
     public static function time_elapsed_string($datetime, $full = false) {
-        $now = new DateTime;
+        $now = new DateTime();
         $ago = new DateTime($datetime);
         $diff = $now->diff($ago);
-
-        $weeks = floor($diff->d / 7);
-        $diff->d -= $weeks * 7;
 
         $string = array(
             'y' => 'year',
             'm' => 'month',
-            'w' => 'week',
             'd' => 'day',
             'h' => 'hour',
             'i' => 'minute',
             's' => 'second',
         );
         foreach ($string as $k => &$v) {
-            if ($k === 'w') {
-                if ($weeks) {
-                    $v = $weeks . ' ' . $v . ($weeks > 1 ? 's' : '');
-                }
-            } elseif ($diff->$k) {
+            if ($diff->$k) {
                 $v = $diff->$k . ' ' . $v . ($diff->$k > 1 ? 's' : '');
             } else {
                 unset($string[$k]);
