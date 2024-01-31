@@ -75,4 +75,17 @@ class ChecklistNote extends Note
             return $errors;
         }
     }
+
+    public function getItems(): array
+    {
+        $query = self::execute("SELECT * FROM checklist_note_items WHERE checklist_note = :checklist_note", ["checklist_note" => $this->id]);
+        $data = $query->fetchAll();
+
+        $items = [];
+        foreach ($data as $row) {
+            $items[] = new ChecklistNoteItems($row['content'], $row['checked'], $row['checklist_note'], $row['id']);
+        }
+
+        return $items;
+    }
 }

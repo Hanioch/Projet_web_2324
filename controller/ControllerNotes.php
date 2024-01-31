@@ -108,25 +108,37 @@ class ControllerNotes extends Controller
                 $note = $new_checklist_note->persist();
 
                 if ($note instanceof ChecklistNote) {
-                    for ($i = 0; $i < 5; $i++) {
+                    for ($i = 1; $i < 6; $i++) {
                         if (isset($_POST['item' . $i])) {
                             $item_content = trim($_POST['item' . $i]);
-                            $new_checklist_item = new ChecklistNoteItems($item_content, false, $note->get_id());
-                            $item = $new_checklist_item->persist();
-                            if (!$item instanceof ChecklistNoteItems) {
-                                $errors['items'] = $item;
+                            if ($this->validateUniqueItem($new_checklist_note, $item_content)) {
+                                $new_checklist_item = new ChecklistNoteItems($item_content, false, $note->get_id());
+                                $item = $new_checklist_item->persist();
+                                if (!($item instanceof ChecklistNoteItems)) {
+                                    $errors['item' . $i] = "Error while creating item";
+                                }
+                            } else {
+                                $errors['item' . $i] = "Items must be unique";
                             }
                         }
                     }
                 } else {
-                    $errors['title'] = $note;
+                    $errors[] = "Error while creating checklist_note";
                 }
             } else {
-                $errors['title'] = "Title must be defined.";
+                $errors['title'][] = "Title must be defined.";
             }
         }
-
         (new View("add_checklist_note"))->show(["errors" => $errors, "default_title" => $default_title, "default_text" => $default_text]);
+    }
+    private function validateUniqueItem(ChecklistNote $checklistNote, string $content): bool {
+        $existingItems = $checklistNote->getItems();
+        foreach ($existingItems as $item) {
+            if ($item->getContent() === $content && $item->getContent() !== '') {
+                return false;
+            }
+        }
+        return true;
     }
 
 

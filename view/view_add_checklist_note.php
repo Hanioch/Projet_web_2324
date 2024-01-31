@@ -32,9 +32,12 @@ include("./utils/header_add_note.php");
             <div class="">
                 <label for="item" class="form-label">Items</label>
                 <ul>
-                    <?php for ($i = 0 ; $i < 5 ; $i++){ ?>
+                    <?php for ($i = 1 ; $i < 6 ; $i++){ ?>
                     <li class="mb-2">
                         <input type="text" name="item<?php echo $i ?>" class="form-control" id="item<?php echo $i ?>">
+                        <?php if (!empty($errors) && isset($errors['item' . $i])): ?>
+                            <span class="error-add-note"><?php echo $errors['item' . $i]; ?></span>
+                        <?php endif; ?>
                     </li>
                     <?php } ?>
                 </ul>

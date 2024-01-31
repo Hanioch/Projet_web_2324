@@ -144,4 +144,9 @@ class ChecklistNoteItems extends MyModel
         return $this;
     }
 
+    public function getContent(): string
+    {
+        return $this->content;
+    }
+
 }
