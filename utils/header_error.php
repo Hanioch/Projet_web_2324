@@ -8,13 +8,12 @@ include('./utils/head.php')
 
         <nav class="navbar navbar-dark">
             <?php
-            $chevronLink = ($title_page === "Settings") ? "./notes" : "./settings";
+            $chevronLink = "./notes";
             echo '<a class="navbar-brand" href="' . $chevronLink . '">
                         <i class="bi bi-chevron-left"></i>
                     </a>';
             ?>
         </nav>
 
-        <h2 class="title">rater</h2>
 
     </header>

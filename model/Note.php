@@ -108,7 +108,23 @@ class Note extends MyModel
         }
         return false;
     }
+    public function deleteAll(User $initiator): Note|false
+    {
+        if ($this->owner == $initiator) {
+            self::execute('DELETE FROM note_shares WHERE note = :note_id', ['note_id' => $this->id]);
 
+            if (self::is_checklist_note($this->id)) {
+                self::execute('DELETE FROM checklist_note_items WHERE checklist_note = :note_id', ['note_id' => $this->id]);
+                self::execute('DELETE FROM checklist_notes WHERE id = :note_id', ['note_id' => $this->id]);
+            } else {
+                self::execute('DELETE FROM text_notes WHERE id = :note_id', ['note_id' => $this->id]);
+            }
+
+            self::execute('DELETE FROM notes WHERE id = :note_id', ['note_id' => $this->id]);
+            return $this;
+        }
+        return false;
+    }
     public function persist(?Note $second_note = NULL): Note|array
     {
         $errors = $this->validate();
@@ -185,29 +201,22 @@ class Note extends MyModel
         $this->archived = !$this->archived;
         return $this->modify_note_in_DB();
     }
+
     public static function time_elapsed_string($datetime, $full = false) {
-        $now = new DateTime;
+        $now = new DateTime();
         $ago = new DateTime($datetime);
         $diff = $now->diff($ago);
-
-        $weeks = floor($diff->d / 7);
-        $diff->d -= $weeks * 7;
 
         $string = array(
             'y' => 'year',
             'm' => 'month',
-            'w' => 'week',
             'd' => 'day',
             'h' => 'hour',
             'i' => 'minute',
             's' => 'second',
         );
         foreach ($string as $k => &$v) {
-            if ($k === 'w') {
-                if ($weeks) {
-                    $v = $weeks . ' ' . $v . ($weeks > 1 ? 's' : '');
-                }
-            } elseif ($diff->$k) {
+            if ($diff->$k) {
                 $v = $diff->$k . ' ' . $v . ($diff->$k > 1 ? 's' : '');
             } else {
                 unset($string[$k]);
