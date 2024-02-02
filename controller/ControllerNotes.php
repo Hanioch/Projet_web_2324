@@ -180,11 +180,7 @@ class ControllerNotes extends Controller
 
         $note->setArchive();
 
-        if ($note->isArchived()) {
-            $this->refresh("./open_note/$noteId/archives");
-        } else {
-            $this->refresh("./open_note/$noteId/notes");
-        }
+        $this->refresh();
     }
     public function delete()
     {
