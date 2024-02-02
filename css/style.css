@@ -66,9 +66,6 @@ body, html {
     box-sizing: border-box;
     padding: 5px;
     border: 1px solid #ddd;
-    display: flex;
-    -ms-flex-direction: column;
-    flex-direction: column;
     min-width: 0;
     word-wrap: break-word;
     background-color: #fff;
@@ -76,6 +73,15 @@ body, html {
     border: 1px solid rgba(0,0,0,.125);
     border-radius: 0.25rem;
 
+}
+
+.note a{
+    color: black;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    -ms-flex-direction: column;
+    flex-direction: column;
 }
 
 .header-in-note, .footer-in-note{
@@ -199,6 +205,10 @@ a {
 
 .bg-dark {
     align-content: end;
+}
+
+.cursor-pointer{
+    cursor: pointer;
 }
 
 /* Media query pour les ordinateurs de bureau */

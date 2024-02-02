@@ -38,7 +38,9 @@ class ControllerNotes extends Controller
     {
         $current_note = Note::get_note($note_id);
         $other_notes = $current_note->get_nearest_note($is_more);
-        $current_note->persist($other_notes);
+        if($other_notes instanceof Note){
+            $current_note->persist($other_notes);
+        }
     }
 
     public function archives(): void
@@ -93,32 +95,55 @@ class ControllerNotes extends Controller
     }
 
 
-    public function open_note()
-    {
+    public function open_note(): void {
         $noteId = $_GET['param1'];
-        $noteType = $_GET['param2'];
-        $userId = $this->get_user_or_redirect()->getId();
+        $user = $this->get_user_or_redirect();
+        $userId = $user->getId();
+        $error = "";
+
         $note = Note::get_note($noteId);
-        $text = TextNote::get_text_note($noteId);
-        $id_sender = $note->getOwner()->getId();
-        $checklistItems = ChecklistNoteItems::get_items_by_checklist_note_id($noteId);
-        if ($noteType == 'shared_by') {
-            $canEdit = NoteShare::canEdit($noteId, $userId);
-        } else {
-            $canEdit = 1;
-        }
         if (!$note) {
-            die("Note not found");
-        }
-        $isChecklistNote = Note::is_checklist_note($noteId);
+            $error = "Note introuvable.";
+        }else {
+            $isSharedNote = NoteShare::isNoteSharedWithUser($noteId, $userId);
+            $canEdit = True;
+            if ($isSharedNote) {
+                $canEdit = NoteShare::canEdit($noteId, $userId);
+            }
 
-        if ($isChecklistNote) {
-            (new View("open_checklist_note"))->show(['note' => $note, 'noteType' => $noteType, 'canEdit' => $canEdit, 'text' => $text, 'id_sender' => $id_sender, 'checklistItems' => $checklistItems]);
-        } else {
-
-            (new View("open_text_note"))->show(['note' => $note, 'noteType' => $noteType, 'canEdit' => $canEdit, 'text' => $text, 'id_sender' => $id_sender]);
+            $canAccess = ($note->getOwner()->getId() === $userId) || $isSharedNote;
+            if (!$canAccess) {
+                $error = "Accès non autorisé.";
+            }else {
+                $id_sender = $note->getOwner()->getId();
+                $isChecklistNote = Note::is_checklist_note($noteId);
+                if ($isChecklistNote) {
+                    $checklistItems = ChecklistNoteItems::get_items_by_checklist_note_id($noteId);
+                } else {
+                    $text = TextNote::get_text_note($noteId);
+                }
+                $headerType = 'notes';
+                if ($isSharedNote) {
+                    $headerType = 'shared_by';
+                } elseif ($note->isArchived()) {
+                    $headerType = 'archives';
+                }
+            }
         }
+        (new View("open_note"))->show([
+            'error'=> $error,
+            'note' => $note,
+            'headerType' => $headerType ?? null,
+            'canEdit' => $canEdit ?? false,
+            'text' => $text ?? null,
+            'id_sender' => $id_sender ?? null,
+            'checklistItems' => $checklistItems ?? null,
+            'isChecklistNote' => $isChecklistNote ?? false
+        ]);
+
     }
+
+
     public function togglePin()
     {
         $noteId = $_POST['note_id'];
