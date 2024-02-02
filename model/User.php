@@ -14,10 +14,46 @@ enum Role: string
 
 class User extends MyModel
 {
-    public function __construct(public string $mail, public string $hashed_password, public string $full_name, public Role $role, public ?int $id = NULL)
+    public function __construct(private string $mail, private string $hashed_password, private string $full_name, private Role $role, private ?int $id = NULL)
     {
     }
+    // Getters
+    public function getMail(): string {
+        return $this->mail;
+    }
 
+    public function getHashedPassword(): string {
+        return $this->hashed_password;
+    }
+
+    public function getFullName(): string {
+        return $this->full_name;
+    }
+
+    public function getRole(): Role {
+        return $this->role;
+    }
+
+    public function getId(): ?int {
+        return $this->id;
+    }
+
+    // Setters
+    public function setMail(string $mail): void {
+        $this->mail = $mail;
+    }
+
+    public function setHashedPassword(string $hashed_password): void {
+        $this->hashed_password = $hashed_password;
+    }
+
+    public function setFullName(string $full_name): void {
+        $this->full_name = $full_name;
+    }
+
+    public function setRole(Role $role): void {
+        $this->role = $role;
+    }
     public function persist(): User
     {
         if (self::get_user_by_mail($this->mail))
@@ -42,7 +78,11 @@ class User extends MyModel
             return new User($data["mail"], $data["hashed_password"], $data["full_name"], Role::USER, $data["id"]);
         }
     }
-
+    public function delete(): void {
+        if ($this->id != NULL) {
+            self::execute("DELETE FROM users WHERE id = :id", ['id' => $this->id]);
+        }
+    }
     // à décommenter si full_name doit être unique
 
     //    public static function get_user_by_name(string $full_name) : User|false {
@@ -297,8 +337,8 @@ class User extends MyModel
 
         return $shared_notes;
     }
-
-    public function get_heaviest_note(): int
+    
+   public function get_heaviest_note(): int
     {
         $query = self::execute("
         SELECT weight FROM notes
@@ -306,7 +346,6 @@ class User extends MyModel
         ORDER BY weight DESC
         LIMIT 1;    
         ", ["owner" => $this->id]);
-
         if ($query->rowCount() == 0) {
             return 0;
         } else {

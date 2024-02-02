@@ -10,7 +10,47 @@ require_once "model/NoteShare.php";
 class NoteShare extends MyModel{
 
 
-    public function __construct(public int $id, public int $noteId, public int $userId, public int $isEditor) {}
+    public function __construct(private int $id, private int $noteId, private int $userId, private int $isEditor) {}
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function setId(int $id): void
+    {
+        $this->id = $id;
+    }
+
+    public function getNoteId(): int
+    {
+        return $this->noteId;
+    }
+
+    public function setNoteId(int $noteId): void
+    {
+        $this->noteId = $noteId;
+    }
+
+    public function getUserId(): int
+    {
+        return $this->userId;
+    }
+
+    public function setUserId(int $userId): void
+    {
+        $this->userId = $userId;
+    }
+
+    public function getIsEditor(): int
+    {
+        return $this->isEditor;
+    }
+
+    public function setIsEditor(int $isEditor): void
+    {
+        $this->isEditor = $isEditor;
+    }
 
     public static function addShare($noteId, $userId, $isEditor) {
         return self::execute('INSERT INTO note_shares (note, user, editor) VALUES (:note_id, :user_id, :is_editor)', [

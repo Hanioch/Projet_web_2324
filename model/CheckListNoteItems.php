@@ -4,14 +4,54 @@ require_once "model/MyModel.php";
 
 class ChecklistNoteItems extends MyModel
 {
-    public function __construct(public string $content = "", public bool $checked = false, public ?int $id = NULL, public ?int $checklist_note = NULL)
+    public function __construct(private string $content = "", private bool $checked = false, private ?int $id = NULL, private ?int $checklist_note = NULL)
     {
+    }
+
+    public function getContent(): string
+    {
+        return $this->content;
+    }
+
+    public function setContent(string $content): void
+    {
+        $this->content = $content;
+    }
+
+    public function isChecked(): bool
+    {
+        return $this->checked;
+    }
+
+    public function setChecked(bool $checked): void
+    {
+        $this->checked = $checked;
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function setId(?int $id): void
+    {
+        $this->id = $id;
+    }
+
+    public function getChecklistNote(): ?int
+    {
+        return $this->checklist_note;
+    }
+
+    public function setChecklistNote(?int $checklist_note): void
+    {
+        $this->checklist_note = $checklist_note;
     }
 
     public function delete(User $initiator): ChecklistNoteItems|false
     {
         $checklistNote = ChecklistNote::get_by_id($this->checklist_note);
-        if ($checklistNote->owner->id == $initiator->id) {
+        if ($checklistNote->getOwner()->getId() == $initiator->getId()) {
             self::execute("DELETE FROM checklist_note_items WHERE id = :id", ["id" => $this->id]);
             $checklistNote->delete($initiator);
             return $this;

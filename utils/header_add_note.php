@@ -1,7 +1,6 @@
 <?php
 include('./utils/head.php');
 ?>
-
 <body class="bg-dark min-vh-100">
     <div class="container mw-80" style="margin-bottom: 15rem;">
         <header class="header-note">
@@ -15,5 +14,4 @@ include('./utils/head.php');
                     save
                 </span>
             </button>
-
         </header>

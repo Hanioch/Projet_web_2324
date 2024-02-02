@@ -113,15 +113,12 @@ body, html {
     background: none;
 }
 
-
-
 .icon-mv-note{
     position: absolute;
     cursor: pointer;
     top: 25%;
     color:#9d9d9d;
 }
-
 .icon-mv-note:hover{
     color:#1f1f1f;
 }
@@ -174,7 +171,6 @@ a {
     color: white;
 }
 
-
 .form-add-text-note{
     color: #6c757d;
 }
@@ -183,20 +179,15 @@ a {
     border: 0;
     background: none;
     display: flex;
-
-
 }
-
 #icon-save{
     color: white;
    font-size: 32px;
 }
-
 .error-add-note{
     color: red;
     font-size: 12px;
 }
-
 
 @media screen and (min-width: 769px) {
     .list-note{

@@ -21,7 +21,7 @@ include('./utils/head.php')
             </div>
             <div class="">
                 <form action="notes/setArchive" method="POST" class="navbar-brand"  >
-                    <input type="hidden" name="note_id" value="<?= $note->id ?>">
+                    <input type="hidden" name="note_id" value="<?= $note->getId() ?>">
                     <button type="submit" class="btn-icon" style="background: none; border: none; color: inherit; ">
                         <i class="bi bi-box-arrow-up"></i>
                     </button>
@@ -40,7 +40,7 @@ include('./utils/head.php')
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                         <form action="notes/delete" method="POST">
-                            <input type="hidden" name="note_id" id="modalNoteId" value="<?= $note->id ?>">
+                            <input type="hidden" name="note_id" id="modalNoteId" value="<?= $note->getId() ?>">
                             <button type="submit" class="btn btn-danger">Delete</button>
                         </form>
                     </div>

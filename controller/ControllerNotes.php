@@ -38,7 +38,9 @@ class ControllerNotes extends Controller
     {
         $current_note = Note::get_note($note_id);
         $other_notes = $current_note->get_nearest_note($is_more);
-        $current_note->persist($other_notes);
+        if($other_notes instanceof Note){
+            $current_note->persist($other_notes);
+        }
     }
 
     public function archives(): void
@@ -96,7 +98,7 @@ class ControllerNotes extends Controller
     public function open_note(): void {
         $noteId = $_GET['param1'];
         $user = $this->get_user_or_redirect();
-        $userId = $user->id;
+        $userId = $user->getId();
         $error = "";
 
         $note = Note::get_note($noteId);
@@ -109,11 +111,11 @@ class ControllerNotes extends Controller
                 $canEdit = NoteShare::canEdit($noteId, $userId);
             }
 
-            $canAccess = ($note->owner->id === $userId) || $isSharedNote;
+            $canAccess = ($note->getOwner()->getId() === $userId) || $isSharedNote;
             if (!$canAccess) {
                 $error = "Accès non autorisé.";
             }else {
-                $id_sender = $note->owner->id;
+                $id_sender = $note->getOwner()->getId();
                 $isChecklistNote = Note::is_checklist_note($noteId);
                 if ($isChecklistNote) {
                     $checklistItems = ChecklistNoteItems::get_items_by_checklist_note_id($noteId);
@@ -123,7 +125,7 @@ class ControllerNotes extends Controller
                 $headerType = 'notes';
                 if ($isSharedNote) {
                     $headerType = 'shared_by';
-                } elseif ($note->archived) {
+                } elseif ($note->isArchived()) {
                     $headerType = 'archives';
                 }
             }
@@ -178,11 +180,7 @@ class ControllerNotes extends Controller
 
         $note->setArchive();
 
-        if ($note->archived) {
-            $this->refresh("./open_note/$noteId/archives");
-        } else {
-            $this->refresh("./open_note/$noteId/notes");
-        }
+        $this->refresh();
     }
     public function delete()
     {

@@ -23,7 +23,7 @@ include('./utils/head.php')
         <nav class="navbar navbar-dark ">
              <div class="">
                  <?php if ($canEdit): ?>
-                     <a class="navbar-brand" href="path/to/edit/note/<?= $note->id ?>">
+                     <a class="navbar-brand" href="path/to/edit/note/<?= $note->getId() ?>">
                          <i class="bi bi-pencil"></i>
                      </a>
                  <?php endif; ?>

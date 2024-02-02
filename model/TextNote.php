@@ -3,17 +3,22 @@
 class TextNote extends Note
 {
 
-    public function __construct(public string $title, public User $owner, public  bool $pinned, public bool $archived, public int $weight, public ?string $content, public ?int $id = NULL, public ?string $created_at = NULL, public ?string $edited_at = NULL)
+    public function __construct(private string $title, private User $owner, private  bool $pinned, private bool $archived, private $weight, private ?string $content, private ?int $id = NULL, private ?string $created_at = NULL, private ?string $edited_at = NULL)
     {
         parent::__construct($title, $owner, $pinned, $archived, $weight, $id, $created_at, $edited_at);
     }
 
-    /*public function validate(): array
+    public function getContent(): ?string
     {
-        $errors = parent::validate();
-        return $errors;
+        return $this->content;
     }
-    */
+
+    public function setContent(?string $content): void
+    {
+        $this->content = $content;
+    }
+
+
 
     public static function get_text_note(int $id): Note| false
     {
@@ -44,20 +49,19 @@ class TextNote extends Note
 
             if ($this->id == NULL) {
                 $note = parent::add_note_in_DB();
-
                 self::execute(
                     'INSERT INTO text_notes (id,content) VALUES
                  (:id,:content)',
                     [
-                        'id' => $note->get_id(),
-                        'content' => $this->content,
+                        'id' => $note->getId(),
+                        'content' => $this->getContent(),
                     ]
                 );
                 return $this;
             } else {
                 self::execute('UPDATE text_notes SET  content = :content WHERE id = :id', [
-                    'content' => $this->content,
-                    'id' => $this->id
+                    'content' => $this->getContent(),
+                    'id' => $this->getId()
                 ]);
                 parent::modify_note_in_DB();
                 return $this;
