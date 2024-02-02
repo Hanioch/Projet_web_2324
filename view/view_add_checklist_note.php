@@ -12,15 +12,15 @@ include("./utils/header_add_note.php");
         <div class="mb-3">
             <div class="">
                 <label for="title_add_checklist_note" class="form-label">Title</label>
-                <input required type="text" value='<?= $default_title ?>' name="title" class="form-control" id="title_add_checklist_note">
+                <input required type="text" value="<?php echo isset($_POST['title']) ? htmlspecialchars($_POST['title']) : ''; ?>" name="title" class="form-control" id="title_add_checklist_note">
                 <?php
-                    if (array_key_exists('title', $errors)) {
+                    if (!empty($errors['title'])) {
                 ?>
                 <span class="error-add-note">
                     <?php
-                        foreach ($errors['title'] as $error) {
-                            echo $error;
-                        }
+                            foreach($errors['title'] as $error) {
+                                echo $error;
+                            }
                     ?>
                 </span>
                 <?php
@@ -34,9 +34,9 @@ include("./utils/header_add_note.php");
                 <ul>
                     <?php for ($i = 1 ; $i < 6 ; $i++){ ?>
                     <li class="mb-2">
-                        <input type="text" name="item<?php echo $i ?>" class="form-control" id="item<?php echo $i ?>">
-                        <?php if (!empty($errors) && isset($errors['item' . $i])): ?>
-                            <span class="error-add-note"><?php echo $errors['item' . $i]; ?></span>
+                        <input type="text" name="item<?php echo $i ?>" class="form-control" id="item<?php echo $i ?>" value="<?php echo isset($_POST['item' . $i]) ? htmlspecialchars($_POST['item' . $i]) : ''; ?>">
+                        <?php if (isset($errors['item' . $i])): ?>
+                            <span class="error-add-note"><?php foreach($errors['item' . $i] as $error){echo $error;} ?></span>
                         <?php endif; ?>
                     </li>
                     <?php } ?>

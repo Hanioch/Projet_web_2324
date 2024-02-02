@@ -92,38 +92,57 @@ class ControllerNotes extends Controller
         (new View("add_text_note"))->show(["errors" => $errors, "default_title" => $default_title, "default_text" => $default_text]);
     }
 
-    public function add_checklist_note(): void
-    {
+    public function add_checklist_note(): void {
+
         $user = $this->get_user_or_redirect();
         $default_title = "";
         $default_text = "";
         $errors = [];
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $validated_items = [];
+            $items_list = [];
+            for ($i = 1; $i < 6; $i++) {
+                if (isset($_POST['item' . $i])) {
+                    $item_content = trim($_POST['item' . $i]);
+                    if ($item_content !== '' && in_array($item_content, $validated_items)) {
+                        $errors['item' . $i][] = "Items must be unique.";
+                        $prevItemKey = array_search($item_content, $validated_items) + 1;
+                        $errors['item' . $prevItemKey][] = "Items must be unique.";
+                        unset($validated_items[$prevItemKey-1]);
+                    } else {
+                        if($item_content !== '') {
+                            $validated_items[] = $item_content;
+                        }
+                        $new_checklist_item = new ChecklistNoteItems($item_content, false);
+                        if($new_checklist_item->getContent() !== '') {
+                            $items_list[] = $new_checklist_item;
+                        }
+                        if(!empty($valid = $new_checklist_item->validate())) {
+                            $errors['item' . $i] = $valid;
+                        }
+                    }
+                }
+            }
             if (isset($_POST['title'])) {
                 $title = trim($_POST['title']);
 
                 $weight = $user->get_heaviest_note() + 1;
-                $new_checklist_note = new ChecklistNote($title, $user, false, false, $weight);
-                $note = $new_checklist_note->persist();
-
-                if ($note instanceof ChecklistNote) {
-                    for ($i = 1; $i < 6; $i++) {
-                        if (isset($_POST['item' . $i])) {
-                            $item_content = trim($_POST['item' . $i]);
-                            if ($this->validateUniqueItem($new_checklist_note, $item_content)) {
-                                $new_checklist_item = new ChecklistNoteItems($item_content, false, $note->get_id());
-                                $item = $new_checklist_item->persist();
-                                if (!($item instanceof ChecklistNoteItems)) {
-                                    $errors['item' . $i] = "Error while creating item";
-                                }
-                            } else {
-                                $errors['item' . $i] = "Items must be unique";
+                $note = new ChecklistNote($title, $user, false, false, $weight);
+                if(!empty($valid = $note->validate())) {
+                    $errors['title'] = $valid;
+                }
+                if (empty($errors)) {
+                    if(!empty($validated_items)) {
+                        if (!($note->persist() instanceof ChecklistNote)) {
+                            $errors['note'][] = "Error while creating checklist_note.";
+                        } else {
+                            foreach ($items_list as $item) {
+                                $item->set_checklist_note($note->get_id());
+                                $item->persist();
                             }
                         }
                     }
-                } else {
-                    $errors[] = "Error while creating checklist_note";
                 }
             } else {
                 $errors['title'][] = "Title must be defined.";
@@ -131,6 +150,64 @@ class ControllerNotes extends Controller
         }
         (new View("add_checklist_note"))->show(["errors" => $errors, "default_title" => $default_title, "default_text" => $default_text]);
     }
+
+//    public function add_checklist_note(): void {
+//        $user = $this->get_user_or_redirect();
+//        $default_title = "";
+//        $default_text = "";
+//        $errors = [];
+//
+//        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+//            if (isset($_POST['title'])) {
+//                $title = trim($_POST['title']);
+//
+//                $weight = $user->get_heaviest_note() + 1;
+//                $new_checklist_note = new ChecklistNote($title, $user, false, false, $weight);
+//
+//                $noteErrors = $new_checklist_note->validate();
+//                if (!empty($noteErrors)) {
+//                    $errors = array_merge($errors, $noteErrors);
+//                }
+//
+//                $existingItems = [];
+//                for ($i = 1; $i < 6; $i++) {
+//                    if (isset($_POST['item' . $i])) {
+//                        $item_content = trim($_POST['item' . $i]);
+//                        if ($item_content !== '' && in_array($item_content, $existingItems)) {
+//                            $errors['item' . $i] = "Items must be unique.";
+//
+//                            $prevItemKey = array_search($item_content, $existingItems) + 1;
+//                            $errors['item' . $prevItemKey] = "Items must be unique.";
+//                        } else {
+//                            $existingItems[] = $item_content;
+//
+//                            $new_checklist_item = new ChecklistNoteItems($item_content, false);
+//                            $itemErrors = $new_checklist_item->validate();
+//                            if (empty($itemErrors)) {
+//                                $item = $new_checklist_item->persist();
+//                                if (!($item instanceof ChecklistNoteItems)) {
+//                                    $errors['item' . $i] = "Error while creating item.";
+//                                }
+//                            } else {
+//                                $errors = array_merge($errors, $itemErrors);
+//                            }
+//                        }
+//                    }
+//                }
+//
+//                if (empty($errors)) {
+//                    $note = $new_checklist_note->persist();
+//                    if (!($note instanceof ChecklistNote)) {
+//                        $errors[] = "Error while creating checklist_note.";
+//                    }
+//                }
+//            } else {
+//                $errors['title'][] = "Title must be defined.";
+//            }
+//        }
+//        (new View("add_checklist_note"))->show(["errors" => $errors, "default_title" => $default_title, "default_text" => $default_text]);
+//    }
+
     private function validateUniqueItem(ChecklistNote $checklistNote, string $content): bool {
         $existingItems = $checklistNote->getItems();
         foreach ($existingItems as $item) {

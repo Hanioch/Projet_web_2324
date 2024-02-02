@@ -25,10 +25,9 @@ class ChecklistNoteItems extends MyModel
         if (empty($errors)) {
             if ($this->id == NULL) {
                 self::execute(
-                    'INSERT INTO checklist_note_items (id,checklist_note, content, checked) VALUES
-                 (:id,:checklist_note,:content,:checked)',
+                    'INSERT INTO checklist_note_items (checklist_note, content, checked) VALUES
+                 (:checklist_note,:content,:checked)',
                     [
-                        'id' => $this->id,
                         'checklist_note' => $this->checklist_note,
                         'content' => $this->content,
                         'checked' => $this->checked
@@ -41,6 +40,7 @@ class ChecklistNoteItems extends MyModel
                     'checked' => $this->checked,
                     'id' => $this->id
                 ]);
+//                $this->id = self::lastInsertId();
                 return $this;
             }
         } else {
@@ -51,7 +51,7 @@ class ChecklistNoteItems extends MyModel
     public function validate(): array
     {
         $errors = [];
-        $errors = array_merge($errors, $this->validate_note_reference($this->checklist_note));
+//        $errors = array_merge($errors, $this->validate_note_reference($this->checklist_note));
         $errors = array_merge($errors, $this->validate_content($this->content, $this->checklist_note));
         $errors = array_merge($errors, $this->validate_checked($this->checked));
 
@@ -70,16 +70,12 @@ class ChecklistNoteItems extends MyModel
         return $errors;
     }
 
-    private function validate_content(string $content, int $noteId): array
+    private function validate_content(string $content): array
     {
         $errors = [];
 
-        if (strlen($content) < 1 || strlen($content) > 60) {
+        if (strlen($content) > 0 && (strlen($content) < 1 || strlen($content) > 60)) {
             $errors[] = "Le contenu doit avoir entre 1 et 60 caractères.";
-        }
-
-        if ($this->isContentDuplicate($content, $noteId)) {
-            $errors[] = "Le contenu doit être unique au sein de la note.";
         }
 
         return $errors;
@@ -94,13 +90,6 @@ class ChecklistNoteItems extends MyModel
         }
 
         return $errors;
-    }
-
-    private function isContentDuplicate(string $content, int $noteId): bool
-    {
-        $query = self::execute("SELECT COUNT(*) FROM checklist_note_items WHERE checklist_note = :noteId AND content = :content", ["noteId" => $noteId, "content" => $content]);
-        $count = (int)$query->fetchColumn();
-        return $count > 0;
     }
 
     public static function get_checklist_note_item_by_id(int $id): ChecklistNoteItems |false
@@ -147,6 +136,11 @@ class ChecklistNoteItems extends MyModel
     public function getContent(): string
     {
         return $this->content;
+    }
+
+    public function set_checklist_note(int $id) : ChecklistNoteItems{
+        $this->checklist_note = $id;
+        return $this;
     }
 
 }
