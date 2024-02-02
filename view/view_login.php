@@ -6,8 +6,7 @@ include("./utils/header_login.php");
                     <fieldset class="h4">Sign in</fieldset>
                     <hr>
                     <div class="form-group">
-                        <label class="hide" for="email"></label>
-
+                        <label class="hide" for="mail"></label>
                         <input type="email" class="form-control <?php if (count($errors["mail"]) > 0): ?>is-invalid<?php endif; ?>" id="mail" name="mail" placeholder="Enter email">
                         <?php if (count($errors["mail"]) > 0): ?>
                             <div class="text-start invalid-feedback">

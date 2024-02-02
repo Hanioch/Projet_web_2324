@@ -30,8 +30,8 @@ function show_note(array $arr_notes, string $title, string $titlePage): void
                                 $content_sub = strlen($content) > $max_lg ? substr($content, 0, $max_lg) . "..." : $content;
                             ?>
                                 <div class="form-check">
-                                    <input class="form-check-input cursor-pointer" type="checkbox" value="" id="flexCheckDefault" <?= $item->isChecked() ? "checked" : ""  ?> disabled>
-                                    <label class="form-check-label cursor-pointer" for="flexCheckDefault">
+                                    <input class="form-check-input cursor-pointer" type="checkbox" value=""  <?= $item->isChecked() ? "checked" : ""  ?> disabled>
+                                    <label class="form-check-label cursor-pointer">
                                         <?= $content_sub ?>
                                     </label>
                                 </div>

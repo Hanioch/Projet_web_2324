@@ -23,7 +23,7 @@ if (isset($headerType) && empty($error)) {
     </div>
     <div class="card-body text-white">
         <?php if ($isChecklistNote): ?>
-                <label for="noteText" class="form-label">Items</label>
+                <label class="form-label">Items</label>
                 <?php foreach ($checklistItems as $item): ?>
                     <form action="notes/toggleCheckbox" method="POST">
                         <div class="input-group mb-3">
