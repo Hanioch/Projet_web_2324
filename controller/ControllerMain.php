@@ -8,7 +8,6 @@ class ControllerMain extends Controller
 {
     public function index(): void
     {
-        //        var_dump($this->user_logged());
         if ($this->user_logged()) {
             $this->redirect("notes");
         } else {

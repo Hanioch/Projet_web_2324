@@ -60,16 +60,6 @@ class ChecklistNote extends Note
         $this->weight = $weight;
     }
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function setId(?int $id): void
-    {
-        $this->id = $id;
-    }
-
     public function getCreatedAt(): ?string
     {
         return $this->created_at;
@@ -98,7 +88,7 @@ class ChecklistNote extends Note
 
         $items = [];
         foreach ($data as $row) {
-            $items[] = new ChecklistNoteItems($row['content'], $row['checked'], $row['id'], $row['checklist_note']);
+            $items[] = new ChecklistNoteItems($row['content'], $row['checked'], $row['checklist_note'], $row['id']);
         }
 
         $this->set_list_item($items);
@@ -143,21 +133,33 @@ class ChecklistNote extends Note
         }
     }
 
-    public function persist(?Note $second_note = NULL): ChecklistNote|array
-    {
+    public function persist(?Note $second_note = NULL): ChecklistNote|array {
         $errors = $this->validate();
         if (empty($errors)) {
             if ($this->id == NULL) {
-                parent::add_note_in_DB();
+                $note = parent::add_note_in_DB();
                 self::execute(
                     'INSERT INTO checklist_notes (id) VALUES
                 (:id)',
-                    ['id' => self::lastInsertId(),]
+                    ['id' => $note->getId()]
                 );
                 return $this;
             }
-        } else {
-            return $errors;
         }
+
+        return $errors;
+    }
+
+    public function getItems(): array
+    {
+        $query = self::execute("SELECT * FROM checklist_note_items WHERE checklist_note = :checklist_note", ["checklist_note" => $this->id]);
+        $data = $query->fetchAll();
+
+        $items = [];
+        foreach ($data as $row) {
+            $items[] = new ChecklistNoteItems($row['content'], $row['checked'], $row['checklist_note'], $row['id']);
+        }
+
+        return $items;
     }
 }

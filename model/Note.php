@@ -14,9 +14,7 @@ class Note extends MyModel
     {
         return $this->owner;
     }
-
-    public function setOwner(User $owner): void
-    {
+    public function setOwner(User $owner): void{
         $this->owner = $owner;
     }
     public function getEditedAt(): ?string
@@ -28,7 +26,6 @@ class Note extends MyModel
     {
         $this->edited_at = $edited_at;
     }
-
     public function getCreatedAt(): ?string
     {
         return $this->created_at;
@@ -119,10 +116,11 @@ class Note extends MyModel
         // }
 
         if (!(strlen($this->title) > 2 && strlen($this->title) < 26)) {
+
             $errors["title"] = "Title length must be between 3 and 25 ";
         }
         if (!($this->weight > 0 && !$this->is_not_unique_weight())) {
-            $errors["weight"] = "Weight must be positif and unique";
+            $errors["weight"] = "Weight must be positive and unique";
         }
 
         return $errors;
@@ -217,18 +215,11 @@ class Note extends MyModel
                 'weight' => $this->weight
             ]
         );
-        $note = self::get_note(self::lastInsertId());
-        // var_dump("check last");
-        //var_dump(self::lastInsertId());
-        //var_dump("check note getid");
-        //var_dump($note->getId());
 
+        $note = self::get_note(self::lastInsertId());
         $this->id = $note->getId();
         $this->created_at = $note->getCreatedAt();
         $this->edited_at = $note->getEditedAt();
-        //var_dump("check this");
-        //var_dump($this->getId());
-
         return $this;
     }
 
@@ -296,5 +287,9 @@ class Note extends MyModel
 
         if (!$full) $string = array_slice($string, 0, 1);
         return $string ? implode(', ', $string) . ' ago' : 'just now';
+    }
+
+    public static function get_last_insert_id() : int {
+        return Model::lastInsertId();
     }
 }

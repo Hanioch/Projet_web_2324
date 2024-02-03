@@ -99,6 +99,77 @@ class ControllerNotes extends Controller
         (new View("add_text_note"))->show(["result" => $result, "default_title" => $default_title, "default_text" => $default_text]);
     }
 
+    public function add_checklist_note(): void {
+
+        $user = $this->get_user_or_redirect();
+        $default_title = "";
+        $default_text = "";
+        $errors = [];
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $validated_items = [];
+            $items_list = [];
+            for ($i = 1; $i < 6; $i++) {
+                if (isset($_POST['item' . $i])) {
+                    $item_content = trim($_POST['item' . $i]);
+                    if ($item_content !== '' && in_array($item_content, $validated_items)) {
+                        $errors['item' . $i][] = "Items must be unique.";
+                        $prevItemKey = array_search($item_content, $validated_items) + 1;
+                        $errors['item' . $prevItemKey][] = "Items must be unique.";
+                        unset($validated_items[$prevItemKey-1]);
+                    } else {
+                        if($item_content !== '') {
+                            $validated_items[] = $item_content;
+                        }
+                        $new_checklist_item = new ChecklistNoteItems($item_content, false);
+                        if($new_checklist_item->getContent() !== '') {
+                            $items_list[] = $new_checklist_item;
+                        }
+                        if(!empty($valid = $new_checklist_item->validate())) {
+                            $errors['item' . $i] = $valid;
+                        }
+                    }
+                }
+            }
+            if (isset($_POST['title'])) {
+                $title = trim($_POST['title']);
+
+                $weight = $user->get_heaviest_note() + 1;
+                $note = new ChecklistNote($title, $user, false, false, $weight);
+                if(!empty($valid = $note->validate())) {
+                    $errors['title'] = $valid;
+                }
+                if (empty($errors)) {
+                    if (!($note->persist() instanceof ChecklistNote)) {
+                        $errors['note'][] = "Error while creating checklist_note.";
+                    }
+                    if(!empty($validated_items)) {
+                        if (empty($errors['note'])) {
+                            foreach ($items_list as $item) {
+                                $item->set_checklist_note($note->getId());
+                                $item->persist();
+                            }
+                        }
+                    }
+                    $this->redirect("notes", "open_note", $note->getId());
+                }
+            } else {
+                $errors['title'][] = "Title must be defined.";
+            }
+        }
+        (new View("add_checklist_note"))->show(["errors" => $errors, "default_title" => $default_title, "default_text" => $default_text]);
+    }
+
+    private function validateUniqueItem(ChecklistNote $checklistNote, string $content): bool {
+        $existingItems = $checklistNote->getItems();
+        foreach ($existingItems as $item) {
+            if ($item->getContent() === $content && $item->getContent() !== '') {
+                return false;
+            }
+        }
+        return true;
+    }
+
 
     public function open_note(): void
     {
