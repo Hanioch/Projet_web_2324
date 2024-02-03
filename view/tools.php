@@ -7,7 +7,6 @@ function show_note(array $arr_notes, string $title, string $titlePage): void
         <?php
         for ($i = 0; $i < count($arr_notes); $i++) {
             $note = $arr_notes[$i];
-            $noteType = determineNoteType($titlePage);
             $openNoteUrl = "./Notes/open_note/" . $note->getId() ;
         ?>
             <li class="note">
@@ -86,13 +85,3 @@ enum Page: string
     case Shared_by = "Shared by";
     case Settings = "Settings";
 }; ?>
-<?php
-function determineNoteType(string $titlePage): string
-{
-
-    return match ($titlePage) {
-        Page::Notes->value => 'notes',
-        Page::Archives->value => 'archives',
-        default => 'shared_by'
-    };
-} ?>
