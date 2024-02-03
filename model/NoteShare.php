@@ -80,10 +80,11 @@ class NoteShare extends MyModel{
         return $query->fetchAll();
     }
 
-    public static function getSharedWithUser($userId) {
-        $query = self::execute("SELECT n.* FROM note_shares ns JOIN notes n ON ns.note = n.id WHERE ns.user = :user_id", ['user_id' => $userId]);
+    public static function getSharedWithUser($userId, $noteId) {
+        $query = self::execute("SELECT * FROM note_shares ns JOIN notes n ON ns.note = n.id JOIN users u ON ns.user = u.id  WHERE n.owner = :user_id AND ns.note = :note_id", ['user_id' => $userId,'note_id'=>$noteId]);
         return $query->fetchAll();
     }
+
     public static function isNoteSharedWithUser($noteId, $userId) {
         $query = self::execute("SELECT COUNT(*) FROM note_shares WHERE note = :note_id AND user = :user_id", [
             'note_id' => $noteId,

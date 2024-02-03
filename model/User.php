@@ -101,7 +101,8 @@ class User extends MyModel
         $data = $query->fetchAll();
         $results = [];
         foreach ($data as $row) {
-            $results[] = new User($row["mail"], $row["hashed_password"], $row["full_name"], $row["role"], $row["id"]);
+            $role = Role::tryFrom($row["role"]) ?: Role::USER;
+            $results[] = new User($row["mail"], $row["hashed_password"], $row["full_name"], $role, $row["id"]);
         }
         return $results;
     }

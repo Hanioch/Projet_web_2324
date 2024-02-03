@@ -95,7 +95,8 @@ class ControllerNotes extends Controller
     }
 
 
-    public function open_note(): void {
+    public function open_note(): void
+    {
         $noteId = $_GET['param1'];
         $user = $this->get_user_or_redirect();
         $userId = $user->getId();
@@ -142,7 +143,73 @@ class ControllerNotes extends Controller
         ]);
 
     }
+    public function shares() : void
+    {
+        $noteId = $_GET['param1'];
+        $currentUser = $this->get_user_or_redirect();
+        $currentUserId = $currentUser->getId();
+        $error = "";
+        $note = Note::get_note($noteId);
 
+        if (isset($_POST['addShare'])) {
+            $noteId = $_POST['noteId'];
+            $userId = $_POST['user'];
+            $permission = $_POST['permission'];
+            if ($userId && $permission !== null) {
+                NoteShare::addShare($noteId, $userId, $permission);
+                $this->refresh();
+                exit();
+            }
+        }
+        if (isset($_POST['changePermission'])) {
+            $shareId = $_POST['shareId'];
+            $newPermission = $_POST['newPermission'];
+            $user = $_POST['user'];
+            NoteShare::changePermissions($shareId,$user, $newPermission);
+            $this->refresh();
+            exit();
+        }
+        if (isset($_POST['removeShare'])) {
+            $shareId = $_POST['shareId'];
+            $user = $_POST['user'];
+            NoteShare::removeShare($shareId,$user);
+
+            $this->refresh();
+            exit();
+        }
+        if (!$note) {
+            $error = "Note introuvable.";
+        }else{
+            $canAccess = ($note->getOwner()->getId() === $currentUserId) ;
+            if (!$canAccess) {
+                $error = "Accès non autorisé.";
+            }else{
+                $existingShares = NoteShare::getSharedWithUser($currentUserId,$noteId);
+                $sharedUserIds = [];
+                foreach ($existingShares as $share) {
+                    $sharedUserIds[] = $share['id'];
+                }
+
+                $allUsers = User::get_users();
+                $usersToShareWith = [];
+                foreach ($allUsers as $user) {
+                    if ($user->getId() !== $currentUserId && !in_array($user->getId(), $sharedUserIds)) {
+                        $usersToShareWith[] = $user;
+                    }
+                }
+            }
+
+        }
+
+        (new View("shares"))->show([
+            'usersToShareWith' => $usersToShareWith ?? null,
+            'existingShares' => $existingShares ?? null,
+            'noteId' => $noteId,
+            'note'=> $note,
+            'currentUser'=>$currentUser ?? null,
+            'error'=>$error
+        ]);
+    }
 
     public function togglePin()
     {
