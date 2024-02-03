@@ -70,7 +70,7 @@ class ChecklistNoteItems extends MyModel
                     [
                         'checklist_note' => $this->checklist_note,
                         'content' => $this->content,
-                        'checked' => $this->checked ? 1:0
+                        'checked' => $this->checked ? 1 : 0
                     ]
                 );
                 return $this;
@@ -90,7 +90,7 @@ class ChecklistNoteItems extends MyModel
     public function validate(): array
     {
         $errors = [];
-//        $errors = array_merge($errors, $this->validate_note_reference($this->checklist_note));
+        //        $errors = array_merge($errors, $this->validate_note_reference($this->checklist_note));
         $errors = array_merge($errors, $this->validate_content($this->content, $this->checklist_note));
         $errors = array_merge($errors, $this->validate_checked($this->checked));
 
@@ -141,9 +141,10 @@ class ChecklistNoteItems extends MyModel
             return new ChecklistNoteItems($row['content'], $row['checked'], $row['checklist_note'], $row['id']);
         }
     }
-    public static function get_items_by_checklist_note_id(int $checklistNoteId):array {
+    public static function get_items_by_checklist_note_id(int $checklistNoteId): array
+    {
         $query = self::execute(
-            "SELECT cni.*, n.title, n.owner, n.pinned, n.archived, n.weight, n.created_at, n.edited_at FROM checklist_note_items cni JOIN notes n ON n.id = cni.checklist_note WHERE checklist_note = :checklist_note ORDER BY cni.id ASC, n.created_at ASC",
+            "SELECT cni.*, n.title, n.owner, n.pinned, n.archived, n.weight, n.created_at, n.edited_at FROM checklist_note_items cni JOIN notes n ON n.id = cni.checklist_note WHERE checklist_note = :checklist_note ORDER BY cni.checked ASC, n.created_at ASC",
             ["checklist_note" => $checklistNoteId]
         );
         $data = $query->fetchAll();
@@ -173,9 +174,9 @@ class ChecklistNoteItems extends MyModel
     }
 
 
-    public function set_checklist_note(int $id) : ChecklistNoteItems{
+    public function set_checklist_note(int $id): ChecklistNoteItems
+    {
         $this->checklist_note = $id;
         return $this;
     }
-
 }
