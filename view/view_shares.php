@@ -38,6 +38,7 @@ if (isset($error) && !empty($error)) {
                         <?php endforeach; ?>
                     </ul>
                 <?php endif; ?>
+                <?php if (!empty($usersToShareWith)): ?>
                     <form action="./notes/shares/<?php echo $noteId; ?>" method="post" >
                         <div class="input-group mb-3">
                             <select class="form-select bg-dark text-white border-secondary " name="user">
@@ -57,6 +58,11 @@ if (isset($error) && !empty($error)) {
                             </button>
                         </div>
                     </form>
+                <?php else: ?>
+                    <div class="alert alert-info" role="alert">
+                        All users have been shared with this note. There are no more users to share.
+                    </div>
+                <?php endif; ?>
                 <?php if (!empty($errorAdd)): ?>
                     <div class="alert alert-warning" role="alert">
                         <?= htmlspecialchars($errorAdd) ?>
