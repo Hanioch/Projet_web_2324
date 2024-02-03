@@ -45,7 +45,11 @@ include('./utils/head.php')
             </div>
              <div class="">
             <?php
-            $chevronLink = "./notes/edit_checklist_note/" . $note->getId();
+            if($isChecklistNote){
+                $chevronLink = "./notes/edit_checklist_note/" . $note->getId();
+            }else{
+                $chevronLink = "./notes";
+            }
             echo '<a class="navbar-brand" href="' . $chevronLink . '">
                        <i class="bi bi-pencil"></i>
                     </a>';
