@@ -67,11 +67,21 @@ class NoteShare extends MyModel{
         ]);
     }
 
-    public static function changePermissions($noteId, $userId, $isEditor) {
-        return self::execute('UPDATE note_shares SET editor = :is_editor WHERE note = :note_id AND user = :user_id', [
+    public static function changePermissions($noteId, $userId) {
+        $currentStatusQuery = self::execute("SELECT editor FROM note_shares WHERE note = :note_id AND user = :user_id", [
+            'note_id' => $noteId,
+            'user_id' => $userId
+        ]);
+        $currentStatusResult = $currentStatusQuery->fetch();
+
+        if (!$currentStatusResult) return false;
+
+        $newEditorStatus = $currentStatusResult['editor'] == 1 ? 0 : 1;
+
+        return self::execute('UPDATE note_shares SET editor = :new_editor WHERE note = :note_id AND user = :user_id', [
             'note_id' => $noteId,
             'user_id' => $userId,
-            'is_editor' => $isEditor ? 1 : 0
+            'new_editor' => $newEditorStatus
         ]);
     }
 

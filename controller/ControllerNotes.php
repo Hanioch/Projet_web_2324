@@ -149,30 +149,30 @@ class ControllerNotes extends Controller
         $currentUser = $this->get_user_or_redirect();
         $currentUserId = $currentUser->getId();
         $error = "";
+        $errorAdd="";
         $note = Note::get_note($noteId);
 
         if (isset($_POST['addShare'])) {
             $noteId = $_POST['noteId'];
-            $userId = $_POST['user'];
-            $permission = $_POST['permission'];
-            if ($userId && $permission !== null) {
+            $userId = $_POST['user'] ?? null;
+            $permission = $_POST['permission'] ?? null;
+            if (!empty($userId) && $permission !== null) {
                 NoteShare::addShare($noteId, $userId, $permission);
                 $this->refresh();
                 exit();
+            }else {
+                $errorAdd = "Please select a user and a permission to share.";
             }
         }
         if (isset($_POST['changePermission'])) {
-            $shareId = $_POST['shareId'];
-            $newPermission = $_POST['newPermission'];
             $user = $_POST['user'];
-            NoteShare::changePermissions($shareId,$user, $newPermission);
+            NoteShare::changePermissions($noteId,$user);
             $this->refresh();
             exit();
         }
         if (isset($_POST['removeShare'])) {
-            $shareId = $_POST['shareId'];
             $user = $_POST['user'];
-            NoteShare::removeShare($shareId,$user);
+            NoteShare::removeShare($noteId,$user);
 
             $this->refresh();
             exit();
@@ -207,7 +207,8 @@ class ControllerNotes extends Controller
             'noteId' => $noteId,
             'note'=> $note,
             'currentUser'=>$currentUser ?? null,
-            'error'=>$error
+            'error'=>$error,
+            'errorAdd'=>$errorAdd
         ]);
     }
 
