@@ -38,7 +38,7 @@ class ControllerNotes extends Controller
     {
         $current_note = Note::get_note($note_id);
         $other_notes = $current_note->get_nearest_note($is_more);
-        if($other_notes instanceof Note){
+        if ($other_notes instanceof Note) {
             $current_note->persist($other_notes);
         }
     }
@@ -72,7 +72,10 @@ class ControllerNotes extends Controller
         $user = $this->get_user_or_redirect();
         $default_title = "";
         $default_text = "";
-        $errors = [];
+        $result = [];
+        $result["success"] = NULL;
+        $result["errors"] = [];
+        var_dump($result);
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (isset($_POST['title'])) {
                 $title = trim($_POST['title']);
@@ -82,20 +85,23 @@ class ControllerNotes extends Controller
                 $note = $new_text_note->persist();
 
                 if (!($note instanceof TextNote)) {
-                    $errors = $note;
+                    $result["errors"] = $note;
                     $default_title = $title;
                     $default_text = $text;
+                } else {
+                    $result["success"] = "The note has been added successfully.";
                 }
             } else {
                 "Les parametre ne sont pas définis.";
             }
         }
 
-        (new View("add_text_note"))->show(["errors" => $errors, "default_title" => $default_title, "default_text" => $default_text]);
+        (new View("add_text_note"))->show(["result" => $result, "default_title" => $default_title, "default_text" => $default_text]);
     }
 
 
-    public function open_note(): void {
+    public function open_note(): void
+    {
         $noteId = $_GET['param1'];
         $user = $this->get_user_or_redirect();
         $userId = $user->getId();
@@ -104,7 +110,7 @@ class ControllerNotes extends Controller
         $note = Note::get_note($noteId);
         if (!$note) {
             $error = "Note introuvable.";
-        }else {
+        } else {
             $isSharedNote = NoteShare::isNoteSharedWithUser($noteId, $userId);
             $canEdit = True;
             if ($isSharedNote) {
@@ -114,7 +120,7 @@ class ControllerNotes extends Controller
             $canAccess = ($note->getOwner()->getId() === $userId) || $isSharedNote;
             if (!$canAccess) {
                 $error = "Accès non autorisé.";
-            }else {
+            } else {
                 $id_sender = $note->getOwner()->getId();
                 $isChecklistNote = Note::is_checklist_note($noteId);
                 if ($isChecklistNote) {
@@ -131,7 +137,7 @@ class ControllerNotes extends Controller
             }
         }
         (new View("open_note"))->show([
-            'error'=> $error,
+            'error' => $error,
             'note' => $note,
             'headerType' => $headerType ?? null,
             'canEdit' => $canEdit ?? false,
@@ -140,7 +146,6 @@ class ControllerNotes extends Controller
             'checklistItems' => $checklistItems ?? null,
             'isChecklistNote' => $isChecklistNote ?? false
         ]);
-
     }
 
 
