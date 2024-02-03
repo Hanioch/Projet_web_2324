@@ -68,7 +68,7 @@ include("./utils/header_add_note.php");
 
                 <button class="btn btn-primary btn-lg rounded-end border" type="submit">+</button>
 
-                <?php if (isset($errors['item' . $item->getId()])): ?>
+                <?php if (isset($item) && isset($errors['item' . $item->getId()])): ?>
                     <span class="error-add-note"><?php foreach($errors['item' . $item->getId()] as $error){echo $error;} ?></span>
                 <?php endif; ?>
 
