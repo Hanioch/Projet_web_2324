@@ -8,7 +8,7 @@ include("./utils/header_add_note.php");
 
     <div class="row justify-content-center align-items-center">
 
-        <form id=<?= $id_form ?> class="p-3 border rounded-4 text-white text-center" action="notes/add_checklist_note" method="post">
+        <form id="<?= $id_form ?>" class="p-3 border rounded-4 text-white text-center" action="notes/add_checklist_note" method="post">
         <div class="mb-3">
             <div class="">
                 <label for="title_add_checklist_note" class="form-label">Title</label>
