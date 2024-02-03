@@ -4,7 +4,7 @@ require_once "model/MyModel.php";
 
 class ChecklistNoteItems extends MyModel
 {
-    public function __construct(private string $content = "", private bool $checked = false, private ?int $id = NULL, private ?int $checklist_note = NULL)
+    public function __construct(private string $content = "", private bool $checked = false, private ?int $checklist_note = NULL, private ?int $id = NULL)
     {
     }
 
@@ -70,7 +70,7 @@ class ChecklistNoteItems extends MyModel
                     [
                         'checklist_note' => $this->checklist_note,
                         'content' => $this->content,
-                        'checked' => $this->checked
+                        'checked' => $this->checked ? 1:0
                     ]
                 );
                 return $this;
