@@ -143,7 +143,7 @@ class ChecklistNoteItems extends MyModel
     }
     public static function get_items_by_checklist_note_id(int $checklistNoteId):array {
         $query = self::execute(
-            "SELECT cni.*, n.title, n.owner, n.pinned, n.archived, n.weight, n.created_at, n.edited_at FROM checklist_note_items cni JOIN notes n ON n.id = cni.checklist_note WHERE checklist_note = :checklist_note ORDER BY cni.checked ASC, n.created_at ASC",
+            "SELECT cni.*, n.title, n.owner, n.pinned, n.archived, n.weight, n.created_at, n.edited_at FROM checklist_note_items cni JOIN notes n ON n.id = cni.checklist_note WHERE checklist_note = :checklist_note ORDER BY cni.id ASC, n.created_at ASC",
             ["checklist_note" => $checklistNoteId]
         );
         $data = $query->fetchAll();

@@ -215,11 +215,11 @@ class Note extends MyModel
                 'weight' => $this->weight
             ]
         );
+
         $note = self::get_note(self::lastInsertId());
         $this->id = $note->getId();
         $this->created_at = $note->getCreatedAt();
         $this->edited_at = $note->getEditedAt();
-
         return $this;
     }
 

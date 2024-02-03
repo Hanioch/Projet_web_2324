@@ -135,17 +135,18 @@ class ControllerNotes extends Controller
                     $errors['title'] = $valid;
                 }
                 if (empty($errors)) {
+                    if (!($note->persist() instanceof ChecklistNote)) {
+                        $errors['note'][] = "Error while creating checklist_note.";
+                    }
                     if(!empty($validated_items)) {
-                        if (!($note->persist() instanceof ChecklistNote)) {
-                            $errors['note'][] = "Error while creating checklist_note.";
-                        } else {
+                        if (empty($errors['note'])) {
                             foreach ($items_list as $item) {
-                                $item->set_checklist_note($note->get_id());
+                                $item->set_checklist_note($note->getId());
                                 $item->persist();
                             }
                         }
                     }
-                    $this->redirect("notes", "open_note", $note->get_id());
+                    $this->redirect("notes", "open_note", $note->getId());
                 }
             } else {
                 $errors['title'][] = "Title must be defined.";

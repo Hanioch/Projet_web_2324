@@ -60,16 +60,6 @@ class ChecklistNote extends Note
         $this->weight = $weight;
     }
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function setId(?int $id): void
-    {
-        $this->id = $id;
-    }
-
     public function getCreatedAt(): ?string
     {
         return $this->created_at;
@@ -147,17 +137,17 @@ class ChecklistNote extends Note
         $errors = $this->validate();
         if (empty($errors)) {
             if ($this->id == NULL) {
-                $id = parent::add_note_in_DB()->get_id();
+                $note = parent::add_note_in_DB();
                 self::execute(
                     'INSERT INTO checklist_notes (id) VALUES
                 (:id)',
-                    ['id' => $id]
+                    ['id' => $note->getId()]
                 );
                 return $this;
             }
-        } else {
-            return $errors;
         }
+
+        return $errors;
     }
 
     public function getItems(): array
