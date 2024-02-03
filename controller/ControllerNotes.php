@@ -57,10 +57,14 @@ class ControllerNotes extends Controller
         if (isset($_GET['param1'])) {
             $id_sender = $_GET['param1'];
             $sender = User::get_user_by_id($id_sender);
-            $notes_shared = $user->get_notes_shared_by($id_sender);
-            $users_shared_notes = $user->get_users_shared_note();
+            if ($sender instanceof User) {
+                $notes_shared = $user->get_notes_shared_by($id_sender);
+                $users_shared_notes = $user->get_users_shared_note();
 
-            (new View("shared_notes"))->show(["notes_shared" => $notes_shared, "users_shared_notes" => $users_shared_notes, "sender" => $sender]);
+                (new View("shared_notes"))->show(["notes_shared" => $notes_shared, "users_shared_notes" => $users_shared_notes, "sender" => $sender]);
+            } else {
+                (new View("error"))->show(["error" => "Page doesn't exist."]);
+            }
         } else {
             echo "Les paramètres ne sont pas définis.";
             print_r($_GET);
@@ -99,7 +103,8 @@ class ControllerNotes extends Controller
         (new View("add_text_note"))->show(["result" => $result, "default_title" => $default_title, "default_text" => $default_text]);
     }
 
-    public function add_checklist_note(): void {
+    public function add_checklist_note(): void
+    {
 
         $user = $this->get_user_or_redirect();
         $default_title = "";
@@ -116,16 +121,16 @@ class ControllerNotes extends Controller
                         $errors['item' . $i][] = "Items must be unique.";
                         $prevItemKey = array_search($item_content, $validated_items) + 1;
                         $errors['item' . $prevItemKey][] = "Items must be unique.";
-                        unset($validated_items[$prevItemKey-1]);
+                        unset($validated_items[$prevItemKey - 1]);
                     } else {
-                        if($item_content !== '') {
+                        if ($item_content !== '') {
                             $validated_items[] = $item_content;
                         }
                         $new_checklist_item = new ChecklistNoteItems($item_content, false);
-                        if($new_checklist_item->getContent() !== '') {
+                        if ($new_checklist_item->getContent() !== '') {
                             $items_list[] = $new_checklist_item;
                         }
-                        if(!empty($valid = $new_checklist_item->validate())) {
+                        if (!empty($valid = $new_checklist_item->validate())) {
                             $errors['item' . $i] = $valid;
                         }
                     }
@@ -136,14 +141,14 @@ class ControllerNotes extends Controller
 
                 $weight = $user->get_heaviest_note() + 1;
                 $note = new ChecklistNote($title, $user, false, false, $weight);
-                if(!empty($valid = $note->validate())) {
+                if (!empty($valid = $note->validate())) {
                     $errors['title'] = $valid;
                 }
                 if (empty($errors)) {
                     if (!($note->persist() instanceof ChecklistNote)) {
                         $errors['note'][] = "Error while creating checklist_note.";
                     }
-                    if(!empty($validated_items)) {
+                    if (!empty($validated_items)) {
                         if (empty($errors['note'])) {
                             foreach ($items_list as $item) {
                                 $item->set_checklist_note($note->getId());
@@ -160,7 +165,8 @@ class ControllerNotes extends Controller
         (new View("add_checklist_note"))->show(["errors" => $errors, "default_title" => $default_title, "default_text" => $default_text]);
     }
 
-    private function validateUniqueItem(ChecklistNote $checklistNote, string $content): bool {
+    private function validateUniqueItem(ChecklistNote $checklistNote, string $content): bool
+    {
         $existingItems = $checklistNote->getItems();
         foreach ($existingItems as $item) {
             if ($item->getContent() === $content && $item->getContent() !== '') {
