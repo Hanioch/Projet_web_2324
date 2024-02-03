@@ -2,7 +2,7 @@
 function show_note(array $arr_notes, string $title, string $titlePage): void
 {
 ?>
-    <h4 class=" title-note"><?= $title ?></h4>
+    <h4 class="title-note"><?= $title ?></h4>
     <ul class="list-note">
         <?php
         for ($i = 0; $i < count($arr_notes); $i++) {
