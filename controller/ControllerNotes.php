@@ -75,7 +75,6 @@ class ControllerNotes extends Controller
         $result = [];
         $result["success"] = NULL;
         $result["errors"] = [];
-        var_dump($result);
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (isset($_POST['title'])) {
                 $title = trim($_POST['title']);
@@ -168,6 +167,21 @@ class ControllerNotes extends Controller
             }
         }
         return true;
+    }
+
+    public function edit_checklist_note (): void{
+        $noteId = $_GET['param1'];
+        $user = $this->get_user_or_redirect();
+        $note = Note::get_note($noteId);
+        $items = ChecklistNoteItems::get_items_by_checklist_note_id($noteId);
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+        }
+        (new View("edit_checklist_note"))->show([
+            'note' => $note,
+            'items' => $items,
+        ]);
     }
 
 
