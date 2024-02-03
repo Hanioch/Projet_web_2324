@@ -265,11 +265,11 @@ class User extends MyModel
 
     public function get_users_shared_note(): array
     {
-        $query = self::execute("SELECT u.*
+        $query = self::execute("SELECT DISTINCT u.*
         FROM users u
-        INNER JOIN note_shares ns ON u.id = ns.user
-        WHERE ns.note IN (SELECT id FROM notes WHERE owner = :owner)
-        GROUP BY u.id, u.mail,u.hashed_password, u.full_name, u.role;
+        INNER JOIN notes n ON u.id = n.owner
+        INNER JOIN note_shares ns ON n.id = ns.note
+        WHERE ns.user = :owner;
         
          ", ["owner" => $this->id]);
 
