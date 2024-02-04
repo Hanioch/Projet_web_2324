@@ -170,7 +170,23 @@ a {
     background-color: transparent;
     color: white;
 }
+.custom-list li {
+    list-style-type: none;
+    position: relative;
+    padding-left: 20px;
+}
 
+.custom-list li::before {
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #FFFFFF;
+}
 .form-add-text-note{
     color: #6c757d;
 }
