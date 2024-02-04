@@ -10,73 +10,73 @@ class Note extends MyModel
     public function __construct(private string $title, private User $owner, private  bool $pinned, private bool $archived, private int $weight, private ?int $id = NULL, private ?string $created_at = NULL, private ?string $edited_at = NULL)
     {
     }
-    public function getOwner(): User
+    public function get_Owner(): User
     {
         return $this->owner;
     }
-    public function setOwner(User $owner): void{
+    public function set_Owner(User $owner): void{
         $this->owner = $owner;
     }
-    public function getEditedAt(): ?string
+    public function get_Edited_At(): ?string
     {
         return $this->edited_at;
     }
 
-    public function setEditedAt(?string $edited_at): void
+    public function set_Edited_At(?string $edited_at): void
     {
         $this->edited_at = $edited_at;
     }
-    public function getCreatedAt(): ?string
+    public function get_Created_At(): ?string
     {
         return $this->created_at;
     }
 
-    public function setCreatedAt(?string $created_at): void
+    public function set_Created_At(?string $created_at): void
     {
         $this->created_at = $created_at;
     }
 
-    public function isArchived(): bool
+    public function is_Archived(): bool
     {
         return $this->archived;
     }
 
-    public function setArchived(bool $archived): void
+    public function set_Archived(bool $archived): void
     {
         $this->archived = $archived;
     }
 
-    public function isPinned(): bool
+    public function is_Pinned(): bool
     {
         return $this->pinned;
     }
 
-    public function setPinned(bool $pinned): void
+    public function set_Pinned(bool $pinned): void
     {
         $this->pinned = $pinned;
     }
 
-    public function getTitle(): string
+    public function get_Title(): string
     {
         return $this->title;
     }
 
-    public function setTitle(string $title): void
+    public function set_Title(string $title): void
     {
         $this->title = $title;
     }
 
-    public function getId(): ?int
+    public function get_Id(): ?int
     {
         return $this->id;
     }
 
-    public function getWeight(): int
+    public function get_Weight(): int
     {
         return $this->weight;
     }
 
-    public function setWeight(int $weight): void
+    public function set_Weight(int $weight): void
     {
         $this->weight = $weight;
     }
@@ -92,7 +92,7 @@ class Note extends MyModel
             AND pinned = :pinned AND archived = false
             ORDER BY ABS(weight - :weight)
             LIMIT 1
-            ", ["owner" => $this->owner->getId(), "weight" => $this->weight, "pinned" => $this->pinned]);
+            ", ["owner" => $this->owner->get_Id(), "weight" => $this->weight, "pinned" => $this->pinned]);
 
         $row = $query->fetch();
 
@@ -108,7 +108,7 @@ class Note extends MyModel
     public function validate(): array
     {
         $errors = [];
-        $user = User::get_user_by_mail($this->owner->getMail());
+        $user = User::get_user_by_mail($this->owner->get_Mail());
         // TO DO: check si l'id de l'user correspond à l'id de l'user connnecter. 
 
         // if ($user->id === ) {
@@ -167,7 +167,7 @@ class Note extends MyModel
         }
         return false;
     }
-    public function deleteAll(User $initiator): Note|false
+    public function delete_All(User $initiator): Note|false
     {
         if ($this->owner == $initiator) {
             self::execute('DELETE FROM note_shares WHERE note = :note_id', ['note_id' => $this->id]);
@@ -209,7 +209,7 @@ class Note extends MyModel
          (:title, :owner, NOW(), null, :pinned, :archived, :weight)',
             [
                 'title' => $this->title,
-                'owner' => $this->owner->getId(),
+                'owner' => $this->owner->get_Id(),
                 'pinned' => $this->pinned ? 1 : 0,
                 'archived' => $this->archived ? 1 : 0,
                 'weight' => $this->weight
@@ -217,9 +217,9 @@ class Note extends MyModel
         );
 
         $note = self::get_note(self::lastInsertId());
-        $this->id = $note->getId();
-        $this->created_at = $note->getCreatedAt();
-        $this->edited_at = $note->getEditedAt();
+        $this->id = $note->get_Id();
+        $this->created_at = $note->get_Created_At();
+        $this->edited_at = $note->get_Edited_At();
         return $this;
     }
 
@@ -238,8 +238,8 @@ class Note extends MyModel
 
     protected function move_note_in_DB(Note $second_note): Note
     {
-        $second_weight = $second_note->getWeight();
-        $second_id = $second_note->getId();
+        $second_weight = $second_note->get_Weight();
+        $second_id = $second_note->get_Id();
         self::execute('UPDATE notes n1, notes n2 SET n1.weight = :second_weight, n2.weight= :weight WHERE n1.id= :id AND n2.id=:second_id', [
             'weight' => $this->weight,
             'second_weight' => $second_weight,
@@ -253,12 +253,12 @@ class Note extends MyModel
         $query = self::execute("SELECT id FROM checklist_notes WHERE id = :id", ["id" => $id]);
         return $query->rowCount() > 0;
     }
-    public function togglePin(): static
+    public function toggle_Pin(): static
     {
         $this->pinned = !$this->pinned;
         return $this->modify_note_in_DB();
     }
-    public function setArchive(): static
+    public function set_Archive_reverse(): static
     {
         $this->archived = !$this->archived;
         return $this->modify_note_in_DB();

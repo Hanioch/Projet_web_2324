@@ -44,7 +44,7 @@ if (isset($error) && !empty($error)) {
                             <select class="form-select bg-dark text-white border-secondary " name="user">
                                 <option disabled selected>-User-</option>
                                 <?php foreach ($usersToShareWith as $user): ?>
-                                        <option value="<?= $user->getId() ?>"><?= $user->getFullName() ?></option>
+                                        <option value="<?= $user->get_Id() ?>"><?= $user->get_Full_Name() ?></option>
                                 <?php endforeach; ?>
                             </select>
                             <select class="form-select bg-dark text-white border-secondary " name="permission">

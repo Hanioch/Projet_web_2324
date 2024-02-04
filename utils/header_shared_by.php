@@ -25,7 +25,7 @@ include('./utils/head.php')
                  <?php if ($canEdit): ?>
                      <?php
                      if($isChecklistNote){
-                         $chevronLink = "./notes/edit_checklist_note/" . $note->getId();
+                         $chevronLink = "./notes/edit_checklist_note/" . $note->get_Id();
                      }else{
                          $chevronLink = "./notes";
                      }
