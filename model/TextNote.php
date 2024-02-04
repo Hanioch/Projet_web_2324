@@ -18,7 +18,7 @@ class TextNote extends Note
         $this->content = $content;
     }
 
-    public static function get_text_note(int $id): Note| false
+    public static function get_text_note(int $id): TextNote| false
     {
         $query = self::execute("select * from notes n join text_notes tn ON tn.id = n.id where n.id= :id", ["id" => $id]);
         if ($query->rowCount() == 0) {

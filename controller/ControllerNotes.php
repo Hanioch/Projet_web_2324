@@ -175,7 +175,8 @@ class ControllerNotes extends Controller
         return true;
     }
 
-    public function edit_checklist_note (): void{
+    public function edit_checklist_note(): void
+    {
         $errors = [];
         $noteId = $_GET['param1'];
         $user = $this->get_user_or_redirect();
@@ -183,6 +184,7 @@ class ControllerNotes extends Controller
         $items = ChecklistNoteItems::get_items_by_checklist_note_id($noteId);
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
             $checklist_note = new ChecklistNote($note->get_Title(), $note->get_Owner(), $note->is_Pinned(), $note->is_Archived(), $note->get_Weight(), $note->get_Id());
             if(isset($_POST['save_button'])) {
                 $errors = $this->edit_title($note, $errors);
@@ -192,6 +194,7 @@ class ControllerNotes extends Controller
                 if(empty($errors)){
                     $items = ChecklistNoteItems::get_items_by_checklist_note_id($noteId);
                     $errors = array_merge($errors, $this->edit_title($note, $errors));
+
                 }
             }
             if (empty($errors)) {
@@ -237,13 +240,54 @@ class ControllerNotes extends Controller
     }
 
 
-    private function item_exists(array $items, string $item) : bool {
+    private function item_exists(array $items, string $item) : bool
+    {
         foreach ($items as $i) {
-            if($i->get_Content() === $item) {
+            if ($i->get_Content() === $item) {
                 return true;
             }
         }
         return false;
+    }
+
+    public function edit_text_note(): void
+    {
+        $errors = [];
+
+        if (!isset($_GET['param1'])) {
+            (new View("error"))->show(["error" => "Page doesn't exist."]);
+            return;
+        }
+
+        $note_id = $_GET['param1'];
+        $user = $this->get_user_or_redirect();
+        $note = TextNote::get_text_note($note_id);
+
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (isset($_POST['title'])) {
+                $title = trim($_POST['title']);
+                $content = isset($_POST['text']) ? $_POST['text'] : "";
+                if ($title == $note->get_Title() && $content == $note->get_Content()) {
+                    $errors[] = "aucune modification apportée";
+                } else {
+                    $note->set_Title($title);
+                    $note->set_Content($content);
+                    $result = $note->persist();
+                    if (!($result instanceof Note)) {
+                        $errors = $result;
+                    } else {
+                        $this->redirect("notes", "open_note", $note->get_Id());
+                    }
+                }
+            } else {
+                "Les paramètres ne sont pas définis.";
+            }
+        }
+        (new View("edit_text_note"))->show([
+            'note' => $note,
+            'errors' => $errors
+        ]);
     }
 
 
@@ -254,9 +298,9 @@ class ControllerNotes extends Controller
         $userId = $user->get_Id();
         $error = "";
 
-        if($noteId === false){
+        if ($noteId === false) {
             $error = "Identifiant de note invalide.";
-        }else{
+        } else {
             $note = Note::get_note($noteId);
             if (!($note instanceof Note)) {
                 $error = "Note introuvable.";
@@ -298,17 +342,17 @@ class ControllerNotes extends Controller
             'isChecklistNote' => $isChecklistNote ?? false
         ]);
     }
-    public function shares() : void
+    public function shares(): void
     {
         $noteId = filter_var($_GET['param1'], FILTER_VALIDATE_INT);
         $currentUser = $this->get_user_or_redirect();
         $currentUserId = $currentUser->get_Id();
         $error = "";
-        $errorAdd="";
+        $errorAdd = "";
 
-        if($noteId === false){
+        if ($noteId === false) {
             $error = "Identifiant de note invalide.";
-        }else{
+        } else {
             $note = Note::get_note($noteId);
             if (isset($_POST['addShare'])) {
                 $noteId = $_POST['noteId'];
@@ -318,31 +362,31 @@ class ControllerNotes extends Controller
                     NoteShare::add_Share($noteId, $userId, $permission);
                     $this->refresh();
                     exit();
-                }else {
+                } else {
                     $errorAdd = "Please select a user and a permission to share.";
                 }
             }
             if (isset($_POST['changePermission'])) {
                 $user = $_POST['user'];
-                NoteShare::change_Permissions($noteId,$user);
+                NoteShare::change_Permissions($noteId, $user);
                 $this->refresh();
                 exit();
             }
             if (isset($_POST['removeShare'])) {
                 $user = $_POST['user'];
-                NoteShare::remove_Share($noteId,$user);
+                NoteShare::remove_Share($noteId, $user);
 
                 $this->refresh();
                 exit();
             }
             if (!($note instanceof Note)) {
                 $error = "Note introuvable.";
-            }else{
-                $canAccess = ($note->get_Owner()->get_Id() === $currentUserId) ;
+            } else {
+                $canAccess = ($note->get_Owner()->get_Id() === $currentUserId);
                 if (!$canAccess) {
                     $error = "Accès non autorisé.";
-                }else{
-                    $existingShares = NoteShare::get_Shared_With_User($currentUserId,$noteId);
+                } else {
+                    $existingShares = NoteShare::get_Shared_With_User($currentUserId, $noteId);
                     $sharedUserIds = [];
                     foreach ($existingShares as $share) {
                         $sharedUserIds[] = $share['id'];
@@ -356,7 +400,6 @@ class ControllerNotes extends Controller
                         }
                     }
                 }
-
             }
         }
 
@@ -364,10 +407,10 @@ class ControllerNotes extends Controller
             'usersToShareWith' => $usersToShareWith ?? null,
             'existingShares' => $existingShares ?? null,
             'noteId' => $noteId,
-            'note'=> $note ?? null,
-            'currentUser'=>$currentUser ?? null,
-            'error'=>$error,
-            'errorAdd'=>$errorAdd
+            'note' => $note ?? null,
+            'currentUser' => $currentUser ?? null,
+            'error' => $error,
+            'errorAdd' => $errorAdd
         ]);
     }
 
