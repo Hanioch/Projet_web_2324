@@ -9,12 +9,16 @@
   * xapigeolet@epfc.eu, password "Password1,", utilisateur
   * mamichel@epfc.eu, password "Password1,", utilisateur
   * A compléter...
+  
+### Remarques
+	
+	* Nous n'avons pas eu le temps de créer un script fonctionnel pour ajouter nos données de test en db.
+	* Nous n'avons finalement rien factorisé dans le modèle MyModel
+
 
 ### Liste des bugs connus
 
-  * bug 1
-  * bug 2
-  * ...
+	
 
 ### Liste des fonctionnalités supplémentaires
 

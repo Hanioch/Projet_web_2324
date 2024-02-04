@@ -6,44 +6,42 @@ include("./utils/header_add_note.php");
 
 ?>
 
-    <div class="row justify-content-center align-items-center">
-
-        <form id="<?= $id_form ?>" class="p-3 border rounded-4 text-white text-center" action="notes/add_checklist_note" method="post">
-        <div class="mb-3">
-            <div class="">
+<div class="card bg-dark text-white border-0">
+    <div class="card-header">
+        <h5 class="card-title">Add Checklist Note</h5>
+    </div>
+    <div class="card-body">
+        <form id="<?= $id_form ?>" action="notes/add_checklist_note" method="post">
+            <div class="mb-3">
                 <label for="title_add_checklist_note" class="form-label">Title</label>
-                <input required type="text" value="<?php echo isset($_POST['title']) ? htmlspecialchars($_POST['title']) : ''; ?>" name="title" class="form-control" id="title_add_checklist_note">
-                <?php
-                    if (!empty($errors['title'])) {
-                ?>
-                <span class="error-add-note">
-                    <?php
-                            foreach($errors['title'] as $error) {
-                                echo $error;
-                            }
-                    ?>
-                </span>
-                <?php
-                    }
-                ?>
+                <input type="text" name="title" value="<?= isset($_POST['title']) ? htmlspecialchars($_POST['title']) : ''; ?>" class="form-control bg-secondary text-white bg-opacity-25 <?= !empty($errors['title']) ? 'is-invalid' : '' ?>" id="title_add_checklist_note">
+                <?php if (!empty($errors['title'])): ?>
+                    <div class="invalid-feedback">
+                        <?php
+                        foreach($errors['title'] as $error) {
+                            echo $error;
+                        }
+                        ?>
+                    </div>
+                <?php endif; ?>
             </div>
-        </div>
-        <div class="mb-3">
-            <div class="">
-                <label for="item" class="form-label">Items</label>
-                <ul>
-                    <?php for ($i = 1 ; $i < 6 ; $i++){ ?>
-                    <li class="mb-2">
-                        <input type="text" name="item<?php echo $i ?>" class="form-control" id="item<?php echo $i ?>" value="<?php echo isset($_POST['item' . $i]) ? htmlspecialchars($_POST['item' . $i]) : ''; ?>">
-                        <?php if (isset($errors['item' . $i])): ?>
-                            <span class="error-add-note"><?php foreach($errors['item' . $i] as $error){echo $error;} ?></span>
-                        <?php endif; ?>
-                    </li>
-                    <?php } ?>
+            <div class="mb-3">
+                <label class="form-label">Items</label>
+                <ul class="list-unstyled custom-list ">
+                    <?php for ($i = 1; $i <= 5; $i++): ?>
+                        <li>
+                            <input type="text" name="item<?= $i ?>" value="<?= isset($_POST['item' . $i]) ? htmlspecialchars($_POST['item' . $i]) : ''; ?>" class="form-control bg-secondary text-white bg-opacity-25 mt-2 <?= !empty($errors['item' . $i]) ? 'is-invalid' : (isset($_POST['item' . $i]) && !empty($_POST['item' . $i]) ? 'is-valid' : '') ?>" id="item<?= $i ?>">
+                            <?php if (isset($errors['item' . $i])): ?>
+                                <div class="invalid-feedback mb-1">
+                                    <?= $errors['item' . $i] ?>
+                                </div>
+                            <?php endif; ?>
+                        </li>
+                    <?php endfor; ?>
                 </ul>
             </div>
-        </div>
         </form>
     </div>
+</div>
 
 <?php include('./utils/footer.php'); ?>
