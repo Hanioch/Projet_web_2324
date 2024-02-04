@@ -14,12 +14,15 @@ VALUES
     ('hani@example.com', 'pw2', 'Hani', 'user'),
     ('ayman@example.com', 'pw2', 'Ayman', 'user');
 
+SET @id_rayan = (SELECT id FROM users WHERE mail = 'rayan@example.com');
+SET @id_hani = (SELECT id FROM users WHERE mail = 'hani@example.com');
+SET @id_ayman = (SELECT id FROM users WHERE mail = 'ayman@example.com');
 
 INSERT INTO notes (title, owner, created_at, edited_at, pinned, archived, weight)
 VALUES
-    ('Note 1', 1, NOW(), NOW(), 0, 0, 1),
-    ('Note 2', 1, NOW(), NOW(), 1, 0, 2),
-    ('Note 3', 2, NOW(), NOW(), 0, 1, 3);
+    ('Note 1', @id_rayan, NOW(), NOW(), 0, 0, 1),
+    ('Note 2', @id_hani, NOW(), NOW(), 1, 0, 2),
+    ('Note 3', @id_ayman, NOW(), NOW(), 0, 1, 3);
 
 INSERT INTO note_shares (note, user, editor)
 VALUES
