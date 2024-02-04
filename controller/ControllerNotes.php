@@ -176,12 +176,43 @@ class ControllerNotes extends Controller
         return true;
     }
 
-    public function edit_checklist_note (): void{
+    public function edit_checklist_note(): void
+    {
         $errors = [];
-        $noteId = $_GET['param1'];
+        $shared_note_id = NULL;
+        $note_id = $_GET['param1'];
         $user = $this->get_user_or_redirect();
-        $note = ChecklistNote::get_note($noteId);
-        $items = ChecklistNoteItems::get_items_by_checklist_note_id($noteId);
+        $user_id = $user->get_Id();
+        $note = ChecklistNote::get_note($note_id);
+        $items = ChecklistNoteItems::get_items_by_checklist_note_id($note_id);
+
+        //On verifie les erreurs. 
+        if (!($note instanceof Note)) {
+            //la checklist note n'existe pas.
+            (new View("error"))->show(["error" => "Page doesn't exist."]);
+            return;
+        }
+
+        foreach ($items as $item) {
+            if (!($item instanceof ChecklistNoteItems)) {
+                // un item n'existe pas.
+                (new View("error"))->show(["error" => "Page doesn't exist."]);
+                return;
+            }
+        }
+
+        $is_shared_note = NoteShare::is_Note_Shared_With_User($note_id, $user_id);
+        $can_edit = $is_shared_note ? NoteShare::can_Edit($note_id, $user_id)  : true;
+
+        if ($is_shared_note) {
+            $shared_note_id = $note->get_Owner()->get_Id();
+        }
+
+        $canAccess = ($note->get_Owner()->get_Id() === $user_id) || ($is_shared_note && $can_edit);
+        if (!$canAccess) {
+            (new View("error"))->show(["error" => "Page doesn't exist."]);
+            return;
+        }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
@@ -191,13 +222,13 @@ class ControllerNotes extends Controller
             } else if (isset($_POST['add_button'])) {
                 $errors = $this->add_item($checklist_note, $errors);
                 if (empty($errors)) {
-                    $items = ChecklistNoteItems::get_items_by_checklist_note_id($noteId);
+                    $items = ChecklistNoteItems::get_items_by_checklist_note_id($note_id);
                     $errors = array_merge($errors, $this->edit_title($note, $errors));
                 }
             } else if (isset($_POST['remove_button'])) {
                 $item = ChecklistNoteItems::get_checklist_note_item_by_id($_POST['remove_button']);
-                $this->remove_item($item, $user);
-                $items = ChecklistNoteItems::get_items_by_checklist_note_id($noteId);
+                $item->delete();
+                $items = ChecklistNoteItems::get_items_by_checklist_note_id($note_id);
                 $errors = $this->edit_title($note, $errors);
             }
             if (empty($errors) && !isset($_POST['remove_button'])) {
@@ -207,22 +238,25 @@ class ControllerNotes extends Controller
         (new View("edit_checklist_note"))->show([
             'note' => $note,
             'items' => $items,
+            'shared_note_id' => $shared_note_id,
             'errors' => $errors
         ]);
     }
 
-    public function edit_title(Note $note, array $errors) : array {
+    public function edit_title(Note $note, array $errors): array
+    {
         if (isset($_POST['title'])) {
             $title = trim($_POST['title']);
             $note->set_Title($title);
-            if(!($test = $note->persist()) instanceof Note){
+            if (!($test = $note->persist()) instanceof Note) {
                 $errors = $test;
             }
         }
         return $errors;
     }
 
-    public function add_item(ChecklistNote $note, array $errors) : array {
+    public function add_item(ChecklistNote $note, array $errors): array
+    {
         $items = $note->get_Items();
         $string_items = [];
         foreach ($items as $i) {
@@ -231,7 +265,7 @@ class ControllerNotes extends Controller
 
         if (isset($_POST['new_item']) && trim($_POST['new_item']) !== '') {
             $item = trim($_POST['new_item']);
-            if(!($this->item_exists($string_items, $item))) {
+            if (!($this->item_exists($string_items, $item))) {
                 $new_item = new ChecklistNoteItems($item, false, $note->get_Id());
                 $new_item->persist();
             } else {
@@ -246,14 +280,10 @@ class ControllerNotes extends Controller
         return $errors;
     }
 
-    private function remove_item(ChecklistNoteItems $item, User $user) : void {
-        $item->delete($user);
-    }
-
-
-    private function item_exists(array $items, string $item_content) : bool {
+    private function item_exists(array $items, string $item_content): bool
+    {
         foreach ($items as $i) {
-            if(strtoupper($i) === strtoupper($item_content)) {
+            if (strtoupper($i) === strtoupper($item_content)) {
                 return true;
             }
         }
