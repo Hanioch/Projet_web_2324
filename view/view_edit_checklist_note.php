@@ -15,20 +15,19 @@ include("./utils/header_add_note.php");
                     <label for="title_add_checklist_note" class="form-label">Title</label>
                     <input required type="text" value="<?= $note->get_Title() ?>" name="title" class="form-control" id="title_add_checklist_note">
                     <?php
-                    if (!empty($errors)) {
+                    if (!empty($errors['title'])) {
                         ?>
                         <span class="error-add-note">
                         <?php
-                        foreach($errors as $error) {
-                            echo $error;
-                        }
+                            echo $errors['title'];
                         ?>
-                    </span>
+                        </span>
                         <?php
                     }
                     ?>
                 </div>
             </div>
+
             <div class="mb-3">
                 <div class="">
                     <label for="item" class="form-label">Items</label>
@@ -62,20 +61,19 @@ include("./utils/header_add_note.php");
                 </div>
             </div>
 
-            <label for="add_item" class="form-label">New Item</label>
-            <div class="input-group mb-3">
-                <input value="" type="text" name="new_item" class="form-control bg-secondary text-white bg-opacity-25 border-0" id="new_item">
+                <label for="add_item" class="form-label">New Item</label>
+                <div class="input-group">
+                    <input <?php if(!empty($errors)){echo 'value="' . $_POST['new_item'] . '"';} else{echo 'value=""';}?> type="text" name="new_item" class="form-control bg-secondary text-white bg-opacity-25 border-0" id="new_item">
 
-                <button class="btn btn-primary btn-lg rounded-end border" type="submit">+</button>
+                    <button name="add_button" class="btn btn-primary btn-lg rounded-end border" type="submit">+</button>
 
-                <?php if (isset($item) && isset($errors['item' . $item->getId()])): ?>
-                    <span class="error-add-note"><?php foreach($errors['item' . $item->getId()] as $error){echo $error;} ?></span>
+                    <input type="hidden" name="item_id" value="1">
+
+                </div>
+                <?php if (isset($item) && isset($errors['new_item'])): ?>
+                    <span class="error-add-note"><?php echo $errors['new_item'] ?></span>
                 <?php endif; ?>
-
-                <input type="hidden" name="item_id" value="1">
-
-            </div>
-        </form>
+            </form>
 
 
     </div>
