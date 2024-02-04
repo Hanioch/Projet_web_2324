@@ -214,8 +214,23 @@ class ControllerNotes extends Controller
 
         $note_id = $_GET['param1'];
         $user = $this->get_user_or_redirect();
+        $user_id = $user->get_Id();
         $note = TextNote::get_text_note($note_id);
 
+        if (!($note instanceof TextNote)) {
+            (new View("error"))->show(["error" => "Page doesn't exist."]);
+            return;
+        }
+
+        $is_shared_note = NoteShare::is_Note_Shared_With_User($note_id, $user_id);
+        $can_edit = $is_shared_note ? NoteShare::can_Edit($note_id, $user_id)  : true;
+
+
+        $canAccess = ($note->get_Owner()->get_Id() === $user_id) || ($is_shared_note && $can_edit);
+        if (!$canAccess) {
+            (new View("error"))->show(["error" => "Page doesn't exist."]);
+            return;
+        }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (isset($_POST['title'])) {
