@@ -51,9 +51,8 @@ class ChecklistNoteItems extends MyModel
     public function delete(User $initiator): ChecklistNoteItems|false
     {
         $checklistNote = ChecklistNote::get_by_id($this->checklist_note);
-        if ($checklistNote->get_Owner()->get_Id() == $initiator->get_Id()) {
+        if ($checklistNote->get_Owner()->get_Id() === $initiator->get_Id()) {
             self::execute("DELETE FROM checklist_note_items WHERE id = :id", ["id" => $this->id]);
-            $checklistNote->delete($initiator);
             return $this;
         }
         return false;
