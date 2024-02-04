@@ -116,7 +116,8 @@ class ControllerNotes extends Controller
             for ($i = 1; $i < 6; $i++) {
                 if (isset($_POST['item' . $i])) {
                     $item_content = trim($_POST['item' . $i]);
-                    if ($item_content !== '' && in_array($item_content, $validated_items)) {
+
+                    if ($item_content !== '' && $this->item_exists($validated_items, $item_content)) {
                         $errors['item' . $i][] = "Items must be unique.";
                         $prevItemKey = array_search($item_content, $validated_items) + 1;
                         $errors['item' . $prevItemKey][] = "Items must be unique.";
@@ -175,8 +176,7 @@ class ControllerNotes extends Controller
         return true;
     }
 
-    public function edit_checklist_note(): void
-    {
+    public function edit_checklist_note (): void{
         $errors = [];
         $noteId = $_GET['param1'];
         $user = $this->get_user_or_redirect();
@@ -211,25 +211,27 @@ class ControllerNotes extends Controller
         ]);
     }
 
-    public function edit_title(Note $note, array $errors): array
-    {
+    public function edit_title(Note $note, array $errors) : array {
         if (isset($_POST['title'])) {
             $title = trim($_POST['title']);
             $note->set_Title($title);
-            if (!($test = $note->persist()) instanceof Note) {
+            if(!($test = $note->persist()) instanceof Note){
                 $errors = $test;
             }
         }
         return $errors;
     }
 
-    public function add_item(ChecklistNote $note, array $errors): array
-    {
+    public function add_item(ChecklistNote $note, array $errors) : array {
         $items = $note->get_Items();
+        $string_items = [];
+        foreach ($items as $i) {
+            $string_items[] = $i->get_content();
+        }
 
-        if (isset($_POST['new_item']) && $_POST['new_item'] !== '') {
+        if (isset($_POST['new_item']) && trim($_POST['new_item']) !== '') {
             $item = trim($_POST['new_item']);
-            if (!($this->item_exists($items, $item))) {
+            if(!($this->item_exists($string_items, $item))) {
                 $new_item = new ChecklistNoteItems($item, false, $note->get_Id());
                 $new_item->persist();
             } else {
@@ -244,16 +246,14 @@ class ControllerNotes extends Controller
         return $errors;
     }
 
-    private function remove_item(ChecklistNoteItems $item, User $user): void
-    {
+    private function remove_item(ChecklistNoteItems $item, User $user) : void {
         $item->delete($user);
     }
 
 
-    private function item_exists(array $items, string $item): bool
-    {
+    private function item_exists(array $items, string $item_content) : bool {
         foreach ($items as $i) {
-            if ($i->get_Content() === $item) {
+            if(strtoupper($i) === strtoupper($item_content)) {
                 return true;
             }
         }
