@@ -227,7 +227,7 @@ class ControllerNotes extends Controller
                 }
             } else if (isset($_POST['remove_button'])) {
                 $item = ChecklistNoteItems::get_checklist_note_item_by_id($_POST['remove_button']);
-                $this->remove_item($item, $user);
+                $item->delete();
                 $items = ChecklistNoteItems::get_items_by_checklist_note_id($note_id);
                 $errors = $this->edit_title($note, $errors);
             }
@@ -279,12 +279,6 @@ class ControllerNotes extends Controller
         }
         return $errors;
     }
-
-    private function remove_item(ChecklistNoteItems $item, User $user): void
-    {
-        $item->delete($user);
-    }
-
 
     private function item_exists(array $items, string $item_content): bool
     {
