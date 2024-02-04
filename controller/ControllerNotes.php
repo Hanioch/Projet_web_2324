@@ -186,17 +186,15 @@ class ControllerNotes extends Controller
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $checklist_note = new ChecklistNote($note->get_Title(), $note->get_Owner(), $note->is_Pinned(), $note->is_Archived(), $note->get_Weight(), $note->get_Id());
-            if(isset($_POST['save_button'])) {
+            if (isset($_POST['save_button'])) {
                 $errors = $this->edit_title($note, $errors);
-            }
-            else if(isset($_POST['add_button'])) {
+            } else if (isset($_POST['add_button'])) {
                 $errors = $this->add_item($checklist_note, $errors);
-                if(empty($errors)){
+                if (empty($errors)) {
                     $items = ChecklistNoteItems::get_items_by_checklist_note_id($noteId);
                     $errors = array_merge($errors, $this->edit_title($note, $errors));
-
                 }
-            } else if(isset($_POST['remove_button'])) {
+            } else if (isset($_POST['remove_button'])) {
                 $item = ChecklistNoteItems::get_checklist_note_item_by_id($_POST['remove_button']);
                 $this->remove_item($item, $user);
                 $items = ChecklistNoteItems::get_items_by_checklist_note_id($noteId);
@@ -213,23 +211,25 @@ class ControllerNotes extends Controller
         ]);
     }
 
-    public function edit_title(Note $note, array $errors) : array {
+    public function edit_title(Note $note, array $errors): array
+    {
         if (isset($_POST['title'])) {
             $title = trim($_POST['title']);
             $note->set_Title($title);
-            if(!($test = $note->persist()) instanceof Note){
+            if (!($test = $note->persist()) instanceof Note) {
                 $errors = $test;
             }
         }
         return $errors;
     }
 
-    public function add_item(ChecklistNote $note, array $errors) : array {
+    public function add_item(ChecklistNote $note, array $errors): array
+    {
         $items = $note->get_Items();
 
         if (isset($_POST['new_item']) && $_POST['new_item'] !== '') {
             $item = trim($_POST['new_item']);
-            if(!($this->item_exists($items, $item))) {
+            if (!($this->item_exists($items, $item))) {
                 $new_item = new ChecklistNoteItems($item, false, $note->get_Id());
                 $new_item->persist();
             } else {
@@ -237,19 +237,20 @@ class ControllerNotes extends Controller
             }
 
 
-            if(!($test = $note->persist()) instanceof Note){
+            if (!($test = $note->persist()) instanceof Note) {
                 $errors = array_merge($errors, $test);
             }
         }
         return $errors;
     }
 
-    private function remove_item(ChecklistNoteItems $item, User $user) : void {
+    private function remove_item(ChecklistNoteItems $item, User $user): void
+    {
         $item->delete($user);
     }
 
 
-    private function item_exists(array $items, string $item) : bool
+    private function item_exists(array $items, string $item): bool
     {
         foreach ($items as $i) {
             if ($i->get_Content() === $item) {
@@ -262,6 +263,7 @@ class ControllerNotes extends Controller
     public function edit_text_note(): void
     {
         $errors = [];
+        $shared_note_id = NULL;
 
         if (!isset($_GET['param1'])) {
             (new View("error"))->show(["error" => "Page doesn't exist."]);
@@ -281,6 +283,9 @@ class ControllerNotes extends Controller
         $is_shared_note = NoteShare::is_Note_Shared_With_User($note_id, $user_id);
         $can_edit = $is_shared_note ? NoteShare::can_Edit($note_id, $user_id)  : true;
 
+        if ($is_shared_note) {
+            $shared_note_id = $note->get_Owner()->get_Id();
+        }
 
         $canAccess = ($note->get_Owner()->get_Id() === $user_id) || ($is_shared_note && $can_edit);
         if (!$canAccess) {
@@ -310,6 +315,7 @@ class ControllerNotes extends Controller
         }
         (new View("edit_text_note"))->show([
             'note' => $note,
+            'shared_note_id' => $shared_note_id,
             'errors' => $errors
         ]);
     }
