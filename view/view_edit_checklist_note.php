@@ -13,7 +13,7 @@ include("./utils/header_add_note.php");
             <div class="mb-3">
                 <div class="">
                     <label for="title_add_checklist_note" class="form-label">Title</label>
-                    <input required type="text" value="<?= $note->get_Title() ?>" name="title" class="form-control" id="title_add_checklist_note">
+                    <input type="text" value="<?= $note->get_Title() ?>" name="title" class="form-control" id="title_add_checklist_note">
                     <?php
                     if (!empty($errors['title'])) {
                         ?>

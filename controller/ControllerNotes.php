@@ -239,7 +239,7 @@ class ControllerNotes extends Controller
 
     private function item_exists(array $items, string $item) : bool {
         foreach ($items as $i) {
-            if($i->getContent() === $item) {
+            if($i->get_Content() === $item) {
                 return true;
             }
         }
