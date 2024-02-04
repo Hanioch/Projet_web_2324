@@ -246,9 +246,9 @@ class ControllerNotes extends Controller
     }
 
 
-    private function item_exists(array $items, string $item) : bool {
+    private function item_exists(array $items, string $item_content) : bool {
         foreach ($items as $i) {
-            if($i->get_Content() === $item) {
+            if(strtoupper($i->get_Content()) === strtoupper($item_content)) {
                 return true;
             }
         }
