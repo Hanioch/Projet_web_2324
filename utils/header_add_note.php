@@ -3,7 +3,7 @@ include('./utils/head.php');
 
 $back_url = "./notes";
 
-if ($shared_note_id !== NULL) {
+if (isset($shared_note_id) && $shared_note_id !== NULL) {
     $back_url = "./notes/shared_by/" . $shared_note_id;
 }
 ?>
