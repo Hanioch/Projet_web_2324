@@ -13,7 +13,7 @@ include("./utils/header_add_note.php");
             <div class="mb-3">
                 <div class="">
                     <label for="title_add_checklist_note" class="form-label">Title</label>
-                    <input type="text" value="<?= $note->get_Title() ?>" name="title" class="form-control" id="title_add_checklist_note">
+                    <input type="text" value="<?php if(isset($_POST['title']) ){ echo $_POST['title'];}else{ echo $note->get_Title();} ?>" name="title" class="form-control" id="title_add_checklist_note">
                     <?php
                     if (!empty($errors['title'])) {
                         ?>
@@ -63,7 +63,7 @@ include("./utils/header_add_note.php");
 
                 <label for="add_item" class="form-label">New Item</label>
                 <div class="input-group">
-                    <input <?php if(!empty($errors)){echo 'value="' . $_POST['new_item'] . '"';} else{echo 'value=""';}?> type="text" name="new_item" class="form-control bg-secondary text-white bg-opacity-25 border-0" id="new_item">
+                    <input <?php if(!empty($errors['new_item'])){echo 'value="' . $_POST['new_item'] . '"';} else{echo 'value=""';}?> type="text" name="new_item" class="form-control bg-secondary text-white bg-opacity-25 border-0" id="new_item">
 
                     <button name="add_button" class="btn btn-primary btn-lg rounded-end border" type="submit">+</button>
 
