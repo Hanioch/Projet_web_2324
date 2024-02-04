@@ -19,7 +19,7 @@ include("./utils/header_add_note.php");
         <form id="<?= $id_form ?>" action="notes/add_text_note" method="post">
             <div class="mb-3">
                 <label for="title_add_text_note" class="form-label">Title</label>
-                <input required type="text" value="<?= $default_title ?>" name="title" class="form-control bg-secondary text-white bg-opacity-25 mb-2" id="title-add-text-note">
+                <input required type="text" value="<?= $default_title ?>" name="title" class="form-control bg-secondary text-white bg-opacity-25 mb-2" id="title_add_text_note">
                 <?php
                 $errors = $result["errors"];
                 if (array_key_exists('title', $errors)) : ?>
@@ -31,7 +31,7 @@ include("./utils/header_add_note.php");
             </div>
             <div class="mb-3">
                 <label for="text_add_text_note" class="form-label">Text</label>
-                <textarea name="text" class="form-control bg-secondary text-white bg-opacity-25" id="text-add-text-note" cols="30" rows="10"><?= $default_text ?></textarea>
+                <textarea name="text" class="form-control bg-secondary text-white bg-opacity-25" id="text_add_text_note" cols="30" rows="10"><?= $default_text ?></textarea>
             </div>
         </form>
     </div>

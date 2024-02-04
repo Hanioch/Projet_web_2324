@@ -30,15 +30,15 @@ include("./utils/header_add_note.php");
 
             <div class="mb-3">
                 <div class="">
-                    <label for="item" class="form-label">Items</label>
+                    <label class="form-label">Items</label>
                     <ul class="list-unstyled">
                         <?php foreach ($items as $item): ?>
                             <li class="list-unstyled">
                                 <div class="input-group mb-3">
                                     <div class="input-group-text bg-primary  border-secondary ">
-                                        <input class="form-check-input  border align-middle" type="checkbox" name="checked" value="1" <?= $item->is_Checked() ? 'checked' : '' ?> aria-label="Checkbox for following text input" disabled> <!-- onchange="this.form.submit()" -->
+                                        <input class="form-check-input  border align-middle"  type="checkbox" name="checked" value="1" <?= $item->is_Checked() ? 'checked' : '' ?> aria-label="Checkbox for following text input" disabled> <!-- onchange="this.form.submit()" -->
                                     </div>
-                                    <input value="<?= $item->get_Content() ?>"type="text" name="item<?php echo $item->get_Id() ?>" class="form-control bg-secondary text-white bg-opacity-25 border-secondary" id="item<?php echo $item->get_Id() ?>"  value="<?php echo isset($_POST['item' . $item->get_Id()]) ? htmlspecialchars($_POST['item' . $item->get_Id()]) : ''; ?>" disabled>
+                                    <input value="<?= $item->get_Content() ?>" type="text" name="item<?php echo $item->get_Id() ?>" class="form-control bg-secondary text-white bg-opacity-25 border-secondary" id="item<?php echo $item->get_Id() ?>"  value="<?php echo isset($_POST['item' . $item->get_Id()]) ? htmlspecialchars($_POST['item' . $item->get_Id()]) : ''; ?>" disabled>
                                     <button name="remove_button" value="<?= $item->get_Id() ?>" class="btn btn-danger btn-lg rounded-end  border-secondary" type="submit">
                                         <i class="bi bi-x"></i>
                                     </button>
@@ -54,7 +54,7 @@ include("./utils/header_add_note.php");
             </div>
             <label for="add_item" class="form-label">New Item</label>
             <div class="input-group">
-                <input <?php if(!empty($errors['new_item'])){echo 'value="' . $_POST['new_item'] . '"';} else{echo 'value=""';}?> type="text" name="new_item" class="form-control bg-secondary text-white bg-opacity-25 border-secondary" id="new_item">
+                <input <?php if(!empty($errors['new_item'])){echo 'value="' . $_POST['new_item'] . '"';} else{echo 'value=""';}?> type="text" name="new_item" class="form-control bg-secondary text-white bg-opacity-25 border-secondary" id="add_item">
                     <button name="add_button" class="btn btn-primary btn-lg rounded-end  border-secondary" type="submit">
                         <i class="bi bi-plus"></i>
                     </button>

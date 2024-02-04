@@ -11,7 +11,7 @@ include("./utils/header_add_note.php");
         <div class="mb-3 text-white">
             <div class="">
                 <label for="title_add_text_note" class="form-label">Title</label>
-                <input required type="text" value="<?= $note->get_Title() ?>" name="title" class="form-control bg-secondary text-white bg-opacity-25 mb-2" id="title-add-text-note">
+                <input required type="text" value="<?= $note->get_Title() ?>" name="title" class="form-control bg-secondary text-white bg-opacity-25 mb-2" id="title_add_text_note">
                 <?php
                 if (!empty($errors)) {
                 ?>
@@ -31,7 +31,7 @@ include("./utils/header_add_note.php");
         </div>
         <div class="mb-3 text-white">
             <label for="text_add_text_note" class="form-label">Text</label>
-            <textarea name="text" class="form-control bg-secondary text-white bg-opacity-25" id="text-add-text-note" cols="30" rows="10"><?= $note->get_Content() ?></textarea>
+            <textarea name="text" class="form-control bg-secondary text-white bg-opacity-25" id="text_add_text_note" cols="30" rows="10"><?= $note->get_Content() ?></textarea>
         </div>
     </form>
 

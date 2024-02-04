@@ -15,6 +15,5 @@ include("./utils/header_settings.php");
                 <i class="bi bi-box-arrow-right"></i> Logout</a>
         </div>
     </div>
-
-    <?php
-    include('./utils/footer.php'); ?>
+</div>
+    <?php include('./utils/footer.php'); ?>
