@@ -190,13 +190,13 @@ class ControllerNotes extends Controller
             else if(isset($_POST['add_button'])) {
                 $errors = $this->add_item($checklist_note, $errors);
                 if(empty($errors)){
+                    $items = ChecklistNoteItems::get_items_by_checklist_note_id($noteId);
                     $errors = array_merge($errors, $this->edit_title($note, $errors));
                 }
             }
             if (empty($errors)) {
                 $this->redirect("notes", "open_note", $note->getId());
             }
-
         }
         (new View("edit_checklist_note"))->show([
             'note' => $note,

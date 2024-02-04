@@ -63,7 +63,7 @@ include("./utils/header_add_note.php");
 
                 <label for="add_item" class="form-label">New Item</label>
                 <div class="input-group">
-                    <input <?php if(isset($errors['new_item']) && $errors['new_item'] !== ''){echo 'value="' . $_POST['new_item'] . '"';} else{echo 'value=""';}?> type="text" name="new_item" class="form-control bg-secondary text-white bg-opacity-25 border-0" id="new_item">
+                    <input <?php if(!empty($errors)){echo 'value="' . $_POST['new_item'] . '"';} else{echo 'value=""';}?> type="text" name="new_item" class="form-control bg-secondary text-white bg-opacity-25 border-0" id="new_item">
 
                     <button name="add_button" class="btn btn-primary btn-lg rounded-end border" type="submit">+</button>
 
