@@ -126,7 +126,7 @@ class ControllerNotes extends Controller
                             $validated_items[] = $item_content;
                         }
                         $new_checklist_item = new ChecklistNoteItems($item_content, false);
-                        if ($new_checklist_item->getContent() !== '') {
+                        if ($new_checklist_item->get_content() !== '') {
                             $items_list[] = $new_checklist_item;
                         }
                         if (!empty($valid = $new_checklist_item->validate())) {
@@ -150,12 +150,12 @@ class ControllerNotes extends Controller
                     if (!empty($validated_items)) {
                         if (empty($errors['note'])) {
                             foreach ($items_list as $item) {
-                                $item->set_checklist_note($note->getId());
+                                $item->set_checklist_note($note->get_Id());
                                 $item->persist();
                             }
                         }
                     }
-                    $this->redirect("notes", "open_note", $note->getId());
+                    $this->redirect("notes", "open_note", $note->get_Id());
                 }
             } else {
                 $errors['title'][] = "Title must be defined.";
@@ -166,9 +166,9 @@ class ControllerNotes extends Controller
 
     private function validateUniqueItem(ChecklistNote $checklistNote, string $content): bool
     {
-        $existingItems = $checklistNote->getItems();
+        $existingItems = $checklistNote->get_Items();
         foreach ($existingItems as $item) {
-            if ($item->getContent() === $content && $item->getContent() !== '') {
+            if ($item->get_Content() === $content && $item->get_Content() !== '') {
                 return false;
             }
         }
@@ -183,7 +183,7 @@ class ControllerNotes extends Controller
         $items = ChecklistNoteItems::get_items_by_checklist_note_id($noteId);
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $checklist_note = new ChecklistNote($note->getTitle(), $note->getOwner(), $note->isPinned(), $note->isArchived(), $note->getWeight(), $note->getId());
+            $checklist_note = new ChecklistNote($note->get_Title(), $note->get_Owner(), $note->is_Pinned(), $note->is_Archived(), $note->get_Weight(), $note->get_Id());
             if(isset($_POST['save_button'])) {
                 $errors = $this->edit_title($note, $errors);
             }
@@ -195,7 +195,7 @@ class ControllerNotes extends Controller
                 }
             }
             if (empty($errors)) {
-                $this->redirect("notes", "open_note", $note->getId());
+                $this->redirect("notes", "open_note", $note->get_Id());
             }
         }
         (new View("edit_checklist_note"))->show([
@@ -208,7 +208,7 @@ class ControllerNotes extends Controller
     public function edit_title(Note $note, array $errors) : array {
         if (isset($_POST['title'])) {
             $title = trim($_POST['title']);
-            $note->setTitle($title);
+            $note->set_Title($title);
             if(!($test = $note->persist()) instanceof Note){
                 $errors = $test;
             }
@@ -217,12 +217,12 @@ class ControllerNotes extends Controller
     }
 
     public function add_item(ChecklistNote $note, array $errors) : array {
-        $items = $note->getItems();
+        $items = $note->get_Items();
 
         if (isset($_POST['new_item']) && $_POST['new_item'] !== '') {
             $item = trim($_POST['new_item']);
             if(!($this->item_exists($items, $item))) {
-                $new_item = new ChecklistNoteItems($item, false, $note->getId());
+                $new_item = new ChecklistNoteItems($item, false, $note->get_Id());
                 $new_item->persist();
             } else {
                 $errors['new_item'] = "Item already exists.";
@@ -239,7 +239,7 @@ class ControllerNotes extends Controller
 
     private function item_exists(array $items, string $item) : bool {
         foreach ($items as $i) {
-            if($i->getContent() === $item) {
+            if($i->get_Content() === $item) {
                 return true;
             }
         }
@@ -249,43 +249,47 @@ class ControllerNotes extends Controller
 
     public function open_note(): void
     {
-        $noteId = $_GET['param1'];
+        $noteId = filter_var($_GET['param1'], FILTER_VALIDATE_INT);
         $user = $this->get_user_or_redirect();
-        $userId = $user->getId();
+        $userId = $user->get_Id();
         $error = "";
 
-        $note = Note::get_note($noteId);
-        if (!$note) {
-            $error = "Note introuvable.";
-        } else {
-            $isSharedNote = NoteShare::isNoteSharedWithUser($noteId, $userId);
-            $canEdit = True;
-            if ($isSharedNote) {
-                $canEdit = NoteShare::canEdit($noteId, $userId);
-            }
-
-            $canAccess = ($note->getOwner()->getId() === $userId) || $isSharedNote;
-            if (!$canAccess) {
-                $error = "Accès non autorisé.";
+        if($noteId === false){
+            $error = "Identifiant de note invalide.";
+        }else{
+            $note = Note::get_note($noteId);
+            if (!($note instanceof Note)) {
+                $error = "Note introuvable.";
             } else {
-                $id_sender = $note->getOwner()->getId();
-                $isChecklistNote = Note::is_checklist_note($noteId);
-                if ($isChecklistNote) {
-                    $checklistItems = ChecklistNoteItems::get_items_by_checklist_note_id($noteId);
-                } else {
-                    $text = TextNote::get_text_note($noteId);
-                }
-                $headerType = 'notes';
+                $isSharedNote = NoteShare::is_Note_Shared_With_User($noteId, $userId);
+                $canEdit = True;
                 if ($isSharedNote) {
-                    $headerType = 'shared_by';
-                } elseif ($note->isArchived()) {
-                    $headerType = 'archives';
+                    $canEdit = NoteShare::can_Edit($noteId, $userId);
+                }
+
+                $canAccess = ($note->get_Owner()->get_Id() === $userId) || $isSharedNote;
+                if (!$canAccess) {
+                    $error = "Accès non autorisé.";
+                } else {
+                    $id_sender = $note->get_Owner()->get_Id();
+                    $isChecklistNote = Note::is_checklist_note($noteId);
+                    if ($isChecklistNote) {
+                        $checklistItems = ChecklistNoteItems::get_items_by_checklist_note_id($noteId);
+                    } else {
+                        $text = TextNote::get_text_note($noteId);
+                    }
+                    $headerType = 'notes';
+                    if ($isSharedNote) {
+                        $headerType = 'shared_by';
+                    } elseif ($note->is_Archived()) {
+                        $headerType = 'archives';
+                    }
                 }
             }
         }
         (new View("open_note"))->show([
             'error' => $error,
-            'note' => $note,
+            'note' => $note ?? null,
             'headerType' => $headerType ?? null,
             'canEdit' => $canEdit ?? false,
             'text' => $text ?? null,
@@ -294,44 +298,98 @@ class ControllerNotes extends Controller
             'isChecklistNote' => $isChecklistNote ?? false
         ]);
     }
+    public function shares() : void
+    {
+        $noteId = filter_var($_GET['param1'], FILTER_VALIDATE_INT);
+        $currentUser = $this->get_user_or_redirect();
+        $currentUserId = $currentUser->get_Id();
+        $error = "";
+        $errorAdd="";
 
+        if($noteId === false){
+            $error = "Identifiant de note invalide.";
+        }else{
+            $note = Note::get_note($noteId);
+            if (isset($_POST['addShare'])) {
+                $noteId = $_POST['noteId'];
+                $userId = $_POST['user'] ?? null;
+                $permission = $_POST['permission'] ?? null;
+                if (!empty($userId) && $permission !== null) {
+                    NoteShare::add_Share($noteId, $userId, $permission);
+                    $this->refresh();
+                    exit();
+                }else {
+                    $errorAdd = "Please select a user and a permission to share.";
+                }
+            }
+            if (isset($_POST['changePermission'])) {
+                $user = $_POST['user'];
+                NoteShare::change_Permissions($noteId,$user);
+                $this->refresh();
+                exit();
+            }
+            if (isset($_POST['removeShare'])) {
+                $user = $_POST['user'];
+                NoteShare::remove_Share($noteId,$user);
 
-    public function togglePin()
+                $this->refresh();
+                exit();
+            }
+            if (!($note instanceof Note)) {
+                $error = "Note introuvable.";
+            }else{
+                $canAccess = ($note->get_Owner()->get_Id() === $currentUserId) ;
+                if (!$canAccess) {
+                    $error = "Accès non autorisé.";
+                }else{
+                    $existingShares = NoteShare::get_Shared_With_User($currentUserId,$noteId);
+                    $sharedUserIds = [];
+                    foreach ($existingShares as $share) {
+                        $sharedUserIds[] = $share['id'];
+                    }
+
+                    $allUsers = User::get_users();
+                    $usersToShareWith = [];
+                    foreach ($allUsers as $user) {
+                        if ($user->get_Id() !== $currentUserId && !in_array($user->get_Id(), $sharedUserIds)) {
+                            $usersToShareWith[] = $user;
+                        }
+                    }
+                }
+
+            }
+        }
+
+        (new View("shares"))->show([
+            'usersToShareWith' => $usersToShareWith ?? null,
+            'existingShares' => $existingShares ?? null,
+            'noteId' => $noteId,
+            'note'=> $note ?? null,
+            'currentUser'=>$currentUser ?? null,
+            'error'=>$error,
+            'errorAdd'=>$errorAdd
+        ]);
+    }
+
+    public function toggle_Pin()
     {
         $noteId = $_POST['note_id'];
-        if ($noteId === null) {
-        }
-
         $note = Note::get_note($noteId);
-        if (!$note) {
-        }
-
-        $note->togglePin();
-
+        $note->toggle_Pin();
         $this->refresh();
     }
-    public function toggleCheckbox()
+    public function toggle_Checkbox()
     {
         $itemId = $_POST['item_id'];
-
         $item = ChecklistNoteItems::get_checklist_note_item_by_id($itemId);
-
-        $item->toggleCheckbox();
-
+        $item->toggle_Checkbox();
         $this->refresh();
     }
-    public function setArchive()
+    public function set_Archive()
     {
         $noteId = $_POST['note_id'];
-        if ($noteId === null) {
-        }
-
         $note = Note::get_note($noteId);
-        if (!$note) {
-        }
-
-        $note->setArchive();
-
+        $note->set_Archive_reverse();
         $this->refresh();
     }
     public function delete()
@@ -342,7 +400,7 @@ class ControllerNotes extends Controller
             $noteId = $_POST['note_id'];
             $note = Note::get_note($noteId);
 
-            if ($note && $note->deleteAll($user)) {
+            if ($note && $note->delete_All($user)) {
                 $this->refresh("./archives");
             } else {
 

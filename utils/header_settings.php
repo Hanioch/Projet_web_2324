@@ -8,7 +8,11 @@ include('./utils/head.php')
 
         <nav class="navbar navbar-dark">
             <?php
-            $chevronLink = ($title_page === "Settings") ? "./notes" : "./settings";
+            if ($title_page === "Shares") {
+                $chevronLink = "./notes/open_note/" . $noteId;
+            } else {
+                $chevronLink = ($title_page === "Settings") ? "./notes" : "./settings";
+            }
             echo '<a class="navbar-brand" href="' . $chevronLink . '">
                         <i class="bi bi-chevron-left"></i>
                     </a>';

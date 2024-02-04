@@ -16,35 +16,40 @@ include('./utils/head.php')
         </nav>
         <nav class="navbar navbar-dark ">
             <div class="">
-            <?php
-            $chevronLink = "./notes";
-            echo '<a class="navbar-brand" href="' . $chevronLink . '">
-                        <i class="bi bi-share"></i>
-                    </a>';
-            ?>
+                <div class="navbar-brand" >
+                    <a href="./Notes/shares/<?php echo $note->get_Id(); ?>">
+                        <button class="btn-icon" style="background: none; border: none; color: white; ">
+                            <i class="bi bi-share"></i>
+                        </button>
+                    </a>
+                </div>
             </div>
             <div class="">
                 <?php
-                $pinIcon = $note->isPinned() ? "bi-pin-fill" : "bi-pin";
+                $pinIcon = $note->is_Pinned() ? "bi-pin-fill" : "bi-pin";
                 ?>
-                <form action="notes/togglePin" method="POST" class="navbar-brand"  >
-                    <input type="hidden" name="note_id" value="<?= $note->getId() ?>">
+                <form action="notes/toggle_Pin" method="POST" class="navbar-brand"  >
+                    <input type="hidden" name="note_id" value="<?= $note->get_Id() ?>">
                         <button type="submit" class="btn-icon" style="background: none; border: none; color: inherit; ">
                             <i class="bi <?= $pinIcon ?>"></i>
                         </button>
                 </form>
             </div>
             <div class="">
-                <form action="notes/setArchive" method="POST" class="navbar-brand"  >
-                    <input type="hidden" name="note_id" value="<?= $note->getId() ?>">
-                    <button type="submit" class="btn-icon" style="background: none; border: none; color: inherit; ">
-                        <i class="bi bi-arrow-down-square"></i>
-                    </button>
+                <form action="notes/set_Archive" method="POST" class="navbar-brand"  >
+                    <input type="hidden" name="note_id" value="<?= $note->get_Id() ?>">
+                        <button type="submit" class="btn-icon" style="background: none; border: none; color: inherit; ">
+                            <i class="bi bi-arrow-down-square"></i>
+                        </button>
                 </form>
             </div>
              <div class="">
             <?php
-            $chevronLink = "./notes/edit_checklist_note/" . $note->getId();
+            if($isChecklistNote){
+                $chevronLink = "./notes/edit_checklist_note/" . $note->get_Id();
+            }else{
+                $chevronLink = "./notes";
+            }
             echo '<a class="navbar-brand" href="' . $chevronLink . '">
                        <i class="bi bi-pencil"></i>
                     </a>';

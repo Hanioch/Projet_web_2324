@@ -10,72 +10,72 @@ class ChecklistNote extends Note
         $this->fetch_list_item();
     }
 
-    public function getTitle(): string
+    public function get_Title(): string
     {
         return $this->title;
     }
 
-    public function setTitle(string $title): void
+    public function set_Title(string $title): void
     {
         $this->title = $title;
     }
 
-    public function getOwner(): User
+    public function get_Owner(): User
     {
         return $this->owner;
     }
 
-    public function setOwner(User $owner): void
+    public function set_Owner(User $owner): void
     {
         $this->owner = $owner;
     }
 
-    public function isPinned(): bool
+    public function is_Pinned(): bool
     {
         return $this->pinned;
     }
 
-    public function setPinned(bool $pinned): void
+    public function set_Pinned(bool $pinned): void
     {
         $this->pinned = $pinned;
     }
 
-    public function isArchived(): bool
+    public function is_Archived(): bool
     {
         return $this->archived;
     }
 
-    public function setArchived(bool $archived): void
+    public function set_Archived(bool $archived): void
     {
         $this->archived = $archived;
     }
 
-    public function getWeight(): int
+    public function get_Weight(): int
     {
         return $this->weight;
     }
 
-    public function setWeight(int $weight): void
+    public function set_Weight(int $weight): void
     {
         $this->weight = $weight;
     }
 
-    public function getCreatedAt(): ?string
+    public function get_Created_At(): ?string
     {
         return $this->created_at;
     }
 
-    public function setCreatedAt(?string $created_at): void
+    public function set_Created_At(?string $created_at): void
     {
         $this->created_at = $created_at;
     }
 
-    public function getEditedAt(): ?string
+    public function get_Edited_At(): ?string
     {
         return $this->edited_at;
     }
 
-    public function setEditedAt(?string $edited_at): void
+    public function set_Edited_At(?string $edited_at): void
     {
         $this->edited_at = $edited_at;
     }
@@ -107,7 +107,7 @@ class ChecklistNote extends Note
     {
         $this->list_item = $list;
     }
-    public function getListItem()
+    public function get_List_Item()
     {
         return $this->list_item ;
     }
@@ -141,7 +141,7 @@ class ChecklistNote extends Note
                 self::execute(
                     'INSERT INTO checklist_notes (id) VALUES
                 (:id)',
-                    ['id' => $note->getId()]
+                    ['id' => $note->get_Id()]
                 );
                 return $this;
             }
@@ -150,7 +150,7 @@ class ChecklistNote extends Note
         return $errors;
     }
 
-    public function getItems(): array
+    public function get_Items(): array
     {
         $query = self::execute("SELECT * FROM checklist_note_items WHERE checklist_note = :checklist_note", ["checklist_note" => $this->id]);
         $data = $query->fetchAll();
