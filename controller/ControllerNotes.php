@@ -179,27 +179,71 @@ class ControllerNotes extends Controller
         $errors = [];
         $noteId = $_GET['param1'];
         $user = $this->get_user_or_redirect();
-        $note = Note::get_note($noteId);
+        $note = ChecklistNote::get_note($noteId);
         $items = ChecklistNoteItems::get_items_by_checklist_note_id($noteId);
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if (isset($_POST['title'])) {
-                $title = trim($_POST['title']);
-                $note->setTitle($title);
-                if(!($test = $note->persist()) instanceof Note){
-                    $errors = $test;
-                } else {
-                    $this->redirect("notes", "open_note", $note->getId());
-                }
-            } else {
-                "Les paramètres ne sont pas définis.";
+            $checklist_note = new ChecklistNote($note->getTitle(), $note->getOwner(), $note->isPinned(), $note->isArchived(), $note->getWeight(), $note->getId());
+            if(isset($_POST['save_button'])) {
+                $errors = $this->edit_title($note, $errors);
             }
+            else if(isset($_POST['add_button'])) {
+                $errors = $this->add_item($checklist_note, $errors);
+                if(empty($errors)){
+                    $errors = array_merge($errors, $this->edit_title($note, $errors));
+                }
+            }
+            if (empty($errors)) {
+                $this->redirect("notes", "open_note", $note->getId());
+            }
+
         }
         (new View("edit_checklist_note"))->show([
             'note' => $note,
             'items' => $items,
             'errors' => $errors
         ]);
+    }
+
+    public function edit_title(Note $note, array $errors) : array {
+        if (isset($_POST['title'])) {
+            $title = trim($_POST['title']);
+            $note->setTitle($title);
+            if(!($test = $note->persist()) instanceof Note){
+                $errors = $test;
+            }
+        }
+        return $errors;
+    }
+
+    public function add_item(ChecklistNote $note, array $errors) : array {
+        $items = $note->getItems();
+
+        if (isset($_POST['new_item']) && $_POST['new_item'] !== '') {
+            $item = trim($_POST['new_item']);
+            if(!($this->item_exists($items, $item))) {
+                $new_item = new ChecklistNoteItems($item, false, $note->getId());
+                $new_item->persist();
+            } else {
+                $errors['new_item'] = "Item already exists.";
+            }
+
+
+            if(!($test = $note->persist()) instanceof Note){
+                $errors = array_merge($errors, $test);
+            }
+        }
+        return $errors;
+    }
+
+
+    private function item_exists(array $items, string $item) : bool {
+        foreach ($items as $i) {
+            if($i->getContent() === $item) {
+                return true;
+            }
+        }
+        return false;
     }
 
 
