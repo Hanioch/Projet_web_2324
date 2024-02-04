@@ -8,42 +8,42 @@ class ChecklistNoteItems extends MyModel
     {
     }
 
-    public function getContent(): string
+    public function get_content(): string
     {
         return $this->content;
     }
 
-    public function setContent(string $content): void
+    public function set_Content(string $content): void
     {
         $this->content = $content;
     }
 
-    public function isChecked(): bool
+    public function is_Checked(): bool
     {
         return $this->checked;
     }
 
-    public function setChecked(bool $checked): void
+    public function set_Checked(bool $checked): void
     {
         $this->checked = $checked;
     }
 
-    public function getId(): ?int
+    public function get_Id(): ?int
     {
         return $this->id;
     }
 
-    public function setId(?int $id): void
+    public function set_Id(?int $id): void
     {
         $this->id = $id;
     }
 
-    public function getChecklistNote(): ?int
+    public function get_ChecklistNote(): ?int
     {
         return $this->checklist_note;
     }
 
-    public function setChecklistNote(?int $checklist_note): void
+    public function set_ChecklistNote(?int $checklist_note): void
     {
         $this->checklist_note = $checklist_note;
     }
@@ -51,7 +51,7 @@ class ChecklistNoteItems extends MyModel
     public function delete(User $initiator): ChecklistNoteItems|false
     {
         $checklistNote = ChecklistNote::get_by_id($this->checklist_note);
-        if ($checklistNote->getOwner()->getId() == $initiator->getId()) {
+        if ($checklistNote->get_Owner()->get_Id() == $initiator->get_Id()) {
             self::execute("DELETE FROM checklist_note_items WHERE id = :id", ["id" => $this->id]);
             $checklistNote->delete($initiator);
             return $this;
@@ -166,7 +166,7 @@ class ChecklistNoteItems extends MyModel
         return $this;
     }
 
-    public function toggleCheckbox(): ChecklistNoteItems
+    public function toggle_Checkbox(): ChecklistNoteItems
     {
         $this->checked = !$this->checked;
         $this->modify_item_in_DB();

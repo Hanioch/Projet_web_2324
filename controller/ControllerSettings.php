@@ -35,15 +35,15 @@ class ControllerSettings extends Controller
         $errors = [
             "full_name" => []
         ];
-        $success = isset($_GET['param1']) ? "Votre profil a été mis à jour avec succès." : '';
+        $success = (isset($_GET['param1']) && $_GET['param1'] == "ok") ? "Votre profil a été mis à jour avec succès." : '';
         if (isset($_POST['full_name'])) {
             $full_name = trim($_POST['full_name']);
             $errors = User::validate_full_name($full_name);
 
-            if ($full_name != $user->getFullName()) {
+            if ($full_name != $user->get_Full_Name()) {
 
                 if (empty($errors["full_name"])) {
-                    $user->setFullName($full_name);
+                    $user->set_Full_Name($full_name);
                     $user->persist();
                 }
 
@@ -69,8 +69,8 @@ class ControllerSettings extends Controller
             "password" => [],
             "password_confirm" => []
         ];
-        $success = isset($_GET['param1']) ? "Votre mot de passe a été mis à jour avec succès." : '';
 
+        $success = (isset($_GET['param1']) && $_GET['param1'] == "ok") ? "Votre mot de passe a été mis à jour avec succès." : '';
         if (isset($_POST['old_password']) && isset($_POST['password']) && isset($_POST['password_confirm'])) {
             $old_password = $_POST['old_password'];
             $password = $_POST['password'];
@@ -82,7 +82,7 @@ class ControllerSettings extends Controller
 
 
             if (empty($errors["old_password"]) && empty($errors["password"]) && empty($errors["password_confirm"])) {
-                $user->setPassword(Tools::my_hash($password));
+                $user->set_Hashed_Password(Tools::my_hash($password));
                 $user->persist();
                 $success = "Password updated successfully.";
             }

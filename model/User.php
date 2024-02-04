@@ -18,40 +18,40 @@ class User extends MyModel
     {
     }
     // Getters
-    public function getMail(): string {
+    public function get_Mail(): string {
         return $this->mail;
     }
 
-    public function getHashedPassword(): string {
+    public function get_Hashed_Password(): string {
         return $this->hashed_password;
     }
 
-    public function getFullName(): string {
+    public function get_Full_Name(): string {
         return $this->full_name;
     }
 
-    public function getRole(): Role {
+    public function get_Role(): Role {
         return $this->role;
     }
 
-    public function getId(): ?int {
+    public function get_Id(): ?int {
         return $this->id;
     }
 
     // Setters
-    public function setMail(string $mail): void {
+    public function set_Mail(string $mail): void {
         $this->mail = $mail;
     }
 
-    public function setHashedPassword(string $hashed_password): void {
+    public function set_Hashed_Password(string $hashed_password): void {
         $this->hashed_password = $hashed_password;
     }
 
-    public function setFullName(string $full_name): void {
+    public function set_Full_Name(string $full_name): void {
         $this->full_name = $full_name;
     }
 
-    public function setRole(Role $role): void {
+    public function set_Role(Role $role): void {
         $this->role = $role;
     }
     public function persist(): User
@@ -83,17 +83,6 @@ class User extends MyModel
             self::execute("DELETE FROM users WHERE id = :id", ['id' => $this->id]);
         }
     }
-    // à décommenter si full_name doit être unique
-
-    //    public static function get_user_by_name(string $full_name) : User|false {
-    //        $query = self::execute("SELECT * FROM users where full_name = :full_name", ["full_name"=>$full_name]);
-    //        $data = $query->fetch();
-    //        if ($query->rowCount() == 0) {
-    //            return false;
-    //        } else {
-    //            return new User($data["mail"], $data["hashed_password"], $data["full_name"], Role::USER);
-    //        }
-    //    }
 
     public static function get_users(): array
     {
@@ -101,7 +90,8 @@ class User extends MyModel
         $data = $query->fetchAll();
         $results = [];
         foreach ($data as $row) {
-            $results[] = new User($row["mail"], $row["hashed_password"], $row["full_name"], $row["role"], $row["id"]);
+            $role = Role::tryFrom($row["role"]) ?: Role::USER;
+            $results[] = new User($row["mail"], $row["hashed_password"], $row["full_name"], $role, $row["id"]);
         }
         return $results;
     }
@@ -264,11 +254,11 @@ class User extends MyModel
 
     public function get_users_shared_note(): array
     {
-        $query = self::execute("SELECT u.*
+        $query = self::execute("SELECT DISTINCT u.*
         FROM users u
-        INNER JOIN note_shares ns ON u.id = ns.user
-        WHERE ns.note IN (SELECT id FROM notes WHERE owner = :owner)
-        GROUP BY u.id, u.mail,u.hashed_password, u.full_name, u.role;
+        INNER JOIN notes n ON u.id = n.owner
+        INNER JOIN note_shares ns ON n.id = ns.note
+        WHERE ns.user = :owner;
         
          ", ["owner" => $this->id]);
 
@@ -375,25 +365,12 @@ class User extends MyModel
         return $new_role;
     }
 
-    public function setPassword($hashed_password)
-    {
-        return $this->hashed_password = $hashed_password;
-    }
-    public function getPassword()
-    {
-        return $this->hashed_password;
-    }
-
-    public function get_full_name()
-    {
-        return $this->full_name;
-    }
     public static function change_password(string $old_password, User $user): array
     {
         $errors = [
             "old_password" => []
         ];
-        if (!(Tools::my_hash($old_password) === $user->getPassword())) {
+        if (!(Tools::my_hash($old_password) === $user->get_Hashed_Password())) {
             $errors['old_password'][] = "Incorrect old password.";
         }
 
