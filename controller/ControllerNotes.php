@@ -507,7 +507,12 @@ class ControllerNotes extends Controller
             }
         }
     }
+    public function confirm_delete() {
+        $noteId = $_POST['note_id'];
+        $note = Note::get_note($noteId);
 
+        (new View("confirm_delete"))->show(array("note" => $note));
+    }
     function refresh($url = null)
     {
         if ($url) {
