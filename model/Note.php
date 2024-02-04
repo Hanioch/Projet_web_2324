@@ -14,7 +14,8 @@ class Note extends MyModel
     {
         return $this->owner;
     }
-    public function set_Owner(User $owner): void{
+    public function set_Owner(User $owner): void
+    {
         $this->owner = $owner;
     }
     public function get_Edited_At(): ?string
@@ -108,7 +109,7 @@ class Note extends MyModel
     public function validate(): array
     {
         $errors = [];
-        $user = User::get_user_by_mail($this->owner->get_Mail());
+        $user = User::get_user_by_id($this->owner->get_Id());
         // TO DO: check si l'id de l'user correspond à l'id de l'user connnecter. 
 
         // if ($user->id === ) {
@@ -263,7 +264,8 @@ class Note extends MyModel
         return $this->modify_note_in_DB();
     }
 
-    public static function time_elapsed_string($datetime, $full = false) {
+    public static function time_elapsed_string($datetime, $full = false)
+    {
         $now = new DateTime();
         $ago = new DateTime($datetime);
         $diff = $now->diff($ago);
@@ -288,7 +290,8 @@ class Note extends MyModel
         return $string ? implode(', ', $string) . ' ago' : 'just now';
     }
 
-    public static function get_last_insert_id() : int {
+    public static function get_last_insert_id(): int
+    {
         return Model::lastInsertId();
     }
 }
