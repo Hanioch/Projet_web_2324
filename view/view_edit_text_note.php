@@ -8,7 +8,7 @@ include("./utils/header_add_note.php");
 
 <div class="card-body">
     <form id="<?= $id_form ?>" action="notes/edit_text_note/<?= $note->get_Id() ?>" method="post">
-        <div class="mb-3">
+        <div class="mb-3 text-white">
             <div class="">
                 <label for="title_add_text_note" class="form-label">Title</label>
                 <input required type="text" value="<?= $note->get_Title() ?>" name="title" class="form-control bg-secondary text-white bg-opacity-25 mb-2" id="title-add-text-note">
@@ -29,7 +29,7 @@ include("./utils/header_add_note.php");
                 ?>
             </div>
         </div>
-        <div class="mb-3">
+        <div class="mb-3 text-white">
             <label for="text_add_text_note" class="form-label">Text</label>
             <textarea name="text" class="form-control bg-secondary text-white bg-opacity-25" id="text-add-text-note" cols="30" rows="10"><?= $note->get_Content() ?></textarea>
         </div>

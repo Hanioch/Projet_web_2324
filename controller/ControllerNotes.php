@@ -196,8 +196,13 @@ class ControllerNotes extends Controller
                     $errors = array_merge($errors, $this->edit_title($note, $errors));
 
                 }
+            } else if(isset($_POST['remove_button'])) {
+                $item = ChecklistNoteItems::get_checklist_note_item_by_id($_POST['remove_button']);
+                $this->remove_item($item, $user);
+                $items = ChecklistNoteItems::get_items_by_checklist_note_id($noteId);
+                $errors = $this->edit_title($note, $errors);
             }
-            if (empty($errors)) {
+            if (empty($errors) && !isset($_POST['remove_button'])) {
                 $this->redirect("notes", "open_note", $note->get_Id());
             }
         }
@@ -239,6 +244,10 @@ class ControllerNotes extends Controller
         return $errors;
     }
 
+    private function remove_item(ChecklistNoteItems $item, User $user) : void {
+        $item->delete($user);
+    }
+
 
     private function item_exists(array $items, string $item) : bool
     {
@@ -261,8 +270,23 @@ class ControllerNotes extends Controller
 
         $note_id = $_GET['param1'];
         $user = $this->get_user_or_redirect();
+        $user_id = $user->get_Id();
         $note = TextNote::get_text_note($note_id);
 
+        if (!($note instanceof TextNote)) {
+            (new View("error"))->show(["error" => "Page doesn't exist."]);
+            return;
+        }
+
+        $is_shared_note = NoteShare::is_Note_Shared_With_User($note_id, $user_id);
+        $can_edit = $is_shared_note ? NoteShare::can_Edit($note_id, $user_id)  : true;
+
+
+        $canAccess = ($note->get_Owner()->get_Id() === $user_id) || ($is_shared_note && $can_edit);
+        if (!$canAccess) {
+            (new View("error"))->show(["error" => "Page doesn't exist."]);
+            return;
+        }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (isset($_POST['title'])) {

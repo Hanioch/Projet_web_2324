@@ -114,7 +114,7 @@ class ChecklistNote extends Note
 
     public function delete(User $initiator): Note |false
     {
-        if ($this->owner == $initiator) {
+        if ($this->owner === $initiator) {
             self::execute("DELETE FROM checklist_notes WHERE id = :id", ["id" => $this->id]);
             parent::delete($initiator);
             return $this;
