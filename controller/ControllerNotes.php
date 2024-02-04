@@ -196,8 +196,13 @@ class ControllerNotes extends Controller
                     $errors = array_merge($errors, $this->edit_title($note, $errors));
 
                 }
+            } else if(isset($_POST['remove_button'])) {
+                $item = ChecklistNoteItems::get_checklist_note_item_by_id($_POST['remove_button']);
+                $this->remove_item($item, $user);
+                $items = ChecklistNoteItems::get_items_by_checklist_note_id($noteId);
+                $errors = $this->edit_title($note, $errors);
             }
-            if (empty($errors)) {
+            if (empty($errors) && !isset($_POST['remove_button'])) {
                 $this->redirect("notes", "open_note", $note->get_Id());
             }
         }
@@ -237,6 +242,10 @@ class ControllerNotes extends Controller
             }
         }
         return $errors;
+    }
+
+    private function remove_item(ChecklistNoteItems $item, User $user) : void {
+        $item->delete($user);
     }
 
 

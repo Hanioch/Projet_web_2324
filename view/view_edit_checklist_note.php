@@ -43,7 +43,7 @@ include("./utils/header_add_note.php");
 
                                     <input value="<?= $item->get_Content() ?>"type="text" name="item<?php echo $item->get_Id() ?>" class="form-control bg-secondary text-white bg-opacity-25 border-0" id="item<?php echo $item->get_Id() ?>"  value="<?php echo isset($_POST['item' . $item->get_Id()]) ? htmlspecialchars($_POST['item' . $item->get_Id()]) : ''; ?>" disabled>
 
-                                    <button class="btn btn-danger btn-lg rounded-end border" type="submit">-</button>
+                                    <button name="remove_button" value="<?= $item->get_Id() ?>" class="btn btn-danger btn-lg rounded-end border" type="submit">-</button>
 
                                     <?php if (isset($errors['item' . $item->get_Id()])): ?>
                                         <span class="error-add-note"><?php foreach($errors['item' . $item->get_Id()] as $error){echo $error;} ?></span>
