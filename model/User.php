@@ -178,20 +178,6 @@ class User extends MyModel
         return $hash === Tools::my_hash($clear_password);
     }
 
-    // redondant avec la nouvelle méthode validate_full_name ?
-
-    //    public function validate() : array {
-    //        $errors = [];
-    //        if (!strlen($this->pseudo) > 0) {
-    //            $errors[] = "Pseudo is required.";
-    //        } if (!(strlen($this->pseudo) >= 3 && strlen($this->pseudo) <= 16)) {
-    //            $errors[] = "Pseudo length must be between 3 and 16.";
-    //        } if (!(preg_match("/^[a-zA-Z][a-zA-Z0-9]*$/", $this->pseudo))) {
-    //            $errors[] = "Pseudo must start by a letter and must contain only letters and numbers.";
-    //        }
-    //        return $errors;
-    //    }
-
     public static function validate_login(string $mail, string $password): array
     {
         $errors = [
