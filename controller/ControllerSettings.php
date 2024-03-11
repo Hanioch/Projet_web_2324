@@ -32,31 +32,48 @@ class ControllerSettings extends Controller
     {
         $user = $this->get_user_or_redirect();
         $full_name = "";
+        $email = "";
         $errors = [
-            "full_name" => []
+            "full_name" => [],
+            "email" => []
         ];
         $success = (isset($_GET['param1']) && $_GET['param1'] == "ok") ? "Votre profil a été mis à jour avec succès." : '';
+
         if (isset($_POST['full_name'])) {
             $full_name = trim($_POST['full_name']);
-            $errors = User::validate_full_name($full_name);
-
-            if ($full_name != $user->get_Full_Name()) {
-
-                if (empty($errors["full_name"])) {
-                    $user->set_Full_Name($full_name);
-                    $user->persist();
-                }
-
-                if (count($_POST) > 0 && empty($errors["full_name"])) {
-                    $this->redirect("Settings", "edit_profile", "ok");
-                }
-
-            }
-
+            $errors = array_merge($errors, User::validate_full_name($full_name));
         }
 
+        if (isset($_POST['email'])) {
+            $email = trim($_POST['email']);
+            $errors = array_merge($errors, User::validate_mail($email));
+        }
 
-        (new View("edit_profile"))->show(["user" => $user, "success" => $success, "full_name" => $full_name, 'errors' => $errors]);
+        // Update only if there are no errors and the value has changed
+        if ($full_name != $user->get_Full_Name() && empty($errors["full_name"])) {
+            $user->set_Full_Name($full_name);
+        }
+
+        if ($email != $user->get_Mail() && empty($errors["email"])) {
+            $user->set_Mail($email);
+        }
+        if (empty($errors["full_name"]) && empty($errors["email"]) && ( $full_name != $user->get_Full_Name() || $email != $user->get_Mail() )) {
+            $user->persist();
+            $user->persist();
+            $success = "Votre profil a été mis à jour avec succès.";
+        }
+
+        if (count($_POST) > 0 && empty($errors["full_name"]) && empty($errors["email"])) {
+            $this->redirect("Settings", "edit_profile", "ok");
+        }
+
+        (new View("edit_profile"))->show([
+            "user" => $user,
+            "success" => $success,
+            "full_name" => $full_name,
+            "email" => $email,
+            "errors" => $errors
+        ]);
 
     }
     public function change_password(): void{
@@ -79,7 +96,9 @@ class ControllerSettings extends Controller
             $errors = array_merge($errors, User::change_password($old_password,$user));
             $errors = array_merge($errors, User::validate_password($password));
             $errors = array_merge($errors, User::validate_password_confirmation($password,$password_confirm));
-
+            if ($old_password === $password) {
+                $errors['password'][] = "Le nouveau mot de passe ne peut pas être identique à l'ancien mot de passe.";
+            }
 
             if (empty($errors["old_password"]) && empty($errors["password"]) && empty($errors["password_confirm"])) {
                 $user->set_Hashed_Password(Tools::my_hash($password));
