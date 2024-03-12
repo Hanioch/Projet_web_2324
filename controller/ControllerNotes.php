@@ -14,33 +14,41 @@ class ControllerNotes extends Controller
 
     private function note_list(): void
     {
-
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if (isset($_POST['action']) && isset($_POST['id'])) {
-                $action = $_POST['action'];
-                $note_id = $_POST['id'];
-
-                if ($action === 'increment') {
-                    $this->modif_weight(true, $note_id);
-                } elseif ($action === 'decrement') {
-                    $this->modif_weight(false, $note_id);
-                }
-            }
-        }
-
         $user = $this->get_user_or_redirect();
         $notes = $user->get_notes();
         $users_shared_notes = $user->get_users_shared_note();
         (new View("notes"))->show(["notes" => $notes, "users_shared_notes" => $users_shared_notes]);
     }
 
+    public function move_note(): void
+    {
+        if (isset($_GET['param1']) && isset($_GET['param2'])) {
+            $note_id = $_GET['param1'];
+            $action = $_GET['param2'];
+
+            var_dump($note_id);
+            var_dump($action);
+
+            if ($action === 'increment') {
+                $this->modif_weight(true, $note_id);
+            } elseif ($action === 'decrement') {
+                $this->modif_weight(false, $note_id);
+            }
+        } else {
+            $this->note_list();
+        }
+    }
+
     private function modif_weight(bool $is_more, int $note_id)
     {
         $current_note = Note::get_note($note_id);
-        $other_notes = $current_note->get_nearest_note($is_more);
-        if ($other_notes instanceof Note) {
-            $current_note->persist($other_notes);
+        if ($current_note instanceof Note) {
+            $other_notes = $current_note->get_nearest_note($is_more);
+            if ($other_notes instanceof Note) {
+                $current_note->persist($other_notes);
+            }
         }
+        $this->note_list();
     }
 
     public function archives(): void
@@ -79,27 +87,26 @@ class ControllerNotes extends Controller
         $result = [];
         $result["success"] = NULL;
         $result["errors"] = [];
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if (isset($_POST['title'])) {
-                $title = trim($_POST['title']);
-                $text = isset($_POST['text']) ? trim($_POST['text']) : "";
-                $weight = $user->get_heaviest_note() + 1;
-                $new_text_note = new TextNote($title, $user, false, false, $weight, $text);
-                $note = $new_text_note->persist();
 
-                if (!($note instanceof TextNote)) {
-                    $result["errors"] = $note;
-                    $default_title = $title;
-                    $default_text = $text;
-                } else {
-                    $result["success"] = "The note has been added successfully.";
-                }
+        if (isset($_POST['title'])) {
+            $title = trim($_POST['title']);
+            $text = isset($_POST['text']) ? trim($_POST['text']) : "";
+            $weight = $user->get_heaviest_note() + 1;
+            $new_text_note = new TextNote($title, $user, false, false, $weight, $text);
+            $note = $new_text_note->persist();
+
+            if (!($note instanceof TextNote)) {
+                $result["errors"] = $note;
+                $default_title = $title;
+                $default_text = $text;
+                (new View("add_text_note"))->show(["result" => $result, "default_title" => $default_title, "default_text" => $default_text]);
             } else {
-                "Les parametre ne sont pas définis.";
+                $result["success"] = "The note has been added successfully.";
+                $this->open_note($note->get_Id());
             }
+        } else {
+            (new View("add_text_note"))->show(["result" => $result, "default_title" => $default_title, "default_text" => $default_text]);
         }
-
-        (new View("add_text_note"))->show(["result" => $result, "default_title" => $default_title, "default_text" => $default_text]);
     }
 
     public function add_checklist_note(): void
@@ -347,9 +354,9 @@ class ControllerNotes extends Controller
     }
 
 
-    public function open_note(): void
+    public function open_note(int $id = -1): void
     {
-        $noteId = filter_var($_GET['param1'], FILTER_VALIDATE_INT);
+        $noteId = $id !== -1 ? $id : filter_var($_GET['param1'], FILTER_VALIDATE_INT);
         $user = $this->get_user_or_redirect();
         $userId = $user->get_Id();
         $error = "";
@@ -507,7 +514,8 @@ class ControllerNotes extends Controller
             }
         }
     }
-    public function confirm_delete() {
+    public function confirm_delete()
+    {
         $noteId = $_POST['note_id'];
         $note = Note::get_note($noteId);
 

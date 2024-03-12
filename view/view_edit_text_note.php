@@ -8,6 +8,13 @@ include("./utils/header_add_note.php");
 
 <div class="card-body">
     <form id="<?= $id_form ?>" action="notes/edit_text_note/<?= $note->get_Id() ?>" method="post">
+        <div class="card-header text-white mb-2 fst-italic fs-6">
+            <span style="font-size: 0.8em;">Created <?= Note::time_elapsed_string($note->get_Created_At()) ?> . </span>
+            <?php if ($note->get_Edited_At() !== null) : ?>
+                <span style="font-size: 0.8em;">Edited <?= Note::time_elapsed_string($note->get_Edited_At()) ?>.</span>
+            <?php endif; ?>
+        </div>
+
         <div class="mb-3 text-white">
             <div class="">
                 <label for="title_add_text_note" class="form-label">Title</label>
