@@ -72,6 +72,8 @@ body, html {
     background-clip: border-box;
     border: 1px solid rgba(0, 0, 0, .125);
     border-radius: 0.25rem;
+    display: flex;
+    flex-direction: column;
 }
 .note a{
     text-decoration: none;
@@ -84,7 +86,6 @@ body, html {
 }
 
 .header-in-note, .footer-in-note{
-    margin-bottom: 0;
     background-color: rgba(0,0,0,.03);
 }
 
