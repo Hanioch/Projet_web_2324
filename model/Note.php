@@ -115,14 +115,12 @@ class Note extends MyModel
         // if ($user->id === ) {
         //     $errors[] = "Incorrect owner";
         // }
-        if (!(strlen($this->title) > 2 && strlen($this->title) < 26)) {
-
+        if (strlen($this->get_Title()) < 3 || strlen($this->get_Title()) > 25) {
             $errors['title'] = "Title length must be between 3 and 25 ";
         }
         if (!($this->weight > 0 && !$this->is_not_unique_weight())) {
             $errors['weight'] = "Weight must be positive and unique";
         }
-
         return $errors;
     }
 

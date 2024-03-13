@@ -26,9 +26,6 @@ class ControllerNotes extends Controller
             $note_id = $_GET['param1'];
             $action = $_GET['param2'];
 
-            var_dump($note_id);
-            var_dump($action);
-
             if ($action === 'increment') {
                 $this->modif_weight(true, $note_id);
             } elseif ($action === 'decrement') {
