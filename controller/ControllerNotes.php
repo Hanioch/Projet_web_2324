@@ -183,11 +183,11 @@ class ControllerNotes extends Controller
         $note_id = $_GET['param1'];
         $user = $this->get_user_or_redirect();
         $user_id = $user->get_Id();
-        $note = ChecklistNote::get_by_id($note_id);
+        $note = ChecklistNote::get_note($note_id);
         $items = ChecklistNoteItems::get_items_by_checklist_note_id($note_id);
 
         //On verifie les erreurs. 
-        if (!($note instanceof ChecklistNote)) {
+        if (!($note instanceof Note)) {
             //la checklist note n'existe pas.
             (new View("error"))->show(["error" => "Page doesn't exist."]);
             return;
