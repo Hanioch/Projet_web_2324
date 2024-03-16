@@ -56,16 +56,23 @@ class User extends MyModel
     }
     public function persist(): User
     {
-        if (self::get_user_by_mail($this->mail))
+        if ($this->id !== null && self::get_user_by_id($this->id)) {
             self::execute(
-                "UPDATE users SET hashed_password=:hashed_password, full_name=:full_name, role=:role WHERE mail=:mail ",
+                "UPDATE users SET hashed_password=:hashed_password, full_name=:full_name, role=:role, mail=:mail WHERE id=:id",
+                ["id" => $this->id, "mail" => $this->mail, "hashed_password" => $this->hashed_password, "full_name" => $this->full_name, "role" => $this->role->value]
+            );
+        } elseif ($this->mail !== null && self::get_user_by_mail($this->mail)) {
+            self::execute(
+                "UPDATE users SET hashed_password=:hashed_password, full_name=:full_name, role=:role WHERE mail=:mail",
                 ["mail" => $this->mail, "hashed_password" => $this->hashed_password, "full_name" => $this->full_name, "role" => $this->role->value]
             );
-        else
+        } else {
             self::execute(
-                "INSERT INTO users (mail,hashed_password,full_name,role) VALUES(:mail,:hashed_password,:full_name,:role)",
+                "INSERT INTO users (mail, hashed_password, full_name, role) VALUES (:mail, :hashed_password, :full_name, :role)",
                 ["mail" => $this->mail, "hashed_password" => $this->hashed_password, "full_name" => $this->full_name, "role" => $this->role->value]
             );
+        }
+
         return $this;
     }
     public static function get_user_by_mail(string $mail): User|false

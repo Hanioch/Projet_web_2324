@@ -19,12 +19,12 @@ include("./utils/header_settings.php");
         </div>
 
         <div class="mb-3">
-            <label for="email" class="form-label">Edit your Email</label>
-            <input type="email" name="email" class="form-control<?php if (isset($errors) && count($errors["email"]) > 0): ?> is-invalid<?php endif; ?>" id="email" value="<?= $user->get_Mail() ?>">
-            <?php if (isset($errors) && count($errors["email"]) > 0): ?>
+            <label for="mail" class="form-label">Edit your Email</label>
+            <input type="email" name="mail" class="form-control<?php if (isset($errors) && count($errors["mail"]) > 0): ?> is-invalid<?php endif; ?>" id="mail" value="<?= $user->get_Mail() ?>">
+            <?php if (isset($errors) && count($errors["mail"]) > 0): ?>
                 <div class="alert alert-danger" role="alert">
                     <ul class="list-unstyled">
-                        <?php foreach ($errors["email"] as $error): ?>
+                        <?php foreach ($errors["mail"] as $error): ?>
                             <li><?= $error ?></li>
                         <?php endforeach; ?>
                     </ul>

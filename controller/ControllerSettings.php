@@ -32,76 +32,44 @@ class ControllerSettings extends Controller
     {
         $user = $this->get_user_or_redirect();
         $full_name = "";
-        $email = "";
+        $mail = "";
         $errors = [
             "full_name" => [],
-            "email" => []
+            "mail" => []
         ];
+        $changesMade = false;
         $success = (isset($_GET['param1']) && $_GET['param1'] == "ok") ? "Votre profil a été mis à jour avec succès." : '';
-        $updateAttempted = false;
 
         if (isset($_POST['full_name'])) {
             $full_name = trim($_POST['full_name']);
-            $errors = User::validate_full_name($full_name);
-            $updateAttempted = true;
+            if($full_name != $user->get_Full_Name()){
+                $errors = array_merge($errors, User::validate_full_name($full_name));
+                if ( empty( $errors['full_name']) ){
+                    $user->set_Full_Name($full_name);
+                    $user->persist();
+                    $changesMade = true;
+                }
+            }
 
-            if ($full_name != $user->get_Full_Name() && empty($errors["full_name"])) {
-                $user->set_Full_Name($full_name);
-                $user->persist();
-                $success = "Votre profil a été mis à jour avec succès.";
+        }
+
+        if (isset($_POST['mail'])) {
+            $mail = trim($_POST['mail']);
+            if($mail != $user->get_Mail()){
+                $errors = array_merge($errors, User::validate_mail($mail));
+                if (empty($errors['mail'])) {
+                    $user->set_Mail($mail);
+                    $user->persist();
+                    $changesMade = true;
+                }
             }
         }
 
-        if (isset($_POST['email'])) {
-            $email = trim($_POST['email']);
-            $errors = User::validate_mail($email);
-            $updateAttempted = true;
-
-            if ($email != $user->get_Mail() && empty($errors["email"])) {
-                $user->set_Mail($email);
-                $user->persist();
-                $success = "Votre profil a été mis à jour avec succès.";
-            }
-        }
-
-        // Redirection après la mise à jour réussie
-        if ($updateAttempted && empty($errors["full_name"]) && empty($errors["email"])) {
+        if ($changesMade && empty($errors["full_name"]) && empty($errors["mail"])) {
             $this->redirect("Settings", "edit_profile", "ok");
         }
 
-        (new View("edit_profile"))->show(["user" => $user, "success" => $success, "full_name" => $full_name, "email" => $email, 'errors' => $errors]);
-    }
-    public function edit_profile1(): void
-    {
-        $user = $this->get_user_or_redirect();
-        $full_name = "";
-        $email = "";
-        $errors = [
-            "full_name" => [],
-            "email" => []
-        ];
-        $success = (isset($_GET['param1']) && $_GET['param1'] == "ok") ? "Votre profil a été mis à jour avec succès." : '';
-        if (isset($_POST['full_name'])) {
-            $full_name = trim($_POST['full_name']);
-            $errors = User::validate_full_name($full_name);
-
-            if ($full_name != $user->get_Full_Name()) {
-
-                if (empty($errors["full_name"])) {
-                    $user->set_Full_Name($full_name);
-                    $user->persist();
-                }
-
-                if (count($_POST) > 0 && empty($errors["full_name"])) {
-                    $this->redirect("Settings", "edit_profile", "ok");
-                }
-
-            }
-
-        }
-
-        (new View("edit_profile"))->show(["user" => $user, "success" => $success, "full_name" => $full_name, 'errors' => $errors, 'email'=>$email]);
-
+        (new View("edit_profile"))->show(["user" => $user, "success" => $success, "full_name" => $full_name, "mail" => $mail, 'errors' => $errors]);
     }
     public function change_password(): void{
         $user = $this->get_user_or_redirect();
