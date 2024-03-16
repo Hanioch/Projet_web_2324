@@ -7,10 +7,10 @@ function show_note(array $arr_notes, string $title, string $titlePage): void
         <?php
         for ($i = 0; $i < count($arr_notes); $i++) {
             $note = $arr_notes[$i];
-            $openNoteUrl = "./Notes/open_note/" . $note->get_Id() ;
+            $openNoteUrl = "./Notes/open_note/" . $note->get_Id();
         ?>
             <li class="note">
-                <a href="<?= $openNoteUrl ?>">
+                <a href="<?= $openNoteUrl ?>" class="link-open-note">
                     <div class="header-in-note"><?= $note->get_Title() ?></div>
                     <div class="body-note">
                         <?php if (property_exists($note, 'content')) {
@@ -29,7 +29,7 @@ function show_note(array $arr_notes, string $title, string $titlePage): void
                                 $content_sub = strlen($content) > $max_lg ? substr($content, 0, $max_lg) . "..." : $content;
                             ?>
                                 <div class="form-check">
-                                    <input class="form-check-input cursor-pointer" type="checkbox" value=""  <?= $item->is_Checked() ? "checked" : ""  ?> disabled>
+                                    <input class="form-check-input cursor-pointer" type="checkbox" value="" <?= $item->is_Checked() ? "checked" : ""  ?> disabled>
                                     <label class="form-check-label cursor-pointer">
                                         <?= $content_sub ?>
                                     </label>
@@ -44,32 +44,37 @@ function show_note(array $arr_notes, string $title, string $titlePage): void
                         }
                         ?>
                     </div>
-                    <?php
-                    if ($titlePage === Page::Notes->value) {
-                    ?>
-                        <form class="footer-in-note" action="notes/" method="post">
-                            <?php if ($i !== 0) {
-                            ?>
-                                <button class="button-mv-note" type="submit" name="action" value="increment">
-                                    <i class="bi bi-chevron-double-left icon-mv-note i-left"></i>
-                                </button>
-                            <?php
-                            }
-                            if ($note->get_Id() != end($arr_notes)->get_Id()) {
-                            ?>
-                                <button class="button-mv-note" type="submit" name="action" value="decrement">
-                                    <i class="bi bi-chevron-double-right icon-mv-note i-right"></i>
-                                </button>
-                            <?php
-                            }
-                            ?>
-                            <input type="hidden" name="id" value=<?= $note->get_Id() ?>>
-
-                        </form>
-                    <?php
-                    }
-                    ?>
                 </a>
+                <?php
+                if ($titlePage === Page::Notes->value) {
+                ?>
+                    <div class="footer-in-note">
+                        <?php
+                        $url_base = "./notes/move_note/" . $note->get_Id();
+
+                        if ($i !== 0) {
+                            $url_increment = $url_base . "/increment";
+                        ?>
+                            <a href="<?= $url_increment ?>" class="button-mv-note" value="increment">
+                                <i class="bi bi-chevron-double-left icon-mv-note i-left"></i>
+                            </a>
+                        <?php
+                        }
+                        if ($i !== count($arr_notes) - 1) {
+                            $url_decrement = $url_base . "/decrement";
+                        ?>
+                            <a href="<?= $url_decrement ?>" class="button-mv-note" value="decrement">
+                                <i class="bi bi-chevron-double-right icon-mv-note i-right"></i>
+                            </a>
+                        <?php
+                        }
+                        ?>
+                        <input type="hidden" name="id" value=<?= $note->get_Id() ?>>
+
+                    </div>
+                <?php
+                }
+                ?>
 
             </li>
         <?php };
