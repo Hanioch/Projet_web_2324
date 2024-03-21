@@ -420,7 +420,7 @@ class ControllerNotes extends Controller
                 $permission = $_POST['permission'] ?? null;
                 if (!empty($userId) && $permission !== null) {
                     NoteShare::add_Share($noteId, $userId, $permission);
-                    $this->refresh();
+                    $this->redirect("notes","shares/$noteId");
                     exit();
                 } else {
                     $errorAdd = "Please select a user and a permission to share.";
@@ -429,14 +429,14 @@ class ControllerNotes extends Controller
             if (isset($_POST['changePermission'])) {
                 $user = $_POST['user'];
                 NoteShare::change_Permissions($noteId, $user);
-                $this->refresh();
+                $this->redirect("notes","shares/$noteId");
                 exit();
             }
             if (isset($_POST['removeShare'])) {
                 $user = $_POST['user'];
                 NoteShare::remove_Share($noteId, $user);
 
-                $this->refresh();
+                $this->redirect("notes","shares/$noteId");
                 exit();
             }
             if (!($note instanceof Note)) {
@@ -479,21 +479,22 @@ class ControllerNotes extends Controller
         $noteId = $_POST['note_id'];
         $note = Note::get_note($noteId);
         $note->toggle_Pin();
-        $this->refresh();
+        $this->redirect("notes","open_note/$noteId");
     }
     public function toggle_Checkbox()
     {
+        $noteId = $_POST['note_id'];
         $itemId = $_POST['item_id'];
         $item = ChecklistNoteItems::get_checklist_note_item_by_id($itemId);
         $item->toggle_Checkbox();
-        $this->refresh();
+        $this->redirect("notes","open_note/$noteId");
     }
     public function set_Archive()
     {
         $noteId = $_POST['note_id'];
         $note = Note::get_note($noteId);
         $note->set_Archive_reverse();
-        $this->refresh();
+        $this->redirect("notes","open_note/$noteId");
     }
     public function delete()
     {
@@ -504,10 +505,10 @@ class ControllerNotes extends Controller
             $note = Note::get_note($noteId);
 
             if ($note && $note->delete_All($user)) {
-                $this->refresh("./archives");
+                $this->redirect("notes","archives");
             } else {
 
-                $this->refresh("./index");
+                $this->redirect("notes");
             }
         }
     }
@@ -518,13 +519,4 @@ class ControllerNotes extends Controller
 
         (new View("confirm_delete"))->show(array("note" => $note));
     }
-    function refresh($url = null)
-    {
-        if ($url) {
-            header('Location: ' . $url);
-        } else {
-            header('Location: ' . $_SERVER['HTTP_REFERER']);
-        }
-        exit;
-    }
-}
+ }
