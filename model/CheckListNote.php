@@ -83,7 +83,7 @@ class ChecklistNote extends Note
 
     public function fetch_list_item()
     {
-        $query = self::execute(   "SELECT cni.*, n.title, n.owner, n.pinned, n.archived, n.weight, n.created_at, n.edited_at FROM checklist_note_items cni JOIN notes n ON n.id = cni.checklist_note WHERE checklist_note = :checklist_note ORDER BY cni.checked ASC, n.created_at ASC", ["checklist_note" => $this->id]);
+        $query = self::execute(   "SELECT cni.*, n.title, n.owner, n.pinned, n.archived, n.weight, n.created_at, n.edited_at FROM checklist_note_items cni JOIN notes n ON n.id = cni.checklist_note WHERE checklist_note = :checklist_note ORDER BY cni.checked ASC", ["checklist_note" => $this->id]);
         $data = $query->fetchAll();
 
         $items = [];

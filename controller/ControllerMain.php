@@ -69,7 +69,7 @@ class ControllerMain extends Controller
 
                 if (empty($errors["mail"]) && empty($errors["full_name"]) && empty($errors["password"]) && empty($errors["password_confirm"])) {
                     $user->persist();
-                    $this->log_user($user);
+                    $this->log_user(User::get_user_by_mail($mail));
                 }
             }
             (new View("signup"))->show([

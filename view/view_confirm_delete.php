@@ -1,5 +1,15 @@
-<?php include('./utils/header_login.php'); ?>
-
+<?php
+if (isset($headerType) && empty($error)) {
+    include("utils/header_{$headerType}.php");
+} else {
+    include("utils/header_error.php");
+}
+?>
+<?php if (isset($error) && !empty($error)): ?>
+    <div class="alert alert-danger" role="alert">
+        <?= htmlspecialchars($error) ?>
+    </div>
+<?php else: ?>
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-6">
@@ -21,5 +31,6 @@
             </div>
         </div>
     </div>
+<?php endif; ?>
 </div>
 <?php include('./utils/footer.php'); ?>
