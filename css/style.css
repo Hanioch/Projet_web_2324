@@ -223,6 +223,13 @@ a {
     font-weight: bold;
 }
 
+<<<<<<< HEAD
+=======
+/* .bg-dark {
+    align-content: end;
+} */
+
+>>>>>>> 6bce8f08d9a32a9cd8c706154bce179dd7d008a3
 .cursor-pointer{
     cursor: pointer;
 }
