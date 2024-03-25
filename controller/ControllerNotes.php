@@ -512,13 +512,6 @@ class ControllerNotes extends Controller
             }
         }
     }
-    public function confirm_delete1()
-    {
-        $noteId = filter_var($_GET['param1'], FILTER_VALIDATE_INT);
-        $note = Note::get_note($noteId);
-
-        (new View("confirm_delete"))->show(array("note" => $note));
-    }
     public function confirm_delete(): void
     {
         $noteId = filter_var($_GET['param1'], FILTER_VALIDATE_INT);
