@@ -231,7 +231,7 @@ class ControllerNotes extends Controller
                 $items = ChecklistNoteItems::get_items_by_checklist_note_id($note_id);
                 $errors = $this->edit_title($note, $errors);
             }
-            if (empty($errors) && !isset($_POST['remove_button'])) {
+            if (empty($errors) && isset($_POST['save_button'])) {
                 $this->redirect("notes", "open_note", $note->get_Id());
             }
         }
