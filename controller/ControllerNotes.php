@@ -224,12 +224,14 @@ class ControllerNotes extends Controller
                 if (empty($errors)) {
                     $items = ChecklistNoteItems::get_items_by_checklist_note_id($note_id);
                     $errors = array_merge($errors, $this->edit_title($note, $errors));
+                    $this->redirect("notes", "edit_checklist_note", $note->get_Id());
                 }
             } else if (isset($_POST['remove_button'])) {
                 $item = ChecklistNoteItems::get_checklist_note_item_by_id($_POST['remove_button']);
                 $item->delete();
                 $items = ChecklistNoteItems::get_items_by_checklist_note_id($note_id);
                 $errors = $this->edit_title($note, $errors);
+                $this->redirect("notes", "edit_checklist_note", $note->get_Id());
             }
             $note = ChecklistNote::get_note($note_id);
             if (empty($errors) && isset($_POST['save_button'])) {
