@@ -263,18 +263,22 @@ class ControllerNotes extends Controller
             $string_items[] = $i->get_content();
         }
 
-        if (isset($_POST['new_item']) && trim($_POST['new_item']) !== '') {
-            $item = trim($_POST['new_item']);
-            if (!($this->item_exists($string_items, $item))) {
-                $new_item = new ChecklistNoteItems($item, false, $note->get_Id());
-                $new_item->persist();
+        if (isset($_POST['new_item'])) {
+            if (trim($_POST['new_item']) == '') {
+                $errors['new_item'] = "Item cannot be empty.";
             } else {
-                $errors['new_item'] = "Item already exists.";
-            }
+                $item = trim($_POST['new_item']);
+                if (!($this->item_exists($string_items, $item))) {
+                    $new_item = new ChecklistNoteItems($item, false, $note->get_Id());
+                    $new_item->persist();
+                } else {
+                    $errors['new_item'] = "Item already exists.";
+                }
 
 
-            if (!($test = $note->persist()) instanceof Note) {
-                $errors = array_merge($errors, $test);
+                if (!($test = $note->persist()) instanceof Note) {
+                    $errors = array_merge($errors, $test);
+                }
             }
         }
         return $errors;
