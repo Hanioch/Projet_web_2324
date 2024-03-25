@@ -68,7 +68,7 @@ function show_note(array $arr_notes, string $title, string $titlePage): void
                             <?php
                             }
                             ?>
-                            <input type="hidden" name="id" value=<?= $note->get_Id() ?>>
+                            <!-- <input type="hidden" name="id" value=<?= $note->get_Id() ?>> -->
 
                         </div>
                     <?php
