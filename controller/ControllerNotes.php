@@ -224,14 +224,17 @@ class ControllerNotes extends Controller
                 if (empty($errors)) {
                     $items = ChecklistNoteItems::get_items_by_checklist_note_id($note_id);
                     $errors = array_merge($errors, $this->edit_title($note, $errors));
+                    $this->redirect("notes", "edit_checklist_note", $note->get_Id());
                 }
             } else if (isset($_POST['remove_button'])) {
                 $item = ChecklistNoteItems::get_checklist_note_item_by_id($_POST['remove_button']);
                 $item->delete();
                 $items = ChecklistNoteItems::get_items_by_checklist_note_id($note_id);
                 $errors = $this->edit_title($note, $errors);
+                $this->redirect("notes", "edit_checklist_note", $note->get_Id());
             }
-            if (empty($errors) && !isset($_POST['remove_button'])) {
+            $note = ChecklistNote::get_note($note_id);
+            if (empty($errors) && isset($_POST['save_button'])) {
                 $this->redirect("notes", "open_note", $note->get_Id());
             }
         }
@@ -263,18 +266,22 @@ class ControllerNotes extends Controller
             $string_items[] = $i->get_content();
         }
 
-        if (isset($_POST['new_item']) && trim($_POST['new_item']) !== '') {
-            $item = trim($_POST['new_item']);
-            if (!($this->item_exists($string_items, $item))) {
-                $new_item = new ChecklistNoteItems($item, false, $note->get_Id());
-                $new_item->persist();
+        if (isset($_POST['new_item'])) {
+            if (trim($_POST['new_item']) == '') {
+                $errors['new_item'] = "Item cannot be empty.";
             } else {
-                $errors['new_item'] = "Item already exists.";
-            }
+                $item = trim($_POST['new_item']);
+                if (!($this->item_exists($string_items, $item))) {
+                    $new_item = new ChecklistNoteItems($item, false, $note->get_Id());
+                    $new_item->persist();
+                } else {
+                    $errors['new_item'] = "Item already exists.";
+                }
 
 
-            if (!($test = $note->persist()) instanceof Note) {
-                $errors = array_merge($errors, $test);
+                if (!($test = $note->persist()) instanceof Note) {
+                    $errors = array_merge($errors, $test);
+                }
             }
         }
         return $errors;
