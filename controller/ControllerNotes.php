@@ -99,7 +99,7 @@ class ControllerNotes extends Controller
                 (new View("add_text_note"))->show(["result" => $result, "default_title" => $default_title, "default_text" => $default_text]);
             } else {
                 $result["success"] = "The note has been added successfully.";
-                $this->open_note($note->get_Id());
+                $this->redirect("notes", "open_note", $note->get_Id());
             }
         } else {
             (new View("add_text_note"))->show(["result" => $result, "default_title" => $default_title, "default_text" => $default_text]);
