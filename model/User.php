@@ -14,6 +14,7 @@ enum Role: string
 
 class User extends MyModel
 {
+    private array $config;
     public function __construct(private string $mail, private string $hashed_password, private string $full_name, private Role $role, private ?int $id = NULL)
     {
     }
@@ -108,10 +109,13 @@ class User extends MyModel
         $errors = [
             "password" => []
         ];
+        $config = parse_ini_file('C:\PRWB2324\projects\prwb_2324_a04\config\dev.ini',true);
+        $password_min_length = $config['Rules']['password_min_length'];
+        var_dump($password_min_length);
         if (strlen($password) === 0) {
             $errors["password"][] = "Password is required.";
         }
-        if (strlen($password) < 8) {
+        if (strlen($password) < $password_min_length) {
             $errors["password"][] = "Password must be at least 8 characters long";
         }
         if (!((preg_match("/[A-Z]/", $password)) && preg_match("/\d/", $password) && preg_match("/['\";:,.\/?!\\-]/", $password))) {
@@ -125,10 +129,12 @@ class User extends MyModel
         $errors = [
             "full_name" => []
         ];
+        $config = parse_ini_file('C:\PRWB2324\projects\prwb_2324_a04\config\dev.ini',true);
+        $fullname_min_length = $config['Rules']['fullname_min_length'];
         if (!strlen($full_name) > 0) {
             $errors["full_name"][] = "Name is required.";
         }
-        if (strlen($full_name) < 3) {
+        if (strlen($full_name) < $fullname_min_length) {
             $errors["full_name"][] = "Name must be at least 3 characters long";
         }
         return $errors;
