@@ -240,12 +240,12 @@ class Note extends MyModel
     public function toggle_Pin(): static
     {
         $this->pinned = !$this->pinned;
-        return $this->modify_head_in_DB();
+        return $this->modify_note_in_DB();
     }
     public function set_Archive_reverse(): static
     {
         $this->archived = !$this->archived;
-        return $this->modify_head_in_DB();
+        return $this->modify_note_in_DB();
     }
 
     public static function time_elapsed_string($datetime, $full = false): string
