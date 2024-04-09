@@ -217,7 +217,18 @@ class Note extends MyModel
         $this->edited_at = $note->get_Edited_At();
         return $this;
     }
-
+    protected function modify_head_in_DB(): Note
+    {
+        self::execute('UPDATE notes SET title = :title, edited_at = :edited_at, pinned = :pinned, archived = :archived, weight = :weight WHERE id = :id', [
+            'title' => $this->title,
+            'edited_at' => $this->edited_at,
+            'pinned' => $this->pinned ? 1 : 0,
+            'archived' => $this->archived ? 1 : 0,
+            'weight' => $this->weight,
+            'id' => $this->id
+        ]);
+        return $this;
+    }
     protected function modify_note_in_DB(): Note
     {
         self::execute('UPDATE notes SET title = :title, edited_at = NOW(), pinned = :pinned, archived = :archived, weight = :weight WHERE id = :id', [
@@ -240,12 +251,12 @@ class Note extends MyModel
     public function toggle_Pin(): static
     {
         $this->pinned = !$this->pinned;
-        return $this->modify_note_in_DB();
+        return $this->modify_head_in_DB();
     }
     public function set_Archive_reverse(): static
     {
         $this->archived = !$this->archived;
-        return $this->modify_note_in_DB();
+        return $this->modify_head_in_DB();
     }
 
     public static function time_elapsed_string($datetime, $full = false): string
