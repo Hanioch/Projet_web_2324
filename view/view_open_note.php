@@ -32,6 +32,7 @@ if (isset($headerType) && empty($error)) {
                             </div>
                             <input type="text" class="form-control bg-secondary text-white bg-opacity-25 border-0 <?= $item->is_Checked() ? 'text-decoration-line-through' : '' ?>" value="<?= htmlspecialchars($item->get_Content()) ?>" aria-label="Text input with checkbox" disabled>
                             <input type="hidden" name="item_id" value="<?= $item->get_Id() ?>">
+                            <input type="hidden" name="note_id" value="<?= $note->get_Id() ?>">
                         </div>
                     </form>
                 <?php endforeach; ?>
