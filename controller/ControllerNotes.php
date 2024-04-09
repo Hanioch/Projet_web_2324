@@ -42,7 +42,16 @@ class ControllerNotes extends Controller
         if ($current_note instanceof Note) {
             $other_notes = $current_note->get_nearest_note($is_more);
             if ($other_notes instanceof Note) {
-                $current_note->persist($other_notes);
+                $weight_current = $current_note->get_Weight();
+                $weight_other = $other_notes->get_Weight();
+                $user = $this->get_user_or_redirect();
+
+                $other_notes->set_Weight($user->get_heaviest_note() + 1);
+                $other_notes->persist();
+                $current_note->set_Weight($weight_other);
+                $current_note->persist();
+                $other_notes->set_Weight($weight_current);
+                $other_notes->persist();
             }
         }
         $this->note_list();

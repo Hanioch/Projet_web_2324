@@ -115,11 +115,11 @@ class Note extends MyModel
         // if ($user->id === ) {
         //     $errors[] = "Incorrect owner";
         // }
-        $config = parse_ini_file('C:\PRWB2324\projects\prwb_2324_a04\config\dev.ini',true);
+        $config = parse_ini_file('C:\PRWB2324\projects\prwb_2324_a04\config\dev.ini', true);
         $note_title_min_length = $config['Rules']['note_title_min_length'];
         $note_title_max_length = $config['Rules']['note_title_max_length'];
 
-        if (strlen($this->get_Title()) < $note_title_min_length|| strlen($this->get_Title()) > $note_title_max_length) {
+        if (strlen($this->get_Title()) < $note_title_min_length || strlen($this->get_Title()) > $note_title_max_length) {
             $errors['title'] = "Title length must be between 3 and 25 ";
         }
         if (!($this->weight > 0 && !$this->is_not_unique_weight())) {
@@ -186,19 +186,12 @@ class Note extends MyModel
         }
         return false;
     }
-    public function persist(?Note $second_note = NULL): Note|array
+    public function persist(): Note|array
     {
         $errors = $this->validate();
         if (empty($errors)) {
-            if ($this->id == NULL) {
-                return self::add_note_in_DB();
-            } else {
-                if ($second_note == NULL) {
-                    return self::modify_note_in_DB();
-                } else {
-                    return $this->move_note_in_DB($second_note);
-                }
-            }
+            if ($this->id == NULL) return self::add_note_in_DB();
+            else return self::modify_note_in_DB();
         } else {
             return $errors;
         }
@@ -237,31 +230,8 @@ class Note extends MyModel
 
         return $this;
     }
-    protected function modify_head_in_DB(): Note
-    {
-        self::execute('UPDATE notes SET title = :title, edited_at = :edited_at, pinned = :pinned, archived = :archived, weight = :weight WHERE id = :id', [
-            'title' => $this->title,
-            'edited_at' => $this->edited_at,
-            'pinned' => $this->pinned ? 1 : 0,
-            'archived' => $this->archived ? 1 : 0,
-            'weight' => $this->weight,
-            'id' => $this->id
-        ]);
 
-        return $this;
-    }
-    protected function move_note_in_DB(Note $second_note): Note
-    {
-        $second_weight = $second_note->get_Weight();
-        $second_id = $second_note->get_Id();
-        self::execute('UPDATE notes n1, notes n2 SET n1.weight = :second_weight, n2.weight= :weight WHERE n1.id= :id AND n2.id=:second_id', [
-            'weight' => $this->weight,
-            'second_weight' => $second_weight,
-            'id' => $this->id,
-            'second_id' => $second_id,
-        ]);
-        return $this;
-    }
+
     public static function is_checklist_note(int $id): bool
     {
         $query = self::execute("SELECT id FROM checklist_notes WHERE id = :id", ["id" => $id]);
