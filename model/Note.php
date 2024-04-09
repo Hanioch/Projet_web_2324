@@ -182,19 +182,12 @@ class Note extends MyModel
         }
         return false;
     }
-    public function persist(?Note $second_note = NULL): Note|array
+    public function persist(): Note|array
     {
         $errors = $this->validate();
         if (empty($errors)) {
-            if ($this->id == NULL) {
-                return self::add_note_in_DB();
-            } else {
-                if ($second_note == NULL) {
-                    return self::modify_note_in_DB();
-                } else {
-                    return $this->move_note_in_DB($second_note);
-                }
-            }
+            if ($this->id == NULL) return self::add_note_in_DB();
+            else return self::modify_note_in_DB();
         } else {
             return $errors;
         }
@@ -234,18 +227,7 @@ class Note extends MyModel
         return $this;
     }
 
-    protected function move_note_in_DB(Note $second_note): Note
-    {
-        $second_weight = $second_note->get_Weight();
-        $second_id = $second_note->get_Id();
-        self::execute('UPDATE notes n1, notes n2 SET n1.weight = :second_weight, n2.weight= :weight WHERE n1.id= :id AND n2.id=:second_id', [
-            'weight' => $this->weight,
-            'second_weight' => $second_weight,
-            'id' => $this->id,
-            'second_id' => $second_id,
-        ]);
-        return $this;
-    }
+
     public static function is_checklist_note(int $id): bool
     {
         $query = self::execute("SELECT id FROM checklist_notes WHERE id = :id", ["id" => $id]);
