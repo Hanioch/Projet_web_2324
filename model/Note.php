@@ -220,7 +220,18 @@ class Note extends MyModel
         $this->edited_at = $note->get_Edited_At();
         return $this;
     }
-
+    protected function modify_head_in_DB(): Note
+    {
+        self::execute('UPDATE notes SET title = :title, edited_at = :edited_at, pinned = :pinned, archived = :archived, weight = :weight WHERE id = :id', [
+            'title' => $this->title,
+            'edited_at' => $this->edited_at,
+            'pinned' => $this->pinned ? 1 : 0,
+            'archived' => $this->archived ? 1 : 0,
+            'weight' => $this->weight,
+            'id' => $this->id
+        ]);
+        return $this;
+    }
     protected function modify_note_in_DB(): Note
     {
         self::execute('UPDATE notes SET title = :title, edited_at = NOW(), pinned = :pinned, archived = :archived, weight = :weight WHERE id = :id', [
