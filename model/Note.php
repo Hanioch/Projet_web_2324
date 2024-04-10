@@ -109,6 +109,9 @@ class Note extends MyModel
     public function validate(): array
     {
         $errors = [];
+        // TODO décommenter ce code si il est commenter: 
+
+
         $user = User::get_user_by_id($this->owner->get_Id());
         // TO DO: check si l'id de l'user correspond à l'id de l'user connnecter. 
 
@@ -230,7 +233,20 @@ class Note extends MyModel
 
         return $this;
     }
+    protected function modify_head_in_DB(): Note
+    {
+        self::execute('UPDATE notes SET title = :title, edited_at = :edited_at, pinned = :pinned, archived = :archived, weight = :weight WHERE id = :id', [
+            'title' => $this->title,
+            'edited_at' => $this->edited_at,
+            'pinned' => $this->pinned ? 1 : 0,
+            'archived' => $this->archived ? 1 : 0,
+            'weight' => $this->weight,
+            'id' => $this->id
+        ]);
 
+
+        return $this;
+    }
 
     public static function is_checklist_note(int $id): bool
     {

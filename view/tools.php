@@ -44,38 +44,37 @@ function show_note(array $arr_notes, string $title, string $titlePage): void
                         }
                         ?>
                     </div>
-                    <?php
-                    if ($titlePage === Page::Notes->value) {
-                    ?>
-                        <div class="footer-in-note">
-                            <?php
-                            $url_base = "./notes/move_note/" . $note->get_Id();
-
-                            if ($i !== 0) {
-                                $url_increment = $url_base . "/increment";
-                            ?>
-                                <a href="<?= $url_increment ?>" class="button-mv-note" value="increment">
-                                    <i class="bi bi-chevron-double-left icon-mv-note i-left"></i>
-                                </a>
-                            <?php
-                            }
-                            if ($note->get_Id() != end($arr_notes)->get_Id()) {
-                                $url_decrement = $url_base . "/decrement";
-                            ?>
-                                <a href="<?= $url_decrement ?>" class="button-mv-note" value="decrement">
-                                    <i class="bi bi-chevron-double-right icon-mv-note i-right"></i>
-                                </a>
-                            <?php
-                            }
-                            ?>
-                            <input type="hidden" name="id" value=<?= $note->get_Id() ?>>
-
-                        </div>
-                    <?php
-                    }
-                    ?>
                 </a>
+                <?php
+                if ($titlePage === Page::Notes->value) {
+                ?>
+                    <div class="footer-in-note">
+                        <?php
+                        $url_base = "./notes/move_note/" . $note->get_Id();
 
+                        if ($i !== 0) {
+                            $url_increment = $url_base . "/increment";
+                        ?>
+                            <a href="<?= $url_increment ?>" class="button-mv-note" value="increment">
+                                <i class="bi bi-chevron-double-left icon-mv-note i-left"></i>
+                            </a>
+                        <?php
+                        }
+                        if ($note->get_Id() != end($arr_notes)->get_Id()) {
+                            $url_decrement = $url_base . "/decrement";
+                        ?>
+                            <a href="<?= $url_decrement ?>" class="button-mv-note" value="decrement">
+                                <i class="bi bi-chevron-double-right icon-mv-note i-right"></i>
+                            </a>
+                        <?php
+                        }
+                        ?>
+                        <input type="hidden" name="id" value=<?= $note->get_Id() ?>>
+
+                    </div>
+                <?php
+                }
+                ?>
             </li>
         <?php };
         ?>
