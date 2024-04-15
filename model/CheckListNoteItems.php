@@ -111,7 +111,7 @@ class ChecklistNoteItems extends MyModel
     private function validate_content(string $content): array
     {
         $errors = [];
-        $config = parse_ini_file('C:\PRWB2324\projects\prwb_2324_a04\config\dev.ini', true);
+        $config = parse_ini_file('config/dev.ini', true);
         $item_min_length = $config['Rules']['item_min_length'];
         $item_max_length = $config['Rules']['item_max_length'];
 

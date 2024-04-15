@@ -118,7 +118,7 @@ class Note extends MyModel
         // if ($user->id === ) {
         //     $errors[] = "Incorrect owner";
         // }
-        $config = parse_ini_file('C:\PRWB2324\projects\prwb_2324_a04\config\dev.ini', true);
+        $config = parse_ini_file('config/dev.ini', true);
         $note_title_min_length = $config['Rules']['note_title_min_length'];
         $note_title_max_length = $config['Rules']['note_title_max_length'];
 

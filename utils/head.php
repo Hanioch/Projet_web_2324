@@ -11,5 +11,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="css/style.css">
+    <script src="css/jquery-3.7.1.min.js" type="text/javascript"></script>
     <title>Caduc Notes</title>
 </head>
