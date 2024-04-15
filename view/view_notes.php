@@ -25,5 +25,9 @@ if (count($pinned_notes) == 0 && count($other_notes) == 0) {
     <a href="notes/add_checklist_note"><i class="bi bi-ui-checks"></i></a>
 </footer>
 
+<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+<script src="js/jquery-ui-touch-punch-master/jquery.ui.touch-punch.min.js"></script>
+<script src="js/scriptMoveNotes.js"></script>
 <?php
 include('./utils/footer.php'); ?>
