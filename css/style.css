@@ -61,6 +61,10 @@ body, html {
     padding: 0;
 }
 
+#sortable1,#sortable2{
+    min-height: 10rem;
+}
+
 .note {
     cursor: pointer;
     box-sizing: border-box;
@@ -251,5 +255,3 @@ a {
     }
     
 }
-
-
