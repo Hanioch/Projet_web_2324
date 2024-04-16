@@ -83,7 +83,7 @@ class ChecklistNote extends Note
 
     public function fetch_list_item()
     {
-        $query = self::execute(   "SELECT cni.*, n.title, n.owner, n.pinned, n.archived, n.weight, n.created_at, n.edited_at FROM checklist_note_items cni JOIN notes n ON n.id = cni.checklist_note WHERE checklist_note = :checklist_note ORDER BY cni.checked ASC, n.created_at ASC", ["checklist_note" => $this->id]);
+        $query = self::execute("SELECT cni.*, n.title, n.owner, n.pinned, n.archived, n.weight, n.created_at, n.edited_at FROM checklist_note_items cni JOIN notes n ON n.id = cni.checklist_note WHERE checklist_note = :checklist_note ORDER BY cni.checked ASC, n.created_at ASC", ["checklist_note" => $this->id]);
         $data = $query->fetchAll();
 
         $items = [];
@@ -109,7 +109,7 @@ class ChecklistNote extends Note
     }
     public function get_List_Item()
     {
-        return $this->list_item ;
+        return $this->list_item;
     }
 
     public function delete(User $initiator): Note |false
@@ -122,7 +122,8 @@ class ChecklistNote extends Note
         return false;
     }
 
-    public static function get_by_id($id): ChecklistNote | false {
+    public static function get_by_id($id): ChecklistNote | false
+    {
         $query = self::execute("SELECT n.*, cn.* FROM notes n JOIN checklist_notes cn ON n.id = cn.id WHERE n.id = :id", ["id" => $id]);
         if ($query->rowCount() == 0) {
             return false;
@@ -133,7 +134,8 @@ class ChecklistNote extends Note
         }
     }
 
-    public function persist(?Note $second_note = NULL): ChecklistNote|array {
+    public function persist(): ChecklistNote|array
+    {
         $errors = $this->validate();
         if (empty($errors)) {
             if ($this->id == NULL) {

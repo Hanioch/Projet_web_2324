@@ -3,17 +3,21 @@ function show_note(array $arr_notes, string $title, string $titlePage): void
 {
 ?>
     <h4 class="title-note"><?= $title ?></h4>
-    <ul class="list-note">
+    <?php
+    $numList = $title === "Pinned" ? 1 : 2;
+    ?>
+    <ul id="sortable<?= $numList ?>" class="list-note connectedSortable">
         <?php
         for ($i = 0; $i < count($arr_notes); $i++) {
             $note = $arr_notes[$i];
             $openNoteUrl = "./Notes/open_note/" . $note->get_Id();
         ?>
-            <li class="note">
+            <li id="<?= $note->get_Id() ?>" class="note ui-state-<?= $numList === 1 ? "default" : "highlight" ?>ui-state-default">
                 <a href="<?= $openNoteUrl ?>" class="link-open-note">
                     <div class="header-in-note"><?= $note->get_Title() ?></div>
                     <div class="body-note">
-                        <?php if (property_exists($note, 'content')) {
+                        <?php
+                        if (property_exists($note, 'content')) {
                             $max_lg = 75;
                             $content = $note->get_Content() === null ? "" : $note->get_Content();
                             $content_sub = strlen($content) > $max_lg ? substr($content, 0, $max_lg) . "..."  : $content;
@@ -44,9 +48,11 @@ function show_note(array $arr_notes, string $title, string $titlePage): void
                         }
                         ?>
                     </div>
-                    <?php
-                    if ($titlePage === Page::Notes->value) {
-                    ?>
+                </a>
+                <?php
+                if ($titlePage === Page::Notes->value) {
+                ?>
+                    <noscript>
                         <div class="footer-in-note">
                             <?php
                             $url_base = "./notes/move_note/" . $note->get_Id();
@@ -71,11 +77,10 @@ function show_note(array $arr_notes, string $title, string $titlePage): void
                             <input type="hidden" name="id" value=<?= $note->get_Id() ?>>
 
                         </div>
-                    <?php
-                    }
-                    ?>
-                </a>
-
+                    </noscript>
+                <?php
+                }
+                ?>
             </li>
         <?php };
         ?>

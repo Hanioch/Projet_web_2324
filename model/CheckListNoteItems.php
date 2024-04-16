@@ -111,8 +111,11 @@ class ChecklistNoteItems extends MyModel
     private function validate_content(string $content): array
     {
         $errors = [];
+        $config = parse_ini_file('config/dev.ini',true);
+        $item_min_length = $config['Rules']['item_min_length'];
+        $item_max_length = $config['Rules']['item_max_length'];
 
-        if (strlen($content) > 0 && (strlen($content) < 1 || strlen($content) > 60)) {
+        if (strlen($content) > 0 && (strlen($content) < $item_min_length || strlen($content) > $item_max_length)) {
             $errors[] = "Le contenu doit avoir entre 1 et 60 caractères.";
         }
 

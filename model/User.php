@@ -14,6 +14,7 @@ enum Role: string
 
 class User extends MyModel
 {
+    private array $config;
     public function __construct(private string $mail, private string $hashed_password, private string $full_name, private Role $role, private ?int $id = NULL)
     {
     }
@@ -56,16 +57,23 @@ class User extends MyModel
     }
     public function persist(): User
     {
-        if (self::get_user_by_mail($this->mail))
+        if ($this->id !== null && self::get_user_by_id($this->id)) {
             self::execute(
-                "UPDATE users SET hashed_password=:hashed_password, full_name=:full_name, role=:role WHERE mail=:mail ",
+                "UPDATE users SET hashed_password=:hashed_password, full_name=:full_name, role=:role, mail=:mail WHERE id=:id",
+                ["id" => $this->id, "mail" => $this->mail, "hashed_password" => $this->hashed_password, "full_name" => $this->full_name, "role" => $this->role->value]
+            );
+        } elseif ($this->mail !== null && self::get_user_by_mail($this->mail)) {
+            self::execute(
+                "UPDATE users SET hashed_password=:hashed_password, full_name=:full_name, role=:role WHERE mail=:mail",
                 ["mail" => $this->mail, "hashed_password" => $this->hashed_password, "full_name" => $this->full_name, "role" => $this->role->value]
             );
-        else
+        } else {
             self::execute(
-                "INSERT INTO users (mail,hashed_password,full_name,role) VALUES(:mail,:hashed_password,:full_name,:role)",
+                "INSERT INTO users (mail, hashed_password, full_name, role) VALUES (:mail, :hashed_password, :full_name, :role)",
                 ["mail" => $this->mail, "hashed_password" => $this->hashed_password, "full_name" => $this->full_name, "role" => $this->role->value]
             );
+        }
+
         return $this;
     }
     public static function get_user_by_mail(string $mail): User|false
@@ -86,7 +94,7 @@ class User extends MyModel
 
     public static function get_users(): array
     {
-        $query = self::execute("SELECT * FROM users", []);
+        $query = self::execute("SELECT * FROM users ORDER BY full_name ASC", []);
         $data = $query->fetchAll();
         $results = [];
         foreach ($data as $row) {
@@ -101,10 +109,13 @@ class User extends MyModel
         $errors = [
             "password" => []
         ];
+        $config = parse_ini_file('C:\PRWB2324\projects\prwb_2324_a04\config\dev.ini',true);
+        $password_min_length = $config['Rules']['password_min_length'];
+        var_dump($password_min_length);
         if (strlen($password) === 0) {
             $errors["password"][] = "Password is required.";
         }
-        if (strlen($password) < 8) {
+        if (strlen($password) < $password_min_length) {
             $errors["password"][] = "Password must be at least 8 characters long";
         }
         if (!((preg_match("/[A-Z]/", $password)) && preg_match("/\d/", $password) && preg_match("/['\";:,.\/?!\\-]/", $password))) {
@@ -118,10 +129,12 @@ class User extends MyModel
         $errors = [
             "full_name" => []
         ];
+        $config = parse_ini_file('C:\PRWB2324\projects\prwb_2324_a04\config\dev.ini',true);
+        $fullname_min_length = $config['Rules']['fullname_min_length'];
         if (!strlen($full_name) > 0) {
             $errors["full_name"][] = "Name is required.";
         }
-        if (strlen($full_name) < 3) {
+        if (strlen($full_name) < $fullname_min_length) {
             $errors["full_name"][] = "Name must be at least 3 characters long";
         }
         return $errors;
@@ -177,20 +190,6 @@ class User extends MyModel
     {
         return $hash === Tools::my_hash($clear_password);
     }
-
-    // redondant avec la nouvelle méthode validate_full_name ?
-
-    //    public function validate() : array {
-    //        $errors = [];
-    //        if (!strlen($this->pseudo) > 0) {
-    //            $errors[] = "Pseudo is required.";
-    //        } if (!(strlen($this->pseudo) >= 3 && strlen($this->pseudo) <= 16)) {
-    //            $errors[] = "Pseudo length must be between 3 and 16.";
-    //        } if (!(preg_match("/^[a-zA-Z][a-zA-Z0-9]*$/", $this->pseudo))) {
-    //            $errors[] = "Pseudo must start by a letter and must contain only letters and numbers.";
-    //        }
-    //        return $errors;
-    //    }
 
     public static function validate_login(string $mail, string $password): array
     {
