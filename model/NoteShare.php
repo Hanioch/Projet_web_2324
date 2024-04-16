@@ -111,5 +111,40 @@ class NoteShare extends MyModel{
         $result = $query->fetch();
         return $result ? $result['editor'] == 1 : false;
     }
+    public function add_share_ajax(): void {
+        $noteId = $_POST['noteId'] ?? null;
+        $userId = $_POST['user'] ?? null;
+        $permission = $_POST['permission'] ?? null;
 
+        if (!empty($noteId) && !empty($userId) && isset($permission)) {
+            NoteShare::add_Share($noteId, $userId, $permission);
+            echo json_encode(["success" => true]);
+        } else {
+            echo json_encode(["success" => false, "error" => "Missing parameters"]);
+        }
+    }
+
+    public function remove_share_ajax(): void {
+        $noteId = $_POST['noteId'] ?? null;
+        $userId = $_POST['user'] ?? null;
+
+        if (!empty($noteId) && !empty($userId)) {
+            NoteShare::remove_Share($noteId, $userId);
+            echo json_encode(["success" => true]);
+        } else {
+            echo json_encode(["success" => false, "error" => "Missing parameters"]);
+        }
+    }
+
+    public function change_permission_ajax(): void {
+        $noteId = $_POST['noteId'] ?? null;
+        $userId = $_POST['user'] ?? null;
+
+        if (!empty($noteId) && !empty($userId)) {
+            NoteShare::change_Permissions($noteId, $userId);
+            echo json_encode(["success" => true]);
+        } else {
+            echo json_encode(["success" => false, "error" => "Missing parameters"]);
+        }
+    }
 }
