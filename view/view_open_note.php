@@ -47,4 +47,6 @@ if (isset($headerType) && empty($error)) {
 <?php endif; ?>
     </div>
 
+<script src="js/scriptCheckUncheck.js"></script>
+
 <?php include('./utils/footer.php'); ?>

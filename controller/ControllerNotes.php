@@ -499,11 +499,27 @@ class ControllerNotes extends Controller
     }
     public function toggle_Checkbox()
     {
-        $noteId = $_POST['note_id'];
-        $itemId = $_POST['item_id'];
-        $item = ChecklistNoteItems::get_checklist_note_item_by_id($itemId);
-        $item->toggle_Checkbox();
-        $this->redirect("notes","open_note/$noteId");
+        $response = ['success' => false];
+
+        if(isset($_POST['note_id']) && isset($_POST['item_id'])) {
+            $noteId = $_POST['note_id'];
+            $itemId = $_POST['item_id'];
+            $item = ChecklistNoteItems::get_checklist_note_item_by_id($itemId);
+
+            if($item) {
+                $item->toggle_Checkbox();
+                $response['success'] = true;
+            }
+        }
+
+        if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+            header('Content-Type: application/json');
+            echo json_encode($response);
+        } else {
+            if($response['success']) {
+                $this->redirect("notes","open_note/$noteId");
+            }
+        }
     }
     public function set_Archive()
     {
