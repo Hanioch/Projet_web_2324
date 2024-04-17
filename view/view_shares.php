@@ -37,7 +37,7 @@ if (isset($error) && !empty($error)) {
             </ul>
         <?php endif; ?>
         <?php if (!empty($usersToShareWith)): ?>
-            <form action="./notes/shares/<?php echo $noteId; ?>" method="post" >
+        <form action="./notes/shares/<?php echo $noteId; ?>" method="post" >
                 <div class="input-group mb-3">
                     <select class="form-select bg-dark text-white border-secondary " name="user" id="user">
                         <option disabled selected>-User-</option>
@@ -51,11 +51,11 @@ if (isset($error) && !empty($error)) {
                         <option value="0">Reader</option>
                     </select>
                     <input type="hidden" name="noteId" value="<?= $noteId?>">
-                    <button type="submit" name="addShare" class="btn btn-primary border-secondary" id="addShare">
+                    <button id="addShare" name="addShare" class="btn btn-primary border-secondary">
                         <i class="bi bi-plus"></i>
                     </button>
                 </div>
-            </form>
+        </form>
         <?php else: ?>
             <div class="alert alert-info" role="alert">
                 All users have been shared with this note. There are no more users to share.

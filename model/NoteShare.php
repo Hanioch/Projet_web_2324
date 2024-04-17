@@ -113,12 +113,15 @@ class NoteShare extends MyModel{
     }
     public function add_share_ajax(): void {
         $noteId = $_POST['noteId'] ?? null;
-        $userId = $_POST['user'] ?? null;
+        $userId = $_POST['userId'] ?? null;
         $permission = $_POST['permission'] ?? null;
 
-        if (!empty($noteId) && !empty($userId) && isset($permission)) {
-            NoteShare::add_Share($noteId, $userId, $permission);
-            echo json_encode(["success" => true]);
+        if (isset($noteId) && isset($userId) && isset($permission)) {
+            if(NoteShare::add_Share($noteId, $userId, $permission)) {
+                echo json_encode(["success" => true]);
+            } else {
+                echo json_encode(["success" => false, "error" => "Failed to add share"]);
+            }
         } else {
             echo json_encode(["success" => false, "error" => "Missing parameters"]);
         }

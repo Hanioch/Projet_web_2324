@@ -1,15 +1,25 @@
-document.addEventListener("DOMContentLoaded", function() {
+
 function addShare(noteId, userId, permission) {
+    console.log("Paramètres envoyés : noteId =", noteId, "userId =", userId, "permission =", permission);
     $.ajax({
         type: "POST",
-        url: "controller_notes/add_share_ajax",
-        data: { noteId: noteId, user: userId, permission: permission },
+        url: "js/addshare.php",
+        data: {
+           // action: "addshare.php",
+            noteId: noteId,
+            userId: userId,
+            permission: permission
+        },
         success: function(response) {
+            console.log("Réponse reçue :", response);
             if (response.success) {
+                console.log("okey")
             } else {
+                console.log("pas okey")
             }
         },
-        error: function() {
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.error("Erreur d'envoi de la requête AJAX :", textStatus, errorThrown);
         }
     });
 }
@@ -17,15 +27,14 @@ function addShare(noteId, userId, permission) {
 function removeShare(noteId, userId) {
     $.ajax({
         type: "POST",
-        url: "controller_notes/remove_share_ajax",
+        url: "notes/remove_share_ajax",
         data: { noteId: noteId, user: userId },
         success: function(response) {
             if (response.success) {
-
+                console.log("okey")
             } else {
+                console.log("pas okey")
             }
-        },
-        error: function() {
         }
     });
 }
@@ -33,7 +42,7 @@ function removeShare(noteId, userId) {
 function changePermission(noteId, userId) {
     $.ajax({
         type: "POST",
-        url: "controller_notes/change_permission_ajax",
+        url: "notes/change_permission_ajax",
         data: { noteId: noteId, user: userId },
         success: function(response) {
             if (response.success) {
@@ -44,51 +53,8 @@ function changePermission(noteId, userId) {
         }
     });
 }
-
-let shareList = document.getElementById("shareList");
-
-function addToShareList(userId, permission) {
-    let listItem = document.createElement("li");
-    listItem.textContent = `User: ${userId}, Permission: ${permission}`;
-    shareList.appendChild(listItem);
-}
-function removeFromShareList(userId) {
-    let items = shareList.getElementsByTagName("li");
-    for (let i = 0; i < items.length; i++) {
-        if (items[i].textContent.includes(userId)) {
-            shareList.removeChild(items[i]);
-            break;
-        }
-    }
-}
-
-function updatePermissionInList(userId, newPermission) {
-    let items = shareList.getElementsByTagName("li");
-    for (let i = 0; i < items.length; i++) {
-        if (items[i].textContent.includes(userId)) {
-            items[i].textContent = items[i].textContent.replace(/Permission: \w+/, `Permission: ${newPermission}`);
-            break;
-        }
-    }
-}
-
-
-    document.getElementById("addShare").addEventListener("click", function() {
-        console.log("Clicked on addShare button");
-        let userId = document.getElementById("user").value;
-        let permission = document.getElementById("permission").value;
-        addShare(23, userId, permission);
-    });
-
-    document.getElementById("removeShare").addEventListener("click", function() {
-        console.log("Clicked on removeShare button");
-        let userId = document.getElementById("userRemove").value;
-        removeShare(23, userId);
-    });
-
-    document.getElementById("changePermission").addEventListener("click", function() {
-        console.log("Clicked on changePermission button");
-        let userId = document.getElementById("userPermission").value;
-        changePermission(23, userId);
-    });
+document.getElementById("addShare").addEventListener("click", function() {
+    let userId = document.getElementById("user").value;
+    let permission = document.getElementById("permission").value;
+    addShare(21, 2, 0);
 });
