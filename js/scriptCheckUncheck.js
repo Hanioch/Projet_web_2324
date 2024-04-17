@@ -10,7 +10,6 @@ $(() => {
 
         console.log(itemId);
         console.log(noteId);
-        console.log(isChecked);
 
 
         $.ajax({
@@ -20,7 +19,7 @@ $(() => {
         }).done(function(response) {
             //$var = $($.parseHTML(response)).find("#checkbox_"+itemId);
             console.log(response);
-            $("#checkbox_"+itemId).html($var);
+            //$("#checkbox_"+itemId).html($var);
         });
 
     });
