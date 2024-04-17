@@ -28,7 +28,9 @@ if (isset($headerType) && empty($error)) {
                     <form action="notes/toggle_Checkbox" method="POST">
                         <div class="input-group mb-3">
                             <div class="input-group-text bg-primary ">
-                                <input class="form-check-input border" type="checkbox" name="checked" value="1" <?= $item->is_Checked() ? 'checked' : '' ?> aria-label="Checkbox for following text input" onchange="this.form.submit()" <?= $canEdit ? '' : 'disabled' ?> >
+                                <button class="btn btn-primary" type="submit" name="checked" value="1" <?= $item->is_Checked() ? 'disabled' : '' ?>>
+                                    <?= $item->is_Checked() ? 'Checked' : 'Unchecked' ?>
+                                </button>
                             </div>
                             <input type="text" class="form-control bg-secondary text-white bg-opacity-25 border-0 <?= $item->is_Checked() ? 'text-decoration-line-through' : '' ?>" value="<?= htmlspecialchars($item->get_Content()) ?>" aria-label="Text input with checkbox" disabled>
                             <input type="hidden" name="item_id" value="<?= $item->get_Id() ?>">
