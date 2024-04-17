@@ -28,8 +28,8 @@ if (isset($headerType) && empty($error)) {
                     <form action="notes/toggle_Checkbox" method="POST">
                         <div class="input-group mb-3">
                             <div class="input-group-text bg-primary ">
-                                <button class="btn btn-primary" type="submit" name="checked" value="1" <?= $item->is_Checked() ? 'disabled' : '' ?>>
-                                    <?= $item->is_Checked() ? 'Checked' : 'Unchecked' ?>
+                                <button type="submit" class="btn btn-submit" <?= $canEdit ? '' : 'disabled' ?>>
+                                    <input class="form-check-input border" type="checkbox" name="checked" value="1" <?= $item->is_Checked() ? 'checked' : '' ?> aria-label="Checkbox for following text input" <?= $canEdit ? '' : 'disabled' ?>>
                                 </button>
                             </div>
                             <input type="text" class="form-control bg-secondary text-white bg-opacity-25 border-0 <?= $item->is_Checked() ? 'text-decoration-line-through' : '' ?>" value="<?= htmlspecialchars($item->get_Content()) ?>" aria-label="Text input with checkbox" disabled>
@@ -48,7 +48,5 @@ if (isset($headerType) && empty($error)) {
         <?php endif; ?>
 <?php endif; ?>
     </div>
-
-<script src="js/scriptCheckUncheck.js"></script>
 
 <?php include('./utils/footer.php'); ?>
