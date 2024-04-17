@@ -20,13 +20,13 @@ if (isset($error) && !empty($error)) {
                 <?php foreach ($existingShares as $share): ?>
                     <div class="input-group mb-3 ">
                         <input type="text" name="listShares" class="form-control text-white custom-placeholder bg-dark border-secondary fst-italic" placeholder="<?=$share['full_name']?> (<?= $share['editor'] ? 'editor' : 'reader' ?>)" aria-label="Recipient's username with two button addons" disabled>
-                        <form action="./notes/shares/<?php echo $noteId; ?>" method="post" >
+                         <form action="./notes/shares/<?php echo $noteId; ?>" method="post" >
                             <input type="hidden" name="user" value="<?=$share['user']?>" id="userPermission">
                             <button class="btn btn-primary border-secondary border rounded-0" type="submit" name="changePermission" id="changePermission">
                                 <i class="bi bi-arrow-repeat"></i>
                             </button>
                         </form>
-                        <form action="./notes/shares/<?php echo $noteId; ?>" method="post" >
+                         <form action="./notes/shares/<?php echo $noteId; ?>" method="post" >
                             <input type="hidden" name="user" value="<?=$share['user']?>" id="userRemove">
                             <button class="arrondirbtn btn btn-danger border-secondary" type="submit" name="removeShare" id="removeShare">
                                 <i class="bi bi-x"></i>
@@ -50,7 +50,7 @@ if (isset($error) && !empty($error)) {
                         <option value="1">Editor</option>
                         <option value="0">Reader</option>
                     </select>
-                    <input type="hidden" name="noteId" value="<?= $noteId?>">
+                    <input type="hidden" name="noteId" value="<?= $noteId?>" id="noteId">
                     <button id="addShare" name="addShare" class="btn btn-primary border-secondary">
                         <i class="bi bi-plus"></i>
                     </button>

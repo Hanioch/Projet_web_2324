@@ -1,60 +1,80 @@
-
-function addShare(noteId, userId, permission) {
-    console.log("Paramètres envoyés : noteId =", noteId, "userId =", userId, "permission =", permission);
-    $.ajax({
-        type: "POST",
-        url: "js/addshare.php",
-        data: {
-           // action: "addshare.php",
-            noteId: noteId,
-            userId: userId,
-            permission: permission
-        },
-        success: function(response) {
-            console.log("Réponse reçue :", response);
-            if (response.success) {
-                console.log("okey")
-            } else {
-                console.log("pas okey")
+document.addEventListener("DOMContentLoaded", function() {
+    function addShare(noteId, userId, permission) {
+        console.log("Paramètres envoyés : noteId =", noteId, "userId =", userId, "permission =", permission);
+        $.ajax({
+            type: "POST",
+            url: "notes/add_share_ajax",
+            data: {
+                noteId: noteId,
+                userId: userId,
+                permission: permission
+            },
+            success: function (response) {
+                console.log("Réponse reçue :", response);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.error("Erreur d'envoi de la requête AJAX :", textStatus, errorThrown);
             }
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-            console.error("Erreur d'envoi de la requête AJAX :", textStatus, errorThrown);
-        }
-    });
-}
+        });
+        return false;
+    }
 
-function removeShare(noteId, userId) {
-    $.ajax({
-        type: "POST",
-        url: "notes/remove_share_ajax",
-        data: { noteId: noteId, user: userId },
-        success: function(response) {
-            if (response.success) {
-                console.log("okey")
-            } else {
-                console.log("pas okey")
+    function removeShare(noteId, userId) {
+        console.log("Paramètres envoyés : noteId =", noteId, "userId =", userId);
+        $.ajax({
+            type: "POST",
+            url: "notes/remove_share_ajax",
+            data: {
+                noteId: noteId,
+                user: userId
+            },
+            success: function (response) {
+                console.log("Réponse reçue :", response);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.error("Erreur d'envoi de la requête AJAX :", textStatus, errorThrown);
             }
-        }
-    });
-}
+        });
+        return false;
+    }
 
-function changePermission(noteId, userId) {
-    $.ajax({
-        type: "POST",
-        url: "notes/change_permission_ajax",
-        data: { noteId: noteId, user: userId },
-        success: function(response) {
-            if (response.success) {
-            } else {
+    function changePermission(noteId, userId) {
+        console.log("Paramètres envoyés : noteId =", noteId, "userId =", userId);
+        $.ajax({
+            type: "POST",
+            url: "notes/change_permission_ajax",
+            data: {
+                noteId: noteId,
+                user: userId
+            },
+            success: function (response) {
+                console.log("Réponse reçue :", response);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.error("Erreur d'envoi de la requête AJAX :", textStatus, errorThrown);
             }
-        },
-        error: function() {
-        }
+        });
+        return false;
+    }
+
+    document.getElementById("addShare").addEventListener("click", function () {
+        event.preventDefault();
+        let noteId = document.getElementById("noteId").value;
+        let userId = document.getElementById("user").value;
+        let permission = document.getElementById("permission").value;
+        addShare(noteId, userId, permission);
     });
-}
-document.getElementById("addShare").addEventListener("click", function() {
-    let userId = document.getElementById("user").value;
-    let permission = document.getElementById("permission").value;
-    addShare(21, 2, 0);
+    document.getElementById("removeShare").addEventListener("click", function () {
+        event.preventDefault();
+        let noteId = document.getElementById("noteId").value;
+        let userId = document.getElementById("userRemove").value;
+        removeShare(noteId, userId);
+    });
+
+    document.getElementById("changePermission").addEventListener("click", function () {
+        event.preventDefault();
+        let noteId = document.getElementById("noteId").value;
+        let userId = document.getElementById("userPermission").value;
+        changePermission(noteId, userId);
+    });
 });
