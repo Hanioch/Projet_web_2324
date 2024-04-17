@@ -371,6 +371,8 @@ class ControllerNotes extends Controller
     {
         $noteId = $id !== -1 ? $id : filter_var($_GET['param1'], FILTER_VALIDATE_INT);
         $user = $this->get_user_or_redirect();
+        var_dump($user);
+        die();
         $userId = $user->get_Id();
         $error = "";
 
@@ -506,9 +508,12 @@ class ControllerNotes extends Controller
         $this->redirect("notes","open_note/$noteId");
     }
 
-    public function toggle_checkbox_service(){
-        var_dump("coucou");
-        die();
+    public function toggle_checkbox_service() : string {
+        $noteId = $_POST['note_id'];
+        $itemId = $_POST['item_id'];
+        $item = ChecklistNoteItems::get_checklist_note_item_by_id($itemId);
+        $item->toggle_Checkbox();
+        return json_encode($item);
     }
     public function set_Archive()
     {
