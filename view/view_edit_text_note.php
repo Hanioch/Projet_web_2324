@@ -20,13 +20,13 @@ include("./utils/header_add_note.php");
                 <label for="title_add_text_note" class="form-label">Title</label>
                 <input required type="text" value="<?= $note->get_Title() ?>" name="title" class="form-control bg-secondary text-white bg-opacity-25 mb-2" id="title_add_text_note">
                 <?php
-                if (!empty($errors)) {
+                if (!empty($errors['title'])) {
                 ?>
                     <?php
                     foreach ($errors as $error) {
                     ?>
                         <div class="alert alert-danger" role="alert">
-                            <?= $error ?>
+                            <?= $errors['title'] ?>
                         </div>
                     <?php
                     }
@@ -40,6 +40,21 @@ include("./utils/header_add_note.php");
             <label for="text_add_text_note" class="form-label">Text</label>
             <textarea name="text" class="form-control bg-secondary text-white bg-opacity-25" id="text_add_text_note" cols="30" rows="10"><?= $note->get_Content() ?></textarea>
         </div>
+        <?php
+        if (!empty($errors['content'])) {
+            ?>
+            <?php
+            foreach ($errors as $error) {
+                ?>
+                <div class="alert alert-danger" role="alert">
+                    <?= $errors['content'] ?>
+                </div>
+                <?php
+            }
+            ?>
+            <?php
+        }
+        ?>
     </form>
 
 

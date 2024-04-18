@@ -145,14 +145,28 @@ class Note extends MyModel
         $note_title_max_length = $config['Rules']['note_title_max_length'];
 
         if (strlen($this->get_Title()) < $note_title_min_length || strlen($this->get_Title()) > $note_title_max_length) {
-            $errors['title'] = "Title length must be between 3 and 25 ";
+            $errors['title'] = "Title length must be between {$note_title_min_length} and {$note_title_max_length} ";
         }
         if (!($this->weight > 0 && !$this->is_not_unique_weight())) {
             $errors['weight'] = "Weight must be positive and unique";
         }
+        if (!$this->is_unique_title()) {
+            $errors['title'] = "Title must be unique for the owner.";
+        }
+
         return $errors;
     }
+    private function is_unique_title(): bool
+    {
+        $query = self::execute("SELECT COUNT(*) AS count FROM notes WHERE title = :title AND owner = :owner AND id != :id", [
+            'title' => $this->title,
+            'owner' => $this->owner->get_Id(),
+            'id' => $this->id ?? 0,
+        ]);
+        $result = $query->fetch();
 
+        return $result['count'] === 0;
+    }
     public function is_not_unique_weight(): bool
     {
         $notesByOwner = $this->owner->get_notes();

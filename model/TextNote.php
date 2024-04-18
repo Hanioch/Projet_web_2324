@@ -29,7 +29,23 @@ class TextNote extends Note
             return new TextNote($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['content'], $row['id'], $row['created_at'], $row['edited_at']);
         }
     }
+    public function validate(): array
+    {
+        $errors = parent::validate();
 
+        $config = parse_ini_file('config/dev.ini', true);
+        $note_content_min_length = $config['Rules']['note_min_length'];
+        $note_content_max_length = $config['Rules']['note_max_length'];
+
+        if ( $this->get_Content() !== "") {
+            $content_length = strlen($this->get_Content());
+            if ($content_length < $note_content_min_length || $content_length > $note_content_max_length) {
+                $errors['content'] = "Content length must be between {$note_content_min_length} and {$note_content_max_length} characters.";
+            }
+        }
+
+        return $errors;
+    }
     public function delete(User $initiator): Note|false
     {
         if ($this->owner == $initiator) {

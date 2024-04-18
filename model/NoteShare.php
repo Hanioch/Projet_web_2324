@@ -111,5 +111,4 @@ class NoteShare extends MyModel{
         $result = $query->fetch();
         return $result ? $result['editor'] == 1 : false;
     }
-
 }

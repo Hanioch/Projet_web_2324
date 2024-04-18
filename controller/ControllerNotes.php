@@ -450,7 +450,7 @@ class ControllerNotes extends Controller
                 $title = trim($_POST['title']);
                 $content = isset($_POST['text']) ? $_POST['text'] : "";
                 if ($title == $note->get_Title() && $content == $note->get_Content()) {
-                    $errors[] = "aucune modification apportée";
+                    $errors['title'] = "aucune modification apportée";
                 } else {
                     $note->set_Title($title);
                     $note->set_Content($content);
@@ -595,7 +595,44 @@ class ControllerNotes extends Controller
             'errorAdd' => $errorAdd
         ]);
     }
+    public function add_share_ajax(): void {
+        $noteId = $_POST['noteId'] ?? null;
+        $userId = $_POST['userId'] ?? null;
+        $permission = $_POST['permission'] ?? null;
 
+        if (isset($noteId) && isset($userId) && isset($permission)) {
+            if(NoteShare::add_Share($noteId, $userId, $permission)) {
+                echo json_encode(["success" => true]);
+            } else {
+                echo json_encode(["success" => false, "error" => "Failed to add share"]);
+            }
+        } else {
+            echo json_encode(["success" => false, "error" => "Missing parameters"]);
+        }
+    }
+    public function remove_share_ajax(): void {
+        $noteId = $_POST['noteId'] ?? null;
+        $userId = $_POST['user'] ?? null;
+
+        if (isset($noteId) && isset($userId)) {
+            NoteShare::remove_Share($noteId, $userId);
+            echo json_encode(["success" => true]);
+        } else {
+            echo json_encode(["success" => false, "error" => "Missing parameters"]);
+        }
+    }
+
+    public function change_permission_ajax(): void {
+        $noteId = $_POST['noteId'] ?? null;
+        $userId = $_POST['user'] ?? null;
+
+        if (isset($noteId) && isset($userId)) {
+            NoteShare::change_Permissions($noteId, $userId);
+            echo json_encode(["success" => true]);
+        } else {
+            echo json_encode(["success" => false, "error" => "Missing parameters"]);
+        }
+    }
     public function toggle_Pin()
     {
         $user = $this->get_user_or_redirect();
@@ -617,6 +654,26 @@ class ControllerNotes extends Controller
 
         $item->toggle_Checkbox();
         $this->redirect("notes", "open_note/$noteId");
+    }
+
+    public function toggle_checkbox_service() {
+        $noteId = $_POST['note_id'];
+        $itemId = $_POST['item_id'];
+        $item = ChecklistNoteItems::get_checklist_note_item_by_id($itemId);
+        $item->toggle_Checkbox();
+        $items = ChecklistNoteItems::get_items_by_checklist_note_id($noteId);
+        $table = [];
+        /** @var CheckListNoteItems $i */
+        foreach($items as $i) {
+            $row = [];
+            $row["content"] = $i->get_content();
+            $row["checked"] = $i->is_Checked();
+            $row["checklist_note"] = $i->get_ChecklistNote();
+            $row["id"] = $i->get_Id();
+            $table[] = $row;
+        }
+
+        echo json_encode($table);
     }
     public function set_Archive()
     {
