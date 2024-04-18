@@ -33,7 +33,7 @@ function displayItems(itemsJson) {
         html += "<div class='input-group mb-3'>";
         html += "<div class='input-group-text bg-primary '>";
         html += "<button class='btn btn-submit' >";
-        html += "<input class='form-check-input border' id='checkbox_" + i.id + "' type='checkbox' name='checked' value='1' " + (i.checked ? 'checked' : '') + " aria-label='Checkbox for following text input' >";
+        html += "<input class='form-check-input border opacity-100' id='checkbox_" + i.id + "' type='checkbox' name='checked' value='1' " + (i.checked ? 'checked' : '') + " aria-label='Checkbox for following text input' disabled>";
         html += "</button>";
         html += "</div>";
         html += "<input type='text' class='form-control bg-secondary text-white bg-opacity-25 border-0 " + (i.checked ? 'text-decoration-line-through' : '') + "' value='" + i.content + "' aria-label='Text input with checkbox' disabled>";
