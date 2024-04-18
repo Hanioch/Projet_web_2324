@@ -33,6 +33,13 @@ include("./utils/header_add_note.php");
                 <label for="text_add_text_note" class="form-label">Text</label>
                 <textarea name="text" class="form-control bg-secondary text-white bg-opacity-25" id="text_add_text_note" cols="30" rows="10"><?= $default_text ?></textarea>
             </div>
+            <?php
+            $errors = $result["errors"];
+            if (array_key_exists('content', $errors)) : ?>
+                <div class="alert alert-danger" role="alert">
+                    <?= $errors["content"] ?>
+                </div>
+            <?php endif; ?>
         </form>
     </div>
 </div>
