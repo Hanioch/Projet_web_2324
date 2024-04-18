@@ -512,10 +512,18 @@ class ControllerNotes extends Controller
         $item = ChecklistNoteItems::get_checklist_note_item_by_id($itemId);
         $item->toggle_Checkbox();
         $items = ChecklistNoteItems::get_items_by_checklist_note_id($noteId);
-        $itemsAsArray = (array)$items;
-        var_dump($itemsAsArray);
-        die();
-        echo json_encode($itemsAsArray);
+        $table = [];
+        /** @var CheckListNoteItems $i */
+        foreach($items as $i) {
+            $row = [];
+            $row["content"] = $i->get_content();
+            $row["checked"] = $i->is_Checked();
+            $row["checklist_note"] = $i->get_ChecklistNote();
+            $row["id"] = $i->get_Id();
+            $table[] = $row;
+        }
+
+        echo json_encode($table);
     }
     public function set_Archive()
     {

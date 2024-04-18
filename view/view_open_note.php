@@ -21,7 +21,7 @@ if (isset($headerType) && empty($error)) {
         <label for="noteTitle" class="form-label">Title</label>
         <input type="text" id="noteTitle" class="form-control border-0 bg-secondary text-white bg-opacity-25" value="<?= htmlspecialchars($note->get_Title()) ?>" disabled>
     </div>
-    <div class="card-body text-white">
+    <div class="card-body text-white" id="itemsDiv">
         <?php if ($isChecklistNote): ?>
                 <label class="form-label">Items</label>
                 <?php foreach ($checklistItems as $item): ?>
