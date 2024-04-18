@@ -21,15 +21,15 @@ if (isset($headerType) && empty($error)) {
         <label for="noteTitle" class="form-label">Title</label>
         <input type="text" id="noteTitle" class="form-control border-0 bg-secondary text-white bg-opacity-25" value="<?= htmlspecialchars($note->get_Title()) ?>" disabled>
     </div>
-    <div class="card-body text-white">
+    <div class="card-body text-white" id="itemsDiv">
         <?php if ($isChecklistNote): ?>
                 <label class="form-label">Items</label>
                 <?php foreach ($checklistItems as $item): ?>
                     <form action="notes/toggle_Checkbox" method="POST">
                         <div class="input-group mb-3">
                             <div class="input-group-text bg-primary ">
-                                <button type="submit" class="btn btn-submit" <?= $canEdit ? '' : 'disabled' ?>>
-                                    <input class="form-check-input border" type="checkbox" name="checked" value="1" <?= $item->is_Checked() ? 'checked' : '' ?> aria-label="Checkbox for following text input" <?= $canEdit ? '' : 'disabled' ?>>
+                                <button class="btn btn-submit" <?= $canEdit ? '' : 'disabled' ?>>
+                                    <input class="form-check-input border" id="checkbox_<?= $item->get_Id()?>" type="checkbox" name="checked" value="1" <?= $item->is_Checked() ? 'checked' : '' ?> aria-label="Checkbox for following text input" <?= $canEdit ? '' : 'disabled' ?>>
                                 </button>
                             </div>
                             <input type="text" class="form-control bg-secondary text-white bg-opacity-25 border-0 <?= $item->is_Checked() ? 'text-decoration-line-through' : '' ?>" value="<?= htmlspecialchars($item->get_Content()) ?>" aria-label="Text input with checkbox" disabled>
@@ -48,5 +48,8 @@ if (isset($headerType) && empty($error)) {
         <?php endif; ?>
 <?php endif; ?>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="js/scriptCheckUncheck.js"></script>
 
 <?php include('./utils/footer.php'); ?>
