@@ -511,8 +511,11 @@ class ControllerNotes extends Controller
         $itemId = $_POST['item_id'];
         $item = ChecklistNoteItems::get_checklist_note_item_by_id($itemId);
         $item->toggle_Checkbox();
-        $itemArray = (array)$item;
-        echo json_encode($itemArray);
+        $items = ChecklistNoteItems::get_items_by_checklist_note_id($noteId);
+        $itemsAsArray = (array)$items;
+        var_dump($itemsAsArray);
+        die();
+        echo json_encode($itemsAsArray);
     }
     public function set_Archive()
     {
