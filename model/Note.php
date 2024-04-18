@@ -106,28 +106,6 @@ class Note extends MyModel
         return new Note($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['id'], $row['created_at'], $row['edited_at']);
     }
 
-    public function get_nearest_archived_note(): Note | false
-    {
-        $query = self::execute("
-            SELECT n.* FROM notes n
-            INNER JOIN users u ON u.id = n.owner
-            WHERE u.id = :owner AND weight < :weight
-            AND archived = true
-            ORDER BY ABS(weight - :weight)
-            LIMIT 1
-            ", ["owner" => $this->owner->get_Id(), "weight" => $this->weight]);
-
-        $row = $query->fetch();
-
-        if (!$row) {
-            return false;
-        }
-
-        $owner = User::get_user_by_id($row['owner']);
-
-        return new Note($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['id'], $row['created_at'], $row['edited_at']);
-    }
-
     public function validate(): array
     {
         $errors = [];
@@ -270,7 +248,6 @@ class Note extends MyModel
     }
     protected function modify_note_in_DB(): Note
     {
-
         self::execute('UPDATE notes SET title = :title, edited_at = NOW(), pinned = :pinned, archived = :archived, weight = :weight WHERE id = :id', [
             'title' => $this->title,
             'pinned' => $this->pinned ? 1 : 0,
@@ -278,6 +255,7 @@ class Note extends MyModel
             'weight' => $this->weight,
             'id' => $this->id
         ]);
+
         return $this;
     }
 
