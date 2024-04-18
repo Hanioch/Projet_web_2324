@@ -121,7 +121,6 @@ class Note extends MyModel
         $config = parse_ini_file('config/dev.ini', true);
         $note_title_min_length = $config['Rules']['note_title_min_length'];
         $note_title_max_length = $config['Rules']['note_title_max_length'];
-
         if (strlen($this->get_Title()) < $note_title_min_length || strlen($this->get_Title()) > $note_title_max_length) {
             $errors['title'] = "Title length must be between {$note_title_min_length} and {$note_title_max_length} ";
         }
