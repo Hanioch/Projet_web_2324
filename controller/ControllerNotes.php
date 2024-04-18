@@ -344,7 +344,7 @@ class ControllerNotes extends Controller
                 $title = trim($_POST['title']);
                 $content = isset($_POST['text']) ? $_POST['text'] : "";
                 if ($title == $note->get_Title() && $content == $note->get_Content()) {
-                    $errors[] = "aucune modification apportée";
+                    $errors['title'] = "aucune modification apportée";
                 } else {
                     $note->set_Title($title);
                     $note->set_Content($content);
