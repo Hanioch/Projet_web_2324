@@ -10,8 +10,6 @@ $(document).ready(function() {
             maxTitleLength = data.maxTitleLength;
             minContentLength = data.minContentLength;
             maxContentLength = data.maxContentLength;
-            validateTitle();
-            validateText();
         },
         error: function(xhr, status, error) {
             console.error(error);
@@ -89,4 +87,5 @@ $(document).ready(function() {
             $('#save_button').prop('disabled', true).addClass('disabled-button');
         }
     }
+    enableSaveButtonIfValid();
 });
