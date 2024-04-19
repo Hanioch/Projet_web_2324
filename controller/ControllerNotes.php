@@ -334,6 +334,7 @@ class ControllerNotes extends Controller
             $checklist_note = new ChecklistNote($note->get_Title(), $note->get_Owner(), $note->is_Pinned(), $note->is_Archived(), $note->get_Weight(), $note->get_Id());
             if (isset($_POST['save_button'])) {
                 $errors = $this->edit_title($note, $errors);
+                $errors = $this->edit_items($checklist_note, $errors);
             } else if (isset($_POST['add_button'])) {
                 $errors = $this->add_item($checklist_note, $errors);
                 if (empty($errors)) {
@@ -402,6 +403,42 @@ class ControllerNotes extends Controller
         return $errors;
     }
 
+    public function edit_items(ChecklistNote $note, array $errors): array {
+        $currentItems = $note->get_Items();
+        $newNote = clone $note;
+        $newItems = $newNote->get_Items();
+        $stringNewItems = [];
+
+        /** @var $i ChecklistNoteItems*/
+        foreach($newItems as $i) {
+            $id = $i->get_Id();
+            $i->set_Content($_POST['item'.$id]);
+            $stringNewItems[] = $i->get_content();
+
+            if (trim($_POST['item'.$id]) == '') {
+                $errors['item'.$id][] = "Item cannot be empty.";
+            } else {
+                $item = trim($_POST['item'.$id]);
+                if (true !== ($duplicates = $this->is_unique($i, $newItems))) {
+                    foreach($duplicates as $dup) {
+                        $errors['item'.$dup][] = "Item already exists.";
+                    }
+                } else {
+                    $i->persist();
+                }
+
+
+                if (!($test = $note->persist()) instanceof Note) {
+                    $errors = array_merge($errors, $test);
+                }
+            }
+        }
+
+
+        return $errors;
+    }
+
+
     private function item_exists(array $items, string $item_content): bool
     {
         foreach ($items as $i) {
@@ -410,6 +447,24 @@ class ControllerNotes extends Controller
             }
         }
         return false;
+    }
+
+    private function is_unique(ChecklistNoteItems $i, array $items): bool | array
+    {
+        $count = 0;
+        $res = [];
+        /** @var ChecklistNoteItems $item */
+        foreach($items as $item) {
+            if ($item->get_content() === $i->get_content()) {
+                $count++;
+                $res[] = $item->get_Id();
+            }
+        }
+        if ($count < 2) {
+            return true;
+        } else {
+            return $res;
+        }
     }
 
     public function edit_text_note(): void
@@ -743,4 +798,5 @@ class ControllerNotes extends Controller
             "headerType" => $headerType
         ]);
     }
+
 }
