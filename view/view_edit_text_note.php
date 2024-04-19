@@ -19,33 +19,34 @@ include("./utils/header_add_note.php");
             <div class="">
                 <label for="title_add_text_note" class="form-label">Title</label>
                 <input required type="text" value="<?= $note->get_Title() ?>" name="title" class="form-control bg-secondary text-white bg-opacity-25 mb-2 <?= !empty($errors['title']) ? 'is-invalid' : '' ?>" id="title_add_text_note">
-                <?php
-                if (!empty($errors['title'])) {
-                    ?>
-                    <div class="invalid-feedback">
-                        <?= $errors['title'] ?>
-                    </div>
+                <div class="invalid-feedback" id="title_error">
                     <?php
-                }
-                ?>
+                    if (!empty($errors['title'])) {
+                        ?>
+                        <?= $errors['title'] ?>
+                        <?php
+                    }
+                    ?>
+                </div>
             </div>
         </div>
         <div class="mb-3 text-white">
             <label for="text_add_text_note" class="form-label">Text</label>
             <textarea name="text" class="form-control bg-secondary text-white bg-opacity-25 <?= !empty($errors['content']) ? 'is-invalid' : '' ?>" id="text_add_text_note" cols="30" rows="10"><?= $note->get_Content() ?></textarea>
         </div>
-        <?php
-        if (!empty($errors['content'])) {
-            ?>
-            <div class="invalid-feedback">
-                <?= $errors['content'] ?>
-            </div>
+        <div class="invalid-feedback" id="text_error">
             <?php
-        }
-        ?>
+            if (!empty($errors['content'])) {
+                ?>
+                <?= $errors['content'] ?>
+                <?php
+            }
+            ?>
+        </div>
     </form>
 
-
+    <div id="noteId" data-note-id="<?= $note->get_Id() ?>"></div>
 </div>
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="js/scriptValidateTextNote.js"></script>
 <?php include('./utils/footer.php'); ?>

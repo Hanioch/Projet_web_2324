@@ -816,4 +816,15 @@ class ControllerNotes extends Controller
         header('Content-Type: application/json');
         echo json_encode($validationRules);
     }
+    public function checkUniqueTitle(): void
+    {
+        $title = $_POST['title'];
+        $noteId = $_POST['noteId'];
+        $user = $this->get_user_or_redirect();
+        $userId = $user->get_Id();
+
+        $isUnique =  Note::is_unique_title_ajax($title,$userId,$noteId);
+        header('Content-Type: application/json');
+        echo json_encode(['unique' => $isUnique]);
+    }
  }
