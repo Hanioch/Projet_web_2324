@@ -198,7 +198,7 @@ class ControllerNotes extends Controller
         $default_text = "";
         $result = [];
         $result["success"] = NULL;
-        $result["errors"] = [];
+        $error = [];
 
         if (isset($_POST['title'])) {
             $title = trim($_POST['title']);
@@ -208,10 +208,10 @@ class ControllerNotes extends Controller
             $note = $new_text_note->persist();
 
             if (!($note instanceof TextNote)) {
-                $result["errors"] = $note;
+                $errors = $note;
                 $default_title = $title;
                 $default_text = $text;
-                (new View("add_text_note"))->show(["result" => $result, "default_title" => $default_title, "default_text" => $default_text]);
+                (new View("add_text_note"))->show(["result" => $result, "default_title" => $default_title, "default_text" => $default_text, 'errors' => $errors]);
             } else {
                 $result["success"] = "The note has been added successfully.";
                 $this->redirect("notes", "open_note", $note->get_Id());
@@ -820,5 +820,34 @@ class ControllerNotes extends Controller
             "headerType" => $headerType
         ]);
     }
+    public function getValidationRules(): void
+    {
+        $config = parse_ini_file('config/dev.ini', true);
 
-}
+        $minTitleLength = $config['Rules']['note_title_min_length'];
+        $maxTitleLength = $config['Rules']['note_title_max_length'];
+        $minContentLength = $config['Rules']['note_min_length'];
+        $maxContentLength = $config['Rules']['note_max_length'];
+
+        $validationRules = [
+            'minTitleLength' => $minTitleLength,
+            'maxTitleLength' => $maxTitleLength,
+            'minContentLength' => $minContentLength,
+            'maxContentLength' => $maxContentLength
+        ];
+
+        header('Content-Type: application/json');
+        echo json_encode($validationRules);
+    }
+    public function checkUniqueTitle(): void
+    {
+        $title = $_POST['title'];
+        $noteId = $_POST['noteId'];
+        $user = $this->get_user_or_redirect();
+        $userId = $user->get_Id();
+
+        $isUnique =  Note::is_unique_title_ajax($title,$userId,$noteId);
+        header('Content-Type: application/json');
+        echo json_encode(['unique' => $isUnique]);
+    }
+ }

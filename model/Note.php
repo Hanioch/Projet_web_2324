@@ -143,28 +143,45 @@ class Note extends MyModel
         $config = parse_ini_file('config/dev.ini', true);
         $note_title_min_length = $config['Rules']['note_title_min_length'];
         $note_title_max_length = $config['Rules']['note_title_max_length'];
-
         if (strlen($this->get_Title()) < $note_title_min_length || strlen($this->get_Title()) > $note_title_max_length) {
             $errors['title'] = "Title length must be between {$note_title_min_length} and {$note_title_max_length} ";
         }
         if (!($this->weight > 0 && !$this->is_not_unique_weight())) {
             $errors['weight'] = "Weight must be positive and unique";
         }
-        if (!$this->is_unique_title()) {
+        if (!$this->is_unique_title($this->title)) {
             $errors['title'] = "Title must be unique for the owner.";
         }
 
         return $errors;
     }
-    private function is_unique_title(): bool
+    public function is_unique_title(string $title): bool
     {
         $query = self::execute("SELECT COUNT(*) AS count FROM notes WHERE title = :title AND owner = :owner AND id != :id", [
-            'title' => $this->title,
+            'title' => $title,
             'owner' => $this->owner->get_Id(),
             'id' => $this->id ?? 0,
         ]);
         $result = $query->fetch();
 
+        return $result['count'] === 0;
+    }
+    public static function is_unique_title_ajax(string $title,int $owner, int $noteId): bool
+    {
+        if ($noteId === -1) {
+
+            $query = self::execute("SELECT COUNT(*) AS count FROM notes WHERE title = :title AND owner = :owner ", [
+                'title' => $title,
+                'owner' => $owner
+            ]);
+        }else{
+            $query = self::execute("SELECT COUNT(*) AS count FROM notes WHERE title = :title AND owner = :owner AND id != :id", [
+                'title' => $title,
+                'owner' => $owner,
+                'id' => $noteId,
+            ]);
+        }
+        $result = $query->fetch();
         return $result['count'] === 0;
     }
     public function is_not_unique_weight(): bool
