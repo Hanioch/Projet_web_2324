@@ -413,26 +413,29 @@ class ControllerNotes extends Controller
         /** @var $i ChecklistNoteItems*/
         foreach($newItems as $i) {
             $id = $i->get_Id();
-            $i->set_Content($_POST['item'.$id]);
-            $stringNewItems[] = $i->get_content();
+            if(isset($_POST['item'.$id])) {
+                $i->set_Content($_POST['item'.$id]);
+                $stringNewItems[] = $i->get_content();
 
-            if (trim($_POST['item'.$id]) == '') {
-                $errors['item'.$id][] = "Item cannot be empty.";
-            } else {
-                $item = trim($_POST['item'.$id]);
-                if (true !== ($duplicates = $this->is_unique($i, $newItems))) {
-                    foreach($duplicates as $dup) {
-                        $errors['item'.$dup][] = "Item already exists.";
-                    }
+                if (trim($_POST['item'.$id]) == '') {
+                    $errors['item'.$id][] = "Item cannot be empty.";
                 } else {
-                    $i->persist();
-                }
+                    $item = trim($_POST['item'.$id]);
+                    if (true !== ($duplicates = $this->is_unique($i, $newItems))) {
+                        foreach($duplicates as $dup) {
+                            $errors['item'.$dup][] = "Item already exists.";
+                        }
+                    } else {
+                        $i->persist();
+                    }
 
 
-                if (!($test = $note->persist()) instanceof Note) {
-                    $errors = array_merge($errors, $test);
+                    if (!($test = $note->persist()) instanceof Note) {
+                        $errors = array_merge($errors, $test);
+                    }
                 }
             }
+
         }
         return $errors;
     }
@@ -728,6 +731,25 @@ class ControllerNotes extends Controller
         }
 
         echo json_encode($table);
+    }
+
+    public function edit_item_service() {
+        $noteId = $_POST['note_id'];
+        $itemId = $_POST['item_id'];
+        $note = ChecklistNote::get_note($noteId);
+
+        $errors = $this->edit_items($note, []);
+        $item = ChecklistNoteItems::get_checklist_note_item_by_id($itemId);
+
+        $row = [];
+        $row["content"] = $item->get_content();
+        $row["checked"] = $item->is_Checked();
+        $row["checklist_note"] = $item->get_ChecklistNote();
+        $row["id"] = $item->get_Id();
+        $row["errors"] = $errors;
+
+
+        echo json_encode($row);
     }
     public function set_Archive()
     {

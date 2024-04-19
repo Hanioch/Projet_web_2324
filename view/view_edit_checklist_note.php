@@ -49,7 +49,8 @@ include("./utils/header_add_note.php");
                                 <?php if (isset($errors['item' . $item->get_Id()])): ?>
                                     <span class="error-add-note"><?php foreach($errors['item' . $item->get_Id()] as $error){echo $error;} ?></span>
                                 <?php endif; ?>
-                                <input type="hidden" name="item_id" value="1">
+                                <input type="hidden" name="item_id" value="<?= $item->get_Id() ?>">
+                                <input type="hidden" name="note_id" value="<?= $note->get_Id() ?>">
                             </div>
                         </li>
                     <?php endforeach; ?>
@@ -69,5 +70,8 @@ include("./utils/header_add_note.php");
         <?php endif; ?>
     </form>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+<script src="js/scriptEditChecklistNote.js"></script>
 
 <?php include('./utils/footer.php'); ?>
