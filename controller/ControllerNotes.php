@@ -423,7 +423,9 @@ class ControllerNotes extends Controller
                     $item = trim($_POST['item'.$id]);
                     if (true !== ($duplicates = $this->is_unique($i, $newItems))) {
                         foreach($duplicates as $dup) {
-                            $errors['item'.$dup][] = "Item already exists.";
+                            if(empty($errors['item'.$dup])) {
+                                $errors['item'.$dup][] = "Item already exists.";
+                            }
                         }
                     } else {
                         $i->persist();
@@ -435,7 +437,6 @@ class ControllerNotes extends Controller
                     }
                 }
             }
-
         }
         return $errors;
     }

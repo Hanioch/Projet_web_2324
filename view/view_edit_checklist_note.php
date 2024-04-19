@@ -37,7 +37,7 @@ include("./utils/header_add_note.php");
                 <label class="form-label mb-0">Items</label>
                 <ul class="list-unstyled">
                     <?php foreach ($items as $item): ?>
-                        <li class="list-unstyled" id="list_items">
+                        <li class="list-unstyled" id="list_items_<?= $item->get_Id() ?>">
                             <div class="input-group pt-3 has-validation">
                                 <div class="input-group-text bg-primary  border-secondary ">
                                     <input class="form-check-input border align-middle "  type="checkbox" name="checked" value="1" <?= $item->is_Checked() ? 'checked' : '' ?> aria-label="Checkbox for following text input" disabled> <!-- onchange="this.form.submit()" -->

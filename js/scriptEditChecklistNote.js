@@ -71,12 +71,12 @@ function displayItem(itemJson, itemElem) {
             itemElem.removeClass("is-valid");
             itemElem.addClass("is-invalid");
             let html = "";
-            for(let error of itemJson.errors.item1) {
-                html += "<div id='" + "error_text_" + itemJson.id + "' class='error-add-note pt-1'>" + itemJson.errors.item1 + "</div>";
+            for(let error of itemJson.errors["item" + itemJson.id]) {
+                html += "<div id='" + "error_text_" + itemJson.id + "' class='error-add-note pt-1'>" + itemJson.errors["item" + itemJson.id] + "</div>";
             }
 
             $('#error_text_'+itemJson.id).remove();
-            $('#list_items').append(html);
+            $('#list_items_' + itemJson.id).append(html);
         }
     }
 }
