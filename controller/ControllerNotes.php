@@ -595,13 +595,14 @@ class ControllerNotes extends Controller
             'errorAdd' => $errorAdd
         ]);
     }
-    public function add_share_ajax(): void {
+    public function add_share_ajax(): void
+    {
         $noteId = $_POST['noteId'] ?? null;
         $userId = $_POST['userId'] ?? null;
         $permission = $_POST['permission'] ?? null;
 
         if (isset($noteId) && isset($userId) && isset($permission)) {
-            if(NoteShare::add_Share($noteId, $userId, $permission)) {
+            if (NoteShare::add_Share($noteId, $userId, $permission)) {
                 echo json_encode(["success" => true]);
             } else {
                 echo json_encode(["success" => false, "error" => "Failed to add share"]);
@@ -610,7 +611,8 @@ class ControllerNotes extends Controller
             echo json_encode(["success" => false, "error" => "Missing parameters"]);
         }
     }
-    public function remove_share_ajax(): void {
+    public function remove_share_ajax(): void
+    {
         $noteId = $_POST['noteId'] ?? null;
         $userId = $_POST['user'] ?? null;
 
@@ -622,7 +624,8 @@ class ControllerNotes extends Controller
         }
     }
 
-    public function change_permission_ajax(): void {
+    public function change_permission_ajax(): void
+    {
         $noteId = $_POST['noteId'] ?? null;
         $userId = $_POST['user'] ?? null;
 
@@ -656,7 +659,8 @@ class ControllerNotes extends Controller
         $this->redirect("notes", "open_note/$noteId");
     }
 
-    public function toggle_checkbox_service() {
+    public function toggle_checkbox_service()
+    {
         $noteId = $_POST['note_id'];
         $itemId = $_POST['item_id'];
         $item = ChecklistNoteItems::get_checklist_note_item_by_id($itemId);
@@ -664,7 +668,7 @@ class ControllerNotes extends Controller
         $items = ChecklistNoteItems::get_items_by_checklist_note_id($noteId);
         $table = [];
         /** @var CheckListNoteItems $i */
-        foreach($items as $i) {
+        foreach ($items as $i) {
             $row = [];
             $row["content"] = $i->get_content();
             $row["checked"] = $i->is_Checked();
@@ -707,7 +711,6 @@ class ControllerNotes extends Controller
             if ($note && $note->delete_All($user)) {
                 $this->redirect("notes", "archives");
             } else {
-
                 $this->redirect("notes");
             }
         }
@@ -742,5 +745,41 @@ class ControllerNotes extends Controller
             "canAccess" => $canAccess,
             "headerType" => $headerType
         ]);
+    }
+
+    public function delete_using_js(): void
+    {
+        $note_id = filter_var($_POST['idNote'], FILTER_VALIDATE_INT);
+        $user = $this->get_user_or_redirect();
+        $user_id = $user->get_Id();
+        $note = null;
+        $error = "";
+
+        if ($note_id === false) {
+            $this->error_delete(400, "Identifiant de note invalide.");
+        } else {
+            $note = Note::get_note($note_id);
+            if (!($note instanceof Note)) {
+                $this->error_delete(400, "Note introuvable");
+            } else {
+                $canAccess = ($note->get_Owner()->get_Id() === $user_id);
+                if (!$canAccess) {
+                    $this->error_delete(400, "Accès non autorisé.");
+                } elseif (!$note->is_Archived()) {
+                    $this->error_delete(400, "Note non archivée.");
+                }
+            }
+        }
+
+        $this->delete($note);
+        $success = $note->delete_All($user);
+        if (!$success) $this->error_delete(500, "erreur lors de la suppression");
+        else echo "la note à bien été supprimée";
+    }
+
+    private function error_delete(int $status, string $message)
+    {
+        http_response_code($status); // Code d'erreur HTTP approprié
+        exit($message);
     }
 }
