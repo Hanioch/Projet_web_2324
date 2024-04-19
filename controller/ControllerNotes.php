@@ -656,11 +656,14 @@ class ControllerNotes extends Controller
     public function add_share_ajax(): void {
         $noteId = $_POST['noteId'] ?? null;
         $userId = $_POST['userId'] ?? null;
+        $currentUser = $this->get_user_or_redirect();
+        $currentUserId = $currentUser->get_Id();
         $permission = $_POST['permission'] ?? null;
 
         if (isset($noteId) && isset($userId) && isset($permission)) {
-            if(NoteShare::add_Share($noteId, $userId, $permission)) {
-                echo json_encode(["success" => true]);
+            if (NoteShare::add_Share($noteId, $userId, $permission)) {
+                $existingShares = NoteShare::get_Shared_With_User($currentUserId, $noteId);
+                echo json_encode($existingShares);
             } else {
                 echo json_encode(["success" => false, "error" => "Failed to add share"]);
             }

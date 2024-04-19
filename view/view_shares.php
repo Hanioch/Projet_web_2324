@@ -13,6 +13,7 @@ if (isset($error) && !empty($error)) {
     </div>
 <?php else: ?>
     <div class="text-white fst-italic ">
+        <div class="" id="sharesContainer">
         <?php if (empty($existingShares)): ?>
             <p>This note is not shared yet.</p>
         <?php else: ?>
@@ -36,6 +37,7 @@ if (isset($error) && !empty($error)) {
                 <?php endforeach; ?>
             </ul>
         <?php endif; ?>
+        </div>
         <?php if (!empty($usersToShareWith)): ?>
         <form action="./notes/shares/<?php echo $noteId; ?>" method="post" >
                 <div class="input-group mb-3">
