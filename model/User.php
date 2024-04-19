@@ -121,7 +121,6 @@ class User extends MyModel
         ];
         $config = parse_ini_file('C:\PRWB2324\projects\prwb_2324_a04\config\dev.ini', true);
         $password_min_length = $config['Rules']['password_min_length'];
-        var_dump($password_min_length);
         if (strlen($password) === 0) {
             $errors["password"][] = "Password is required.";
         }
@@ -264,7 +263,6 @@ class User extends MyModel
     public function get_notes_with_weight_between(int $weight_first_note, int $weight_second_note, bool $pinned)
     {
         $first_bigger = $weight_first_note > $weight_second_note;
-        echo "second : " . $weight_second_note;
         $condition = $first_bigger ?
             "n.weight < :first_weight AND n.weight >= :second_weight" :
             "n.weight > :first_weight AND n.weight < :second_weight";

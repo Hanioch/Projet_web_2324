@@ -139,7 +139,6 @@ class ChecklistNote extends Note
                 return $this;
             } else {
                 parent::modify_note_in_DB();
-                var_dump("on rentre bien je crois");
                 return $this;
             }
         }
