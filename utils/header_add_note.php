@@ -16,7 +16,7 @@ if (isset($shared_note_id) && $shared_note_id !== NULL) {
                     <i class="bi bi-chevron-left"></i>
                 </a>
             </nav>
-            <button name="save_button" class="button-add-text-note" type="submit" form=<?= $id_form ?>>
+            <button id="save_button" name="save_button" class="button-add-text-note" type="submit" form=<?= $id_form ?>>
                 <span class="material-icons" id="icon-save">
                     save
                 </span>
