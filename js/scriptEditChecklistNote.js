@@ -8,7 +8,9 @@ $(() => {
 
             let itemId = $(this).closest('.input-group').find('input[name="item_id"]').val();
             let noteId = $(this).closest('.input-group').find('input[name="note_id"]').val();
-            let item = $(this).closest('.input-group').find(`input[name="item${itemId}"]`).val();
+            let itemElem = $(this);
+            let item = itemElem.val();
+
 
             console.log(itemId);
             console.log(noteId);
@@ -22,7 +24,7 @@ $(() => {
                 let jsonResponse = JSON.parse(response);
                 console.log(jsonResponse);
 
-                let item = displayItem(jsonResponse)
+                let item = displayItem(jsonResponse, itemElem)
 
             });
 
@@ -55,22 +57,26 @@ $(() => {
     }
 });
 
-function displayItem(itemsJson) {
-    let html= "<label class='form-label'>Items</label>";
-    for (let i of itemsJson) {
+function displayItem(itemJson, itemElem) {
+    console.log(itemJson.errors);
 
-        html += "<form action='notes/toggle_Checkbox' method='POST'>";
-        html += "<div class='input-group mb-3'>";
-        html += "<div class='input-group-text bg-primary '>";
-        html += "<button class='btn btn-submit' >";
-        html += "<input class='form-check-input border opacity-100' id='checkbox_" + i.id + "' type='checkbox' name='checked' value='1' " + (i.checked ? 'checked' : '') + " aria-label='Checkbox for following text input' disabled>";
-        html += "</button>";
-        html += "</div>";
-        html += "<input type='text' class='form-control bg-secondary text-white bg-opacity-25 border-0 " + (i.checked ? 'text-decoration-line-through' : '') + "' value='" + i.content + "' aria-label='Text input with checkbox' disabled>";
-        html += "<input type='hidden' name='item_id' value='" + i.id + "'>";
-        html += "<input type='hidden' name='note_id' value='" + i.checklist_note + "'>";
-        html += "</div>";
-        html += "</form>";
+    // si c'est une array il n'y a pas d'erreur, si c'est un json il y a des erreurs
+    if(Array.isArray(itemJson.errors)) {
+        itemElem.removeClass("is-invalid");
+        itemElem.addClass("is-valid");
+        $('#error_text_'+itemJson.id).remove();
+    } else {
+        if(itemJson.errors.hasOwnProperty("item"+itemJson.id)){
+
+            itemElem.removeClass("is-valid");
+            itemElem.addClass("is-invalid");
+            let html = "";
+            for(let error of itemJson.errors.item1) {
+                html += "<div id='" + "error_text_" + itemJson.id + "' class='error-add-note pt-1'>" + itemJson.errors.item1 + "</div>";
+            }
+
+            $('#error_text_'+itemJson.id).remove();
+            $('#list_items').append(html);
+        }
     }
-    return html;
 }
