@@ -30,15 +30,6 @@ class ChecklistNote extends Note
         $this->owner = $owner;
     }
 
-    public function is_Pinned(): bool
-    {
-        return $this->pinned;
-    }
-
-    public function set_Pinned(bool $pinned): void
-    {
-        $this->pinned = $pinned;
-    }
 
     public function is_Archived(): bool
     {
@@ -145,6 +136,9 @@ class ChecklistNote extends Note
                 (:id)',
                     ['id' => $note->get_Id()]
                 );
+                return $this;
+            } else {
+                parent::modify_note_in_DB();
                 return $this;
             }
         }
