@@ -334,7 +334,7 @@ class ControllerNotes extends Controller
             $checklist_note = new ChecklistNote($note->get_Title(), $note->get_Owner(), $note->is_Pinned(), $note->is_Archived(), $note->get_Weight(), $note->get_Id());
             if (isset($_POST['save_button'])) {
                 $errors = $this->edit_title($note, $errors);
-                $errors = $this->edit_items($checklist_note, $errors);
+                $errors = array_merge($errors, $this->edit_items($note, $errors));
             } else if (isset($_POST['add_button'])) {
                 $errors = $this->add_item($checklist_note, $errors);
                 if (empty($errors)) {
@@ -403,9 +403,10 @@ class ControllerNotes extends Controller
         return $errors;
     }
 
-    public function edit_items(ChecklistNote $note, array $errors): array {
-        $currentItems = $note->get_Items();
-        $newNote = clone $note;
+    public function edit_items(Note $note, array $errors): array {
+        $checklist_note = new ChecklistNote($note->get_Title(), $note->get_Owner(), $note->is_Pinned(), $note->is_Archived(), $note->get_Weight(), $note->get_Id());
+        $currentItems = $checklist_note->get_Items();
+        $newNote = clone $checklist_note;
         $newItems = $newNote->get_Items();
         $stringNewItems = [];
 
@@ -433,8 +434,6 @@ class ControllerNotes extends Controller
                 }
             }
         }
-
-
         return $errors;
     }
 
