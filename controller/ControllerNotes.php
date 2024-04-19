@@ -20,6 +20,91 @@ class ControllerNotes extends Controller
         (new View("notes"))->show(["notes" => $notes, "users_shared_notes" => $users_shared_notes]);
     }
 
+    public function move_note_js(): void
+    {
+        $user = $this->get_user_or_redirect();
+
+        if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+            echo " erreur: methode non valide ";
+            return;
+        }
+
+        if (!(isset($_POST["idNoteMoved"])
+            && isset($_POST["idReplacedNote"])
+            && isset($_POST["switchedColumn"]))) {
+            echo "erreur: attributs non valide";
+            return;
+        }
+        //si noteMoved > alors on prend tout ce qui est plus petit jusqua replacedNote
+        //si note Moved< alors on prend tout ce qui est plus grand 
+        $id_note_moved = intval($_POST["idNoteMoved"]);
+        $id_replaced_note = intval($_POST["idReplacedNote"]);
+        $is_switched_column = filter_var($_POST["switchedColumn"], FILTER_VALIDATE_BOOLEAN);
+
+        $note_moved = $user->get_note_by_id($id_note_moved);
+        $replaced_note = NULL;
+        $is_note_moved_pinned = $note_moved->is_Pinned();
+
+        if ($is_switched_column) {
+            $note_moved->set_Pinned(!$is_note_moved_pinned);
+            $note_moved->persist();
+            $is_note_moved_pinned = $note_moved->is_Pinned();
+        }
+
+        $weight_replaced_note = "";
+        if ($id_replaced_note === 0) {
+            // on recupere la note la plus élévée+1 pour que, plus bas, il prenne en compte
+            // tout notes comprises entre la note qu'on déplace et toute les notes plus hautes.
+            $weight_replaced_note = $user->get_heaviest_note($is_note_moved_pinned) + 1;
+        } else {
+            $replaced_note = $user->get_note_by_id($id_replaced_note);
+            $weight_replaced_note = $replaced_note->get_Weight();
+        }
+
+        $this->move_all_note_between($note_moved, $weight_replaced_note);
+    }
+
+    public function move_all_note_between(Note $note_moved, int $weight_replaced_note)
+    {
+        $user = $this->get_user_or_redirect();
+        $weight_moved_note =  $note_moved->get_Weight();
+        $is_note_moved_pinned = $note_moved->is_Pinned();
+
+        $notes_to_move = $user->get_notes_with_weight_between(
+            $weight_moved_note,
+            $weight_replaced_note,
+            $is_note_moved_pinned
+        );
+
+        if (empty($notes_to_move)) {
+            return;
+        }
+
+        $first_is_biggest = $weight_moved_note > $weight_replaced_note;
+
+        foreach ($notes_to_move as $note) {
+            $this->modif_weight($first_is_biggest, $note["id"]);
+        }
+    }
+    public function move_all_archived_note_between(Note $note_moved, int $weight_replaced_note)
+    {
+        $user = $this->get_user_or_redirect();
+        $weight_moved_note =  $note_moved->get_Weight();
+
+        $notes_to_move = $user->get_notes_archived_with_weight_between(
+            $weight_moved_note,
+            $weight_replaced_note
+        );
+
+        if (empty($notes_to_move)) {
+            return;
+        }
+
+        foreach ($notes_to_move as $note) {
+            $this->modif_archived_weight($note["id"]);
+        }
+    }
+
     public function move_note(): void
     {
         if (isset($_GET['param1']) && isset($_GET['param2'])) {
@@ -31,6 +116,8 @@ class ControllerNotes extends Controller
             } elseif ($action === 'decrement') {
                 $this->modif_weight(false, $note_id);
             }
+
+            $this->note_list();
         } else {
             $this->note_list();
         }
@@ -54,7 +141,26 @@ class ControllerNotes extends Controller
                 $other_notes->persist();
             }
         }
-        $this->note_list();
+    }
+
+    private function modif_archived_weight(int $note_id)
+    {
+        $current_note = Note::get_note($note_id);
+        if ($current_note instanceof Note) {
+            $other_notes = $current_note->get_nearest_archived_note();
+            if ($other_notes instanceof Note) {
+                $weight_current = $current_note->get_Weight();
+                $weight_other = $other_notes->get_Weight();
+                $user = $this->get_user_or_redirect();
+
+                $other_notes->set_Weight($user->get_heaviest_note() + 1);
+                $other_notes->persist();
+                $current_note->set_Weight($weight_other);
+                $current_note->persist();
+                $other_notes->set_Weight($weight_current);
+                $other_notes->persist();
+            }
+        }
     }
 
     public function archives(): void
@@ -436,7 +542,7 @@ class ControllerNotes extends Controller
                 $permission = $_POST['permission'] ?? null;
                 if (!empty($userId) && $permission !== null) {
                     NoteShare::add_Share($noteId, $userId, $permission);
-                    $this->redirect("notes","shares/$noteId");
+                    $this->redirect("notes", "shares/$noteId");
                     exit();
                 } else {
                     $errorAdd = "Please select a user and a permission to share.";
@@ -445,14 +551,14 @@ class ControllerNotes extends Controller
             if (isset($_POST['changePermission'])) {
                 $user = $_POST['user'];
                 NoteShare::change_Permissions($noteId, $user);
-                $this->redirect("notes","shares/$noteId");
+                $this->redirect("notes", "shares/$noteId");
                 exit();
             }
             if (isset($_POST['removeShare'])) {
                 $user = $_POST['user'];
                 NoteShare::remove_Share($noteId, $user);
 
-                $this->redirect("notes","shares/$noteId");
+                $this->redirect("notes", "shares/$noteId");
                 exit();
             }
             if (!($note instanceof Note)) {
@@ -529,18 +635,25 @@ class ControllerNotes extends Controller
     }
     public function toggle_Pin()
     {
+        $user = $this->get_user_or_redirect();
         $noteId = $_POST['note_id'];
         $note = Note::get_note($noteId);
         $note->toggle_Pin();
-        $this->redirect("notes","open_note/$noteId");
+
+        $new_weight = $user->get_heaviest_note($note->is_Pinned()) + 1;
+
+        $this->move_all_note_between($note, $new_weight);
+
+        $this->redirect("notes", "open_note/$noteId");
     }
     public function toggle_Checkbox()
     {
         $noteId = $_POST['note_id'];
         $itemId = $_POST['item_id'];
         $item = ChecklistNoteItems::get_checklist_note_item_by_id($itemId);
+
         $item->toggle_Checkbox();
-        $this->redirect("notes","open_note/$noteId");
+        $this->redirect("notes", "open_note/$noteId");
     }
 
     public function toggle_checkbox_service() {
@@ -564,10 +677,24 @@ class ControllerNotes extends Controller
     }
     public function set_Archive()
     {
+        $user = $this->get_user_or_redirect();
         $noteId = $_POST['note_id'];
         $note = Note::get_note($noteId);
         $note->set_Archive_reverse();
-        $this->redirect("notes","open_note/$noteId");
+
+        if ($note->is_Pinned()) {
+            $note->toggle_Pin();
+        }
+
+        if ($note->is_Archived()) {
+            $new_weight = $user->get_heaviest_note(NULL, $note->is_Archived() + 1);
+            $this->move_all_archived_note_between($note, $new_weight);
+        } else {
+            $new_weight =  $user->get_heaviest_note(false) + 1;
+            $this->move_all_note_between($note, $new_weight);
+        }
+
+        $this->redirect("notes", "open_note/$noteId");
     }
     public function delete()
     {
@@ -578,7 +705,7 @@ class ControllerNotes extends Controller
             $note = Note::get_note($noteId);
 
             if ($note && $note->delete_All($user)) {
-                $this->redirect("notes","archives");
+                $this->redirect("notes", "archives");
             } else {
 
                 $this->redirect("notes");
@@ -603,7 +730,7 @@ class ControllerNotes extends Controller
                 $canAccess = ($note->get_Owner()->get_Id() === $userId);
                 if (!$canAccess) {
                     $error = "Accès non autorisé.";
-                }elseif (!$note->is_Archived()) {
+                } elseif (!$note->is_Archived()) {
                     $error = "Note non archivée.";
                 }
             }
@@ -616,4 +743,4 @@ class ControllerNotes extends Controller
             "headerType" => $headerType
         ]);
     }
- }
+}
