@@ -34,23 +34,24 @@ include("./utils/header_add_note.php");
 
         <div class="mb-3">
             <div class="">
-                <label class="form-label">Items</label>
+                <label class="form-label mb-0">Items</label>
                 <ul class="list-unstyled">
                     <?php foreach ($items as $item): ?>
-                        <li class="list-unstyled">
-                            <div class="input-group mb-3">
+                        <li class="list-unstyled" id="list_items_<?= $item->get_Id() ?>">
+                            <div class="input-group pt-3 has-validation">
                                 <div class="input-group-text bg-primary  border-secondary ">
-                                    <input class="form-check-input  border align-middle"  type="checkbox" name="checked" value="1" <?= $item->is_Checked() ? 'checked' : '' ?> aria-label="Checkbox for following text input" disabled> <!-- onchange="this.form.submit()" -->
+                                    <input class="form-check-input border align-middle "  type="checkbox" name="checked" value="1" <?= $item->is_Checked() ? 'checked' : '' ?> aria-label="Checkbox for following text input" disabled> <!-- onchange="this.form.submit()" -->
                                 </div>
-                                <input value="<?= $item->get_Content() ?>" type="text" name="item<?php echo $item->get_Id() ?>" class="form-control bg-secondary text-white bg-opacity-25 border-secondary" id="item<?php echo $item->get_Id() ?>"  value="<?php echo isset($_POST['item' . $item->get_Id()]) ? htmlspecialchars($_POST['item' . $item->get_Id()]) : ''; ?>" disabled>
+                                <input value="<?= $item->get_Content() ?>" type="text" name="item<?php echo $item->get_Id() ?>" class="form-control bg-secondary text-white bg-opacity-25 border-secondary" id="item<?php echo $item->get_Id() ?>"  value="<?php echo isset($_POST['item' . $item->get_Id()]) ? htmlspecialchars($_POST['item' . $item->get_Id()]) : ''; ?>">
                                 <button name="remove_button" value="<?= $item->get_Id() ?>" class="btn btn-danger btn-lg rounded-end  border-secondary" type="submit">
                                     <i class="bi bi-x"></i>
                                 </button>
-                                <?php if (isset($errors['item' . $item->get_Id()])): ?>
-                                    <span class="error-add-note"><?php foreach($errors['item' . $item->get_Id()] as $error){echo $error;} ?></span>
-                                <?php endif; ?>
-                                <input type="hidden" name="item_id" value="1">
+                                <input type="hidden" name="item_id" value="<?= $item->get_Id() ?>">
+                                <input type="hidden" name="note_id" value="<?= $note->get_Id() ?>">
                             </div>
+                            <?php if (isset($errors['item' . $item->get_Id()])): ?>
+                                <div id="error_text_<?= $item->get_Id() ?>" class="error-add-note pt-1"><?php foreach($errors['item' . $item->get_Id()] as $error){echo $error;} ?></div>
+                            <?php endif; ?>
                         </li>
                     <?php endforeach; ?>
                 </ul>
@@ -69,5 +70,8 @@ include("./utils/header_add_note.php");
         <?php endif; ?>
     </form>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+<script src="js/scriptEditChecklistNote.js"></script>
 
 <?php include('./utils/footer.php'); ?>

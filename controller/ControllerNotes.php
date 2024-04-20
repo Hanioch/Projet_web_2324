@@ -198,7 +198,7 @@ class ControllerNotes extends Controller
         $default_text = "";
         $result = [];
         $result["success"] = NULL;
-        $result["errors"] = [];
+        $error = [];
 
         if (isset($_POST['title'])) {
             $title = trim($_POST['title']);
@@ -208,10 +208,10 @@ class ControllerNotes extends Controller
             $note = $new_text_note->persist();
 
             if (!($note instanceof TextNote)) {
-                $result["errors"] = $note;
+                $errors = $note;
                 $default_title = $title;
                 $default_text = $text;
-                (new View("add_text_note"))->show(["result" => $result, "default_title" => $default_title, "default_text" => $default_text]);
+                (new View("add_text_note"))->show(["result" => $result, "default_title" => $default_title, "default_text" => $default_text, 'errors' => $errors]);
             } else {
                 $result["success"] = "The note has been added successfully.";
                 $this->redirect("notes", "open_note", $note->get_Id());
@@ -334,6 +334,7 @@ class ControllerNotes extends Controller
             $checklist_note = new ChecklistNote($note->get_Title(), $note->get_Owner(), $note->is_Pinned(), $note->is_Archived(), $note->get_Weight(), $note->get_Id());
             if (isset($_POST['save_button'])) {
                 $errors = $this->edit_title($note, $errors);
+                $errors = array_merge($errors, $this->edit_items($note, $errors));
             } else if (isset($_POST['add_button'])) {
                 $errors = $this->add_item($checklist_note, $errors);
                 if (empty($errors)) {
@@ -402,6 +403,46 @@ class ControllerNotes extends Controller
         return $errors;
     }
 
+    public function edit_items(Note $note, array $errors): array
+    {
+        $checklist_note = new ChecklistNote($note->get_Title(), $note->get_Owner(), $note->is_Pinned(), $note->is_Archived(), $note->get_Weight(), $note->get_Id());
+        $currentItems = $checklist_note->get_Items();
+        $newNote = clone $checklist_note;
+        $newItems = $newNote->get_Items();
+        $stringNewItems = [];
+
+        /** @var $i ChecklistNoteItems*/
+        foreach ($newItems as $i) {
+            $id = $i->get_Id();
+            if (isset($_POST['item' . $id])) {
+                $i->set_Content($_POST['item' . $id]);
+                $stringNewItems[] = $i->get_content();
+
+                if (trim($_POST['item' . $id]) == '') {
+                    $errors['item' . $id][] = "Item cannot be empty.";
+                } else {
+                    $item = trim($_POST['item' . $id]);
+                    if (true !== ($duplicates = $this->is_unique($i, $newItems))) {
+                        foreach ($duplicates as $dup) {
+                            if (empty($errors['item' . $dup])) {
+                                $errors['item' . $dup][] = "Item already exists.";
+                            }
+                        }
+                    } else {
+                        $i->persist();
+                    }
+
+
+                    if (!($test = $note->persist()) instanceof Note) {
+                        $errors = array_merge($errors, $test);
+                    }
+                }
+            }
+        }
+        return $errors;
+    }
+
+
     private function item_exists(array $items, string $item_content): bool
     {
         foreach ($items as $i) {
@@ -410,6 +451,24 @@ class ControllerNotes extends Controller
             }
         }
         return false;
+    }
+
+    private function is_unique(ChecklistNoteItems $i, array $items): bool | array
+    {
+        $count = 0;
+        $res = [];
+        /** @var ChecklistNoteItems $item */
+        foreach ($items as $item) {
+            if ($item->get_content() === $i->get_content()) {
+                $count++;
+                $res[] = $item->get_Id();
+            }
+        }
+        if ($count < 2) {
+            return true;
+        } else {
+            return $res;
+        }
     }
 
     public function edit_text_note(): void
@@ -679,6 +738,26 @@ class ControllerNotes extends Controller
 
         echo json_encode($table);
     }
+
+    public function edit_item_service()
+    {
+        $noteId = $_POST['note_id'];
+        $itemId = $_POST['item_id'];
+        $note = ChecklistNote::get_note($noteId);
+
+        $errors = $this->edit_items($note, []);
+        $item = ChecklistNoteItems::get_checklist_note_item_by_id($itemId);
+
+        $row = [];
+        $row["content"] = $item->get_content();
+        $row["checked"] = $item->is_Checked();
+        $row["checklist_note"] = $item->get_ChecklistNote();
+        $row["id"] = $item->get_Id();
+        $row["errors"] = $errors;
+
+
+        echo json_encode($row);
+    }
     public function set_Archive()
     {
         $user = $this->get_user_or_redirect();
@@ -781,5 +860,35 @@ class ControllerNotes extends Controller
     {
         http_response_code($status); // Code d'erreur HTTP approprié
         exit($message);
+    }
+    public function getValidationRules(): void
+    {
+        $config = parse_ini_file('config/dev.ini', true);
+
+        $minTitleLength = $config['Rules']['note_title_min_length'];
+        $maxTitleLength = $config['Rules']['note_title_max_length'];
+        $minContentLength = $config['Rules']['note_min_length'];
+        $maxContentLength = $config['Rules']['note_max_length'];
+
+        $validationRules = [
+            'minTitleLength' => $minTitleLength,
+            'maxTitleLength' => $maxTitleLength,
+            'minContentLength' => $minContentLength,
+            'maxContentLength' => $maxContentLength
+        ];
+
+        header('Content-Type: application/json');
+        echo json_encode($validationRules);
+    }
+    public function checkUniqueTitle(): void
+    {
+        $title = $_POST['title'];
+        $noteId = $_POST['noteId'];
+        $user = $this->get_user_or_redirect();
+        $userId = $user->get_Id();
+
+        $isUnique =  Note::is_unique_title_ajax($title, $userId, $noteId);
+        header('Content-Type: application/json');
+        echo json_encode(['unique' => $isUnique]);
     }
 }

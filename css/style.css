@@ -226,7 +226,10 @@ a {
 .bold-text {
     font-weight: bold;
 }
-
+.disabled-button {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
 .cursor-pointer{
     cursor: pointer;
 }
