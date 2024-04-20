@@ -7,6 +7,29 @@ include("./utils/header_add_note.php");
 ?>
 
 <div class="card-body">
+    <span id="idNote" value="<?= $note->get_Id() ?>" style="display: none;"></span>
+    <!-- Modal -->
+    <div id="modalGoBack" class="modal fade" tabindex="-1" aria-labelledby="fullScreenModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="fullScreenModalLabel">Are you sure ?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Do you really want to quit without save ?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <a href="<?= $back_url ?>">
+                        <button type="button" class="btn btn-primary" id="validBtn">Yes!</button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- fin modal -->
+
     <form id="<?= $id_form ?>" action="notes/edit_text_note/<?= $note->get_Id() ?>" method="post">
         <div class="card-header text-white mb-2 fst-italic fs-6">
             <span style="font-size: 0.8em;">Created <?= Note::time_elapsed_string($note->get_Created_At()) ?> . </span>
@@ -22,9 +45,9 @@ include("./utils/header_add_note.php");
                 <div class="invalid-feedback" id="title_error">
                     <?php
                     if (!empty($errors['title'])) {
-                        ?>
+                    ?>
                         <?= $errors['title'] ?>
-                        <?php
+                    <?php
                     }
                     ?>
                 </div>
@@ -37,9 +60,9 @@ include("./utils/header_add_note.php");
         <div class="invalid-feedback" id="text_error">
             <?php
             if (!empty($errors['content'])) {
-                ?>
+            ?>
                 <?= $errors['content'] ?>
-                <?php
+            <?php
             }
             ?>
         </div>
@@ -47,6 +70,8 @@ include("./utils/header_add_note.php");
 
     <div id="noteId" data-note-id="<?= $note->get_Id() ?>"></div>
 </div>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="js/scriptValidateTextNote.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="js/scriptModalEdit.js"></script>
+<script src="js/scriptValidateTextNote.js"></script>
+
 <?php include('./utils/footer.php'); ?>
