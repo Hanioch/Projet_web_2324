@@ -166,7 +166,7 @@ class Note extends MyModel
 
         return $result['count'] === 0;
     }
-    public static function is_unique_title_ajax(string $title,int $owner, int $noteId): bool
+    public static function is_unique_title_ajax(string $title, int $owner, int $noteId): bool
     {
         if ($noteId === -1) {
 
@@ -174,7 +174,7 @@ class Note extends MyModel
                 'title' => $title,
                 'owner' => $owner
             ]);
-        }else{
+        } else {
             $query = self::execute("SELECT COUNT(*) AS count FROM notes WHERE title = :title AND owner = :owner AND id != :id", [
                 'title' => $title,
                 'owner' => $owner,

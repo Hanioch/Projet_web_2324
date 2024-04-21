@@ -293,9 +293,10 @@ class ControllerNotes extends Controller
 
     public function edit_checklist_note(): void
     {
+        $is_javascript_request = isset($_POST["noteId"]);
         $errors = [];
         $shared_note_id = NULL;
-        $note_id = $_GET['param1'];
+        $note_id = $is_javascript_request ? intval($_POST["noteId"]) : $_GET['param1'];
         $user = $this->get_user_or_redirect();
         $user_id = $user->get_Id();
         $note = ChecklistNote::get_note($note_id);
@@ -354,6 +355,7 @@ class ControllerNotes extends Controller
                 $this->redirect("notes", "open_note", $note->get_Id());
             }
         }
+
         (new View("edit_checklist_note"))->show([
             'note' => $note,
             'items' => $items,
@@ -582,77 +584,78 @@ class ControllerNotes extends Controller
             'checklistItems' => $checklistItems ?? null,
             'isChecklistNote' => $isChecklistNote ?? false
         ]);
-    }   public function shares(): void
-{
-    $noteId = filter_var($_GET['param1'], FILTER_VALIDATE_INT);
-    $currentUser = $this->get_user_or_redirect();
-    $currentUserId = $currentUser->get_Id();
-    $error = "";
-    $errorAdd = "";
+    }
+    public function shares(): void
+    {
+        $noteId = filter_var($_GET['param1'], FILTER_VALIDATE_INT);
+        $currentUser = $this->get_user_or_redirect();
+        $currentUserId = $currentUser->get_Id();
+        $error = "";
+        $errorAdd = "";
 
-    if ($noteId === false) {
-        $error = "Identifiant de note invalide.";
-    } else {
-        $note = Note::get_note($noteId);
-        if (isset($_POST['addShare'])) {
-            $noteId = $_POST['noteId'];
-            $userId = $_POST['user'] ?? null;
-            $permission = $_POST['permission'] ?? null;
-            if (!empty($userId) && $permission !== null) {
-                NoteShare::add_Share($noteId, $userId, $permission);
+        if ($noteId === false) {
+            $error = "Identifiant de note invalide.";
+        } else {
+            $note = Note::get_note($noteId);
+            if (isset($_POST['addShare'])) {
+                $noteId = $_POST['noteId'];
+                $userId = $_POST['user'] ?? null;
+                $permission = $_POST['permission'] ?? null;
+                if (!empty($userId) && $permission !== null) {
+                    NoteShare::add_Share($noteId, $userId, $permission);
+                    $this->redirect("notes", "shares/$noteId");
+                    exit();
+                } else {
+                    $errorAdd = "Please select a user and a permission to share.";
+                }
+            }
+            if (isset($_POST['changePermission'])) {
+                $user = $_POST['user'];
+                NoteShare::change_Permissions($noteId, $user);
                 $this->redirect("notes", "shares/$noteId");
                 exit();
-            } else {
-                $errorAdd = "Please select a user and a permission to share.";
             }
-        }
-        if (isset($_POST['changePermission'])) {
-            $user = $_POST['user'];
-            NoteShare::change_Permissions($noteId, $user);
-            $this->redirect("notes", "shares/$noteId");
-            exit();
-        }
-        if (isset($_POST['removeShare'])) {
-            $user = $_POST['user'];
-            NoteShare::remove_Share($noteId, $user);
+            if (isset($_POST['removeShare'])) {
+                $user = $_POST['user'];
+                NoteShare::remove_Share($noteId, $user);
 
-            $this->redirect("notes", "shares/$noteId");
-            exit();
-        }
-        if (!($note instanceof Note)) {
-            $error = "Note introuvable.";
-        } else {
-            $canAccess = ($note->get_Owner()->get_Id() === $currentUserId);
-            if (!$canAccess) {
-                $error = "Accès non autorisé.";
+                $this->redirect("notes", "shares/$noteId");
+                exit();
+            }
+            if (!($note instanceof Note)) {
+                $error = "Note introuvable.";
             } else {
-                $existingShares = NoteShare::get_Shared_With_User($currentUserId, $noteId);
-                $sharedUserIds = [];
-                foreach ($existingShares as $share) {
-                    $sharedUserIds[] = $share['id'];
-                }
+                $canAccess = ($note->get_Owner()->get_Id() === $currentUserId);
+                if (!$canAccess) {
+                    $error = "Accès non autorisé.";
+                } else {
+                    $existingShares = NoteShare::get_Shared_With_User($currentUserId, $noteId);
+                    $sharedUserIds = [];
+                    foreach ($existingShares as $share) {
+                        $sharedUserIds[] = $share['id'];
+                    }
 
-                $allUsers = User::get_users();
-                $usersToShareWith = [];
-                foreach ($allUsers as $user) {
-                    if ($user->get_Id() !== $currentUserId && !in_array($user->get_Id(), $sharedUserIds)) {
-                        $usersToShareWith[] = $user;
+                    $allUsers = User::get_users();
+                    $usersToShareWith = [];
+                    foreach ($allUsers as $user) {
+                        if ($user->get_Id() !== $currentUserId && !in_array($user->get_Id(), $sharedUserIds)) {
+                            $usersToShareWith[] = $user;
+                        }
                     }
                 }
             }
         }
-    }
 
-    (new View("shares"))->show([
-        'usersToShareWith' => $usersToShareWith ?? null,
-        'existingShares' => $existingShares ?? null,
-        'noteId' => $noteId,
-        'note' => $note ?? null,
-        'currentUser' => $currentUser ?? null,
-        'error' => $error,
-        'errorAdd' => $errorAdd
-    ]);
-}
+        (new View("shares"))->show([
+            'usersToShareWith' => $usersToShareWith ?? null,
+            'existingShares' => $existingShares ?? null,
+            'noteId' => $noteId,
+            'note' => $note ?? null,
+            'currentUser' => $currentUser ?? null,
+            'error' => $error,
+            'errorAdd' => $errorAdd
+        ]);
+    }
     public function refresh_share_ajax(int $noteId): void
     {
         $currentUser = $this->get_user_or_redirect();
@@ -705,7 +708,7 @@ class ControllerNotes extends Controller
         if (isset($noteId) && isset($userId)) {
             if (NoteShare::remove_Share($noteId, $userId)) {
                 $this->refresh_share_ajax($noteId);
-            }else {
+            } else {
                 echo json_encode(["success" => false, "error" => "Failed to remove share"]);
             }
         } else {
@@ -719,9 +722,9 @@ class ControllerNotes extends Controller
         $userId = $_POST['userId'] ?? null;
 
         if (isset($noteId) && isset($userId)) {
-            if(NoteShare::change_Permissions($noteId, $userId)) {
+            if (NoteShare::change_Permissions($noteId, $userId)) {
                 $this->refresh_share_ajax($noteId);
-            }else {
+            } else {
                 echo json_encode(["success" => false, "error" => "Failed to remove share"]);
             }
         } else {

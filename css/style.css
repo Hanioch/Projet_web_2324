@@ -45,6 +45,11 @@ body, html {
     border: none;
 }
 
+.navbar-brand{
+    margin-top: 0;
+    margin-left: 0;
+    margin-bottom: 0;
+}
 .selected{
     color: #fff;
 }
