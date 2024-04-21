@@ -94,7 +94,7 @@ include("./utils/header_add_note.php");
                     } else {
                         echo 'value=""';
                     } ?> type="text" name="new_item" class="form-control bg-secondary text-white bg-opacity-25 border-secondary" id="add_item">
-            <button name="add_button" class="btn btn-primary btn-lg rounded-end  border-secondary" type="submit">
+            <button id="add_button" name="add_button" class="btn btn-primary btn-lg rounded-end  border-secondary" type="submit">
                 <i class="bi bi-plus"></i>
             </button>
             <input type="hidden" name="item_id" value="1">
@@ -108,6 +108,7 @@ include("./utils/header_add_note.php");
 <script>
     const pageName = "editChecklistnote";
     const urlToRedirect = "<?= $back_url ?>"
+    const noteId = <?= $note->get_Id() ?>
 </script>
 <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
 <script src="js/scriptModalEdit.js"></script>

@@ -88,3 +88,34 @@ function displayItem(itemJson, itemElem) {
     }
   }
 }
+
+$("button[name='remove_button']").each(function () {
+  $(this).on("click", (e) => {
+    e.preventDefault();
+    // on recup l'id du btn
+    let itemId = $(this).val();
+
+    //on le supp dans le back
+    $.post(
+      "notes/edit_checklist_note",
+      {
+        noteId,
+        remove_button: itemId,
+      },
+      (res) => {
+        // en cas de reussite :
+        //on recup le li correspondant
+        let liId = "#list_items_" + itemId;
+        // on le supprime visuellement
+        $(liId).remove();
+      }
+    );
+  });
+});
+
+$("#add_button").on("click", (e) => {
+  //e.preventDefault();
+  console.log("added");
+});
+
+const refresh = () => {};
