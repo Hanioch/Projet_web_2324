@@ -39,12 +39,12 @@ include("./utils/header_add_note.php");
                 <?php endif; ?>
             </div>
             <div class="">
-                <label for="title_add_checklist_note" class="form-label">Title</label>
+                <label for="titleNote" class="form-label">Title</label>
                 <input type="text" value="<?php if (isset($_POST['title'])) {
                                                 echo $_POST['title'];
                                             } else {
                                                 echo $note->get_Title();
-                                            } ?>" name="title" class="form-control  border-0 bg-secondary text-white bg-opacity-25" id="title_add_checklist_note">
+                                            } ?>" name="title" class="form-control  border-0 bg-secondary text-white bg-opacity-25" id="titleNote">
                 <?php
                 if (!empty($errors['title'])) {
                 ?>
@@ -77,9 +77,10 @@ include("./utils/header_add_note.php");
                                 <input type="hidden" name="note_id" value="<?= $note->get_Id() ?>">
                             </div>
                             <?php if (isset($errors['item' . $item->get_Id()])) : ?>
-                                <div id="error_text_<?= $item->get_Id() ?>" class="error-add-note pt-1"><?php foreach ($errors['item' . $item->get_Id()] as $error) {
-                                                                                                            echo $error;
-                                                                                                        } ?></div>
+                                <div id="error_text_<?= $item->get_Id() ?>" class="error-add-note pt-1">
+                                    <?php foreach ($errors['item' . $item->get_Id()] as $error) {
+                                        echo $error;
+                                    } ?></div>
                             <?php endif; ?>
                         </li>
                     <?php endforeach; ?>
@@ -104,6 +105,10 @@ include("./utils/header_add_note.php");
     </form>
 </div>
 
+<script>
+    const pageName = "editChecklistnote";
+    const urlToRedirect = "<?= $back_url ?>"
+</script>
 <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
 <script src="js/scriptModalEdit.js"></script>
 <script src="js/scriptEditChecklistNote.js"></script>
