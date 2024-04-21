@@ -111,9 +111,12 @@ class ChecklistNoteItems extends MyModel
     private function validate_content(string $content): array
     {
         $errors = [];
+        $config = parse_ini_file('config/dev.ini', true);
+        $item_min_length = $config['Rules']['item_min_length'];
+        $item_max_length = $config['Rules']['item_max_length'];
 
-        if (strlen($content) > 0 && (strlen($content) < 1 || strlen($content) > 60)) {
-            $errors[] = "Le contenu doit avoir entre 1 et 60 caractères.";
+        if (strlen($content) > 0 && (strlen($content) < $item_min_length || strlen($content) > $item_max_length)) {
+            $errors[] = "Le contenu doit avoir entre {$item_min_length} et {$item_max_length} caractères.";
         }
 
         return $errors;
@@ -143,7 +146,7 @@ class ChecklistNoteItems extends MyModel
     public static function get_items_by_checklist_note_id(int $checklistNoteId): array
     {
         $query = self::execute(
-            "SELECT cni.*, n.title, n.owner, n.pinned, n.archived, n.weight, n.created_at, n.edited_at FROM checklist_note_items cni JOIN notes n ON n.id = cni.checklist_note WHERE checklist_note = :checklist_note ORDER BY cni.checked ASC, n.created_at ASC",
+            "SELECT cni.*, n.title, n.owner, n.pinned, n.archived, n.weight, n.created_at, n.edited_at FROM checklist_note_items cni JOIN notes n ON n.id = cni.checklist_note WHERE checklist_note = :checklist_note ORDER BY cni.checked ASC, cni.id ASC",
             ["checklist_note" => $checklistNoteId]
         );
         $data = $query->fetchAll();

@@ -106,26 +106,84 @@ class Note extends MyModel
         return new Note($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['id'], $row['created_at'], $row['edited_at']);
     }
 
+    public function get_nearest_archived_note(): Note | false
+    {
+        $query = self::execute("
+            SELECT n.* FROM notes n
+            INNER JOIN users u ON u.id = n.owner
+            WHERE u.id = :owner AND weight < :weight
+            AND archived = true
+            ORDER BY ABS(weight - :weight)
+            LIMIT 1
+            ", ["owner" => $this->owner->get_Id(), "weight" => $this->weight]);
+
+        $row = $query->fetch();
+
+        if (!$row) {
+            return false;
+        }
+
+        $owner = User::get_user_by_id($row['owner']);
+
+        return new Note($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['id'], $row['created_at'], $row['edited_at']);
+    }
+
     public function validate(): array
     {
         $errors = [];
+        // TODO décommenter ce code si il est commenter: 
+
+
         $user = User::get_user_by_id($this->owner->get_Id());
         // TO DO: check si l'id de l'user correspond à l'id de l'user connnecter. 
 
         // if ($user->id === ) {
         //     $errors[] = "Incorrect owner";
         // }
-        if (!(strlen($this->title) > 2 && strlen($this->title) < 26)) {
-
-            $errors['title'] = "Title length must be between 3 and 25 ";
+        $config = parse_ini_file('config/dev.ini', true);
+        $note_title_min_length = $config['Rules']['note_title_min_length'];
+        $note_title_max_length = $config['Rules']['note_title_max_length'];
+        if (strlen($this->get_Title()) < $note_title_min_length || strlen($this->get_Title()) > $note_title_max_length) {
+            $errors['title'] = "Title length must be between {$note_title_min_length} and {$note_title_max_length} ";
         }
         if (!($this->weight > 0 && !$this->is_not_unique_weight())) {
             $errors['weight'] = "Weight must be positive and unique";
         }
+        if (!$this->is_unique_title($this->title)) {
+            $errors['title'] = "Title must be unique for the owner.";
+        }
 
         return $errors;
     }
+    public function is_unique_title(string $title): bool
+    {
+        $query = self::execute("SELECT COUNT(*) AS count FROM notes WHERE title = :title AND owner = :owner AND id != :id", [
+            'title' => $title,
+            'owner' => $this->owner->get_Id(),
+            'id' => $this->id ?? 0,
+        ]);
+        $result = $query->fetch();
 
+        return $result['count'] === 0;
+    }
+    public static function is_unique_title_ajax(string $title, int $owner, int $noteId): bool
+    {
+        if ($noteId === -1) {
+
+            $query = self::execute("SELECT COUNT(*) AS count FROM notes WHERE title = :title AND owner = :owner ", [
+                'title' => $title,
+                'owner' => $owner
+            ]);
+        } else {
+            $query = self::execute("SELECT COUNT(*) AS count FROM notes WHERE title = :title AND owner = :owner AND id != :id", [
+                'title' => $title,
+                'owner' => $owner,
+                'id' => $noteId,
+            ]);
+        }
+        $result = $query->fetch();
+        return $result['count'] === 0;
+    }
     public function is_not_unique_weight(): bool
     {
         $notesByOwner = $this->owner->get_notes();
@@ -184,19 +242,12 @@ class Note extends MyModel
         }
         return false;
     }
-    public function persist(?Note $second_note = NULL): Note|array
+    public function persist(): Note|array
     {
         $errors = $this->validate();
         if (empty($errors)) {
-            if ($this->id == NULL) {
-                return self::add_note_in_DB();
-            } else {
-                if ($second_note == NULL) {
-                    return self::modify_note_in_DB();
-                } else {
-                    return $this->move_note_in_DB($second_note);
-                }
-            }
+            if ($this->id == NULL) return self::add_note_in_DB();
+            else return self::modify_note_in_DB();
         } else {
             return $errors;
         }
@@ -222,9 +273,21 @@ class Note extends MyModel
         $this->edited_at = $note->get_Edited_At();
         return $this;
     }
-
+    protected function modify_head_in_DB(): Note
+    {
+        self::execute('UPDATE notes SET title = :title, edited_at = :edited_at, pinned = :pinned, archived = :archived, weight = :weight WHERE id = :id', [
+            'title' => $this->title,
+            'edited_at' => $this->edited_at,
+            'pinned' => $this->pinned ? 1 : 0,
+            'archived' => $this->archived ? 1 : 0,
+            'weight' => $this->weight,
+            'id' => $this->id
+        ]);
+        return $this;
+    }
     protected function modify_note_in_DB(): Note
     {
+
         self::execute('UPDATE notes SET title = :title, edited_at = NOW(), pinned = :pinned, archived = :archived, weight = :weight WHERE id = :id', [
             'title' => $this->title,
             'pinned' => $this->pinned ? 1 : 0,
@@ -232,22 +295,10 @@ class Note extends MyModel
             'weight' => $this->weight,
             'id' => $this->id
         ]);
-
         return $this;
     }
 
-    protected function move_note_in_DB(Note $second_note): Note
-    {
-        $second_weight = $second_note->get_Weight();
-        $second_id = $second_note->get_Id();
-        self::execute('UPDATE notes n1, notes n2 SET n1.weight = :second_weight, n2.weight= :weight WHERE n1.id= :id AND n2.id=:second_id', [
-            'weight' => $this->weight,
-            'second_weight' => $second_weight,
-            'id' => $this->id,
-            'second_id' => $second_id,
-        ]);
-        return $this;
-    }
+
     public static function is_checklist_note(int $id): bool
     {
         $query = self::execute("SELECT id FROM checklist_notes WHERE id = :id", ["id" => $id]);
@@ -256,15 +307,15 @@ class Note extends MyModel
     public function toggle_Pin(): static
     {
         $this->pinned = !$this->pinned;
-        return $this->modify_note_in_DB();
+        return $this->modify_head_in_DB();
     }
     public function set_Archive_reverse(): static
     {
         $this->archived = !$this->archived;
-        return $this->modify_note_in_DB();
+        return $this->modify_head_in_DB();
     }
 
-    public static function time_elapsed_string($datetime, $full = false)
+    public static function time_elapsed_string($datetime, $full = false): string
     {
         $now = new DateTime();
         $ago = new DateTime($datetime);

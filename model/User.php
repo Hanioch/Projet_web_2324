@@ -14,58 +14,75 @@ enum Role: string
 
 class User extends MyModel
 {
+    private array $config;
     public function __construct(private string $mail, private string $hashed_password, private string $full_name, private Role $role, private ?int $id = NULL)
     {
     }
     // Getters
-    public function get_Mail(): string {
+    public function get_Mail(): string
+    {
         return $this->mail;
     }
 
-    public function get_Hashed_Password(): string {
+    public function get_Hashed_Password(): string
+    {
         return $this->hashed_password;
     }
 
-    public function get_Full_Name(): string {
+    public function get_Full_Name(): string
+    {
         return $this->full_name;
     }
 
-    public function get_Role(): Role {
+    public function get_Role(): Role
+    {
         return $this->role;
     }
 
-    public function get_Id(): ?int {
+    public function get_Id(): ?int
+    {
         return $this->id;
     }
 
     // Setters
-    public function set_Mail(string $mail): void {
+    public function set_Mail(string $mail): void
+    {
         $this->mail = $mail;
     }
 
-    public function set_Hashed_Password(string $hashed_password): void {
+    public function set_Hashed_Password(string $hashed_password): void
+    {
         $this->hashed_password = $hashed_password;
     }
 
-    public function set_Full_Name(string $full_name): void {
+    public function set_Full_Name(string $full_name): void
+    {
         $this->full_name = $full_name;
     }
 
-    public function set_Role(Role $role): void {
+    public function set_Role(Role $role): void
+    {
         $this->role = $role;
     }
     public function persist(): User
     {
-        if (self::get_user_by_mail($this->mail))
+        if ($this->id !== null && self::get_user_by_id($this->id)) {
             self::execute(
-                "UPDATE users SET hashed_password=:hashed_password, full_name=:full_name, role=:role WHERE mail=:mail ",
+                "UPDATE users SET hashed_password=:hashed_password, full_name=:full_name, role=:role, mail=:mail WHERE id=:id",
+                ["id" => $this->id, "mail" => $this->mail, "hashed_password" => $this->hashed_password, "full_name" => $this->full_name, "role" => $this->role->value]
+            );
+        } elseif ($this->mail !== null && self::get_user_by_mail($this->mail)) {
+            self::execute(
+                "UPDATE users SET hashed_password=:hashed_password, full_name=:full_name, role=:role WHERE mail=:mail",
                 ["mail" => $this->mail, "hashed_password" => $this->hashed_password, "full_name" => $this->full_name, "role" => $this->role->value]
             );
-        else
+        } else {
             self::execute(
-                "INSERT INTO users (mail,hashed_password,full_name,role) VALUES(:mail,:hashed_password,:full_name,:role)",
+                "INSERT INTO users (mail, hashed_password, full_name, role) VALUES (:mail, :hashed_password, :full_name, :role)",
                 ["mail" => $this->mail, "hashed_password" => $this->hashed_password, "full_name" => $this->full_name, "role" => $this->role->value]
             );
+        }
+
         return $this;
     }
     public static function get_user_by_mail(string $mail): User|false
@@ -78,7 +95,8 @@ class User extends MyModel
             return new User($data["mail"], $data["hashed_password"], $data["full_name"], Role::USER, $data["id"]);
         }
     }
-    public function delete(): void {
+    public function delete(): void
+    {
         if ($this->id != NULL) {
             self::execute("DELETE FROM users WHERE id = :id", ['id' => $this->id]);
         }
@@ -86,7 +104,7 @@ class User extends MyModel
 
     public static function get_users(): array
     {
-        $query = self::execute("SELECT * FROM users", []);
+        $query = self::execute("SELECT * FROM users ORDER BY full_name ASC", []);
         $data = $query->fetchAll();
         $results = [];
         foreach ($data as $row) {
@@ -101,10 +119,12 @@ class User extends MyModel
         $errors = [
             "password" => []
         ];
+        $config = parse_ini_file('C:\PRWB2324\projects\prwb_2324_a04\config\dev.ini', true);
+        $password_min_length = $config['Rules']['password_min_length'];
         if (strlen($password) === 0) {
             $errors["password"][] = "Password is required.";
         }
-        if (strlen($password) < 8) {
+        if (strlen($password) < $password_min_length) {
             $errors["password"][] = "Password must be at least 8 characters long";
         }
         if (!((preg_match("/[A-Z]/", $password)) && preg_match("/\d/", $password) && preg_match("/['\";:,.\/?!\\-]/", $password))) {
@@ -118,10 +138,12 @@ class User extends MyModel
         $errors = [
             "full_name" => []
         ];
+        $config = parse_ini_file('C:\PRWB2324\projects\prwb_2324_a04\config\dev.ini', true);
+        $fullname_min_length = $config['Rules']['fullname_min_length'];
         if (!strlen($full_name) > 0) {
             $errors["full_name"][] = "Name is required.";
         }
-        if (strlen($full_name) < 3) {
+        if (strlen($full_name) < $fullname_min_length) {
             $errors["full_name"][] = "Name must be at least 3 characters long";
         }
         return $errors;
@@ -177,20 +199,6 @@ class User extends MyModel
     {
         return $hash === Tools::my_hash($clear_password);
     }
-
-    // redondant avec la nouvelle méthode validate_full_name ?
-
-    //    public function validate() : array {
-    //        $errors = [];
-    //        if (!strlen($this->pseudo) > 0) {
-    //            $errors[] = "Pseudo is required.";
-    //        } if (!(strlen($this->pseudo) >= 3 && strlen($this->pseudo) <= 16)) {
-    //            $errors[] = "Pseudo length must be between 3 and 16.";
-    //        } if (!(preg_match("/^[a-zA-Z][a-zA-Z0-9]*$/", $this->pseudo))) {
-    //            $errors[] = "Pseudo must start by a letter and must contain only letters and numbers.";
-    //        }
-    //        return $errors;
-    //    }
 
     public static function validate_login(string $mail, string $password): array
     {
@@ -248,6 +256,56 @@ class User extends MyModel
             } else {
                 $notes["other"][] = $note;
             }
+        }
+        return $notes;
+    }
+
+    public function get_notes_with_weight_between(int $weight_first_note, int $weight_second_note, bool $pinned)
+    {
+        $first_bigger = $weight_first_note > $weight_second_note;
+        $condition = $first_bigger ?
+            "n.weight < :first_weight AND n.weight >= :second_weight" :
+            "n.weight > :first_weight AND n.weight < :second_weight";
+        $order_by = $first_bigger ? "DESC" : "ASC";
+
+        $query = self::execute("SELECT  n.*,
+        tn.content AS text_content,
+        cn.id AS checklist_id
+        FROM
+        notes n
+        LEFT JOIN text_notes tn ON n.id = tn.id
+        LEFT JOIN checklist_notes cn ON n.id = cn.id
+        where owner = :owner AND n.pinned= :pinned AND $condition AND n.archived =0  AND n.id NOT IN
+        (SELECT note FROM note_shares ns INNER JOIN notes n2 On n2.id = ns.note WHERE n2.owner != n.owner )
+        GROUP BY n.id, n.title, n.pinned, n.archived, n.weight, tn.content, cn.id, n.owner, n.created_at, n.edited_at
+        ORDER BY weight $order_by
+       ", ["owner" => $this->id, "pinned" => $pinned, "first_weight" => $weight_first_note, "second_weight" => $weight_second_note]);
+        $data = $query->fetchAll();
+        $notes = [];
+        foreach ($data as $row) {
+            $notes[] = $row;
+        }
+        return $notes;
+    }
+    public function get_notes_archived_with_weight_between(int $weight_first_note, int $weight_second_note)
+    {
+        $query = self::execute("SELECT  n.*,
+        tn.content AS text_content,
+        cn.id AS checklist_id
+        FROM
+        notes n
+        LEFT JOIN text_notes tn ON n.id = tn.id
+        LEFT JOIN checklist_notes cn ON n.id = cn.id
+        where owner = :owner AND n.weight > :first_weight AND n.archived =1
+        AND n.id NOT IN
+        (SELECT note FROM note_shares ns INNER JOIN notes n2 On n2.id = ns.note WHERE n2.owner != n.owner )
+        GROUP BY n.id, n.title, n.pinned, n.archived, n.weight, tn.content, cn.id, n.owner, n.created_at,n.edited_at
+        ORDER BY weight ASC
+       ", ["owner" => $this->id, "first_weight" => $weight_first_note]);
+        $data = $query->fetchAll();
+        $notes = [];
+        foreach ($data as $row) {
+            $notes[] = $row;
         }
         return $notes;
     }
@@ -327,20 +385,65 @@ class User extends MyModel
 
         return $shared_notes;
     }
-    
-   public function get_heaviest_note(): int
+
+    public function get_heaviest_note($pinned = NULL, $archived = NULL): int
     {
-        $query = self::execute("
-        SELECT weight FROM notes
-        WHERE owner = :owner
-        ORDER BY weight DESC
-        LIMIT 1;    
-        ", ["owner" => $this->id]);
+
+        $query = "";
+        if ($archived !== NULL) {
+            $query = self::execute("
+            SELECT weight FROM notes
+            WHERE owner = :owner AND archived = :archived AND pinned = 0
+            ORDER BY weight DESC
+            LIMIT 1;    
+            ", ["owner" => $this->id, "archived" => $archived ? 1 : 0]);
+        } else if ($pinned !== NULL) {
+            $query = self::execute("
+            SELECT weight FROM notes
+            WHERE owner = :owner AND pinned = :pinned
+            ORDER BY weight DESC
+            LIMIT 1;    
+            ", ["owner" => $this->id, "pinned" => $pinned ? 1 : 0]);
+        } else {
+            $query = self::execute("
+                SELECT weight FROM notes
+                WHERE owner = :owner
+                ORDER BY weight DESC
+                LIMIT 1;    
+                ", ["owner" => $this->id]);
+        }
+
         if ($query->rowCount() == 0) {
             return 0;
         } else {
             $row = $query->fetch();
             return $row['weight'];
+        }
+    }
+
+
+
+    public function get_note_by_id(int $id): Note | false
+
+    {
+        $query = self::execute("SELECT n.*,
+        tn.content AS text_content,
+        cn.id AS checklist_id,
+        GROUP_CONCAT(cni.id) AS checklist_items
+        FROM
+        notes n
+        LEFT JOIN text_notes tn ON n.id = tn.id
+        LEFT JOIN checklist_notes cn ON n.id = cn.id
+        LEFT JOIN checklist_note_items cni ON cn.id = cni.checklist_note  
+        where owner = :owner AND n.id = :id
+        GROUP BY n.id, n.title, n.pinned, n.archived, n.weight, tn.content, cn.id, n.owner, n.created_at, n.edited_at
+         ", ["owner" => $this->id, "id" => $id]);
+
+        if ($query->rowCount() == 0) {
+            return false;
+        } else {
+            $row = $query->fetch();
+            return $this->get_text_note_or_checklist_note($row);
         }
     }
 

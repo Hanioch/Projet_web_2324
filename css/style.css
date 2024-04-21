@@ -45,6 +45,11 @@ body, html {
     border: none;
 }
 
+.navbar-brand{
+    margin-top: 0;
+    margin-left: 0;
+    margin-bottom: 0;
+}
 .selected{
     color: #fff;
 }
@@ -61,6 +66,10 @@ body, html {
     padding: 0;
 }
 
+#sortable1,#sortable2{
+    min-height: 10rem;
+}
+
 .note {
     cursor: pointer;
     box-sizing: border-box;
@@ -72,8 +81,11 @@ body, html {
     background-clip: border-box;
     border: 1px solid rgba(0, 0, 0, .125);
     border-radius: 0.25rem;
+    display: flex;
+    flex-direction: column;
 }
-.note a{
+
+.link-open-note{
     text-decoration: none;
     color: black;
     height: 100%;
@@ -84,7 +96,6 @@ body, html {
 }
 
 .header-in-note, .footer-in-note{
-    margin-bottom: 0;
     background-color: rgba(0,0,0,.03);
 }
 
@@ -102,8 +113,9 @@ body, html {
 
 .footer-in-note{
     position: relative;
-    height: 2rem;
+    height: 3rem;
     border-top: 1px solid rgba(0,0,0,.125);
+    overflow: hidden;
 }
 
 .button-mv-note{
@@ -115,7 +127,8 @@ body, html {
 .icon-mv-note{
     position: absolute;
     cursor: pointer;
-    top: 25%;
+    top: 50%;
+    transform: translate(0,-50%);
     color:#9d9d9d;
 }
 .icon-mv-note:hover{
@@ -218,11 +231,10 @@ a {
 .bold-text {
     font-weight: bold;
 }
-
-.bg-dark {
-    align-content: end;
+.disabled-button {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
-
 .cursor-pointer{
     cursor: pointer;
 }
@@ -251,5 +263,3 @@ a {
     }
     
 }
-
-
