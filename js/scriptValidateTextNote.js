@@ -15,19 +15,16 @@ $(document).ready(function () {
     },
   });
   $("#title_add_text_note").on("input", function () {
-    modifDone();
     validateTitle();
   });
 
   $("#text_add_text_note").on("input", function () {
-    modifDone();
     validateText();
   });
 
   function validateTitle() {
     var title = $("#title_add_text_note").val().trim();
     var noteId = $("#noteId").length ? $("#noteId").data("note-id") : -1;
-    console.log(noteId);
     if (title.length === 0) {
       $("#title_add_text_note");
       $("#title_error").text("");
