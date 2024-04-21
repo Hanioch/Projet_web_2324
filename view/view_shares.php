@@ -23,13 +23,13 @@ if (isset($error) && !empty($error)) {
                         <input type="text" name="listShares" class="form-control text-white custom-placeholder bg-dark border-secondary fst-italic" placeholder="<?=$share['full_name']?> (<?= $share['editor'] ? 'editor' : 'reader' ?>)" aria-label="Recipient's username with two button addons" disabled>
                         <form action="./notes/shares/<?php echo $noteId; ?>" method="post" >
                             <input type="hidden" name="user" value="<?=$share['user']?>" id="userPermission">
-                            <button class="btn btn-primary border-secondary border rounded-0" name="changePermission"  type="button" onclick="changePermissions('<?php echo $share['note']; ?>', '<?php echo $share['user']; ?>')">
+                            <button class="btn btn-primary border-secondary border rounded-0" name="changePermission" id="changePermission" type="submit" onclick="changePermissions('<?php echo $share['note']; ?>', '<?php echo $share['user']; ?>')">
                                 <i class="bi bi-arrow-repeat"></i>
                             </button>
                         </form>
                        <form action="./notes/shares/<?php echo $noteId; ?>" method="post" >
                             <input type="hidden" name="user" value="<?=$share['user']?>" id="userRemove">
-                            <button class="arrondirbtn btn btn-danger border-secondary" name="removeShare"  type="button" onclick="removeShares('<?php echo $share['note']; ?>', '<?php echo $share['user']; ?>')">
+                            <button class="arrondirbtn btn btn-danger border-secondary" name="removeShare" id="removeShare"  type="submit" onclick="removeShares('<?php echo $share['note']; ?>', '<?php echo $share['user']; ?>')">
                                 <i class="bi bi-x"></i>
                             </button>
                        </form>
@@ -54,7 +54,7 @@ if (isset($error) && !empty($error)) {
                         <option value="0">Reader</option>
                     </select>
                     <input type="hidden" name="noteId" value="<?= $noteId?>" id="noteId">
-                    <button id="addShare" name="addShare" class="btn btn-primary border-secondary"  type="button" onclick="addShareOnClick()">
+                    <button id="addShare" name="addShare" class="btn btn-primary border-secondary"  type="submit" onclick="addShareOnClick()">
                         <i class="bi bi-plus"></i>
                     </button>
                 </div>
