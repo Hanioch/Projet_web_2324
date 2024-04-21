@@ -25,17 +25,20 @@ function show_back_button($back_url)
                 <?php
                 if ($title_page === "add_text_note" || $title_page === "add_checklist_note") {
                     show_back_button($back_url);
-                }
-
+                } else {
                 ?>
-                <button class="navbar-brand" style="display: none; background-color: transparent; border: 0;" id="btnBack" data-bs-toggle="modal">
-                    <i class="bi bi-chevron-left"></i>
-                </button>
-                <noscript>
-                    <?php
-                    show_back_button($back_url);
-                    ?>
-                </noscript>
+                    <button class="navbar-brand" style="display: none; background-color: transparent; border: 0;" id="btnBack" data-bs-toggle="modal">
+                        <i class="bi bi-chevron-left"></i>
+                    </button>
+                    <noscript>
+                        <?php
+                        show_back_button($back_url);
+                        ?>
+                    </noscript>
+                <?php
+                }
+                ?>
+
             </nav>
             <button id="save_button" name="save_button" class="button-add-text-note" type="submit" form=<?= $id_form ?>>
                 <span class="material-icons" id="icon-save">
