@@ -1,4 +1,10 @@
+document.addEventListener('DOMContentLoaded', function() {
+    let buttons = document.querySelectorAll('button');
 
+    buttons.forEach(function(button) {
+        button.type = 'button';
+    });
+});
 function addShareOnClick() {
     let noteId = document.getElementById("noteId").value;
     let userId = document.getElementById("user").options[document.getElementById("user").selectedIndex].value;
@@ -103,13 +109,13 @@ function removeShares(noteId, userId) {
                         <input type="text" name="listShares" class="form-control text-white custom-placeholder bg-dark border-secondary fst-italic" placeholder="${share.full_name} (${share.editor ? 'editor' : 'reader'})" aria-label="Recipient's username with two button addons" disabled>
                         <form action="./notes/shares/${share.note}" method="post">
                             <input type="hidden" name="user" value="${share.user}" id="userPermission_${share.user}">
-                            <button class="btn btn-primary border-secondary border rounded-0"  name="changePermission" type="button" onclick="changePermissions('${share.note}', '${share.user}')">
+                            <button class="btn btn-primary border-secondary border rounded-0"  name="changePermission" id="changePermission" type="button" onclick="changePermissions('${share.note}', '${share.user}')">
                                 <i class="bi bi-arrow-repeat"></i>
                             </button>
                         </form>
                         <form action="./notes/shares/${share.note}" method="post">
                             <input type="hidden" name="user" value="${share.user}" id="userRemove_${share.user}">
-                            <button class="arrondirbtn btn btn-danger border-secondary" name="removeShare" type="button" onclick="removeShares('${share.note}', '${share.user}')">
+                            <button class="arrondirbtn btn btn-danger border-secondary" name="removeShare" id="removeShare" type="button" onclick="removeShares('${share.note}', '${share.user}')">
                                 <i class="bi bi-x"></i>
                             </button>
                       </form>
