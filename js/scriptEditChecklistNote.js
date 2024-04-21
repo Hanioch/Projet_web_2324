@@ -2,9 +2,6 @@ $(() => {
   handleKeyPress();
 
   function handleKeyPress() {
-    console.log("rentre");
-    modifDone();
-
     $('[id^="item"]').keyup(function (event) {
       let itemId = $(this)
         .closest(".input-group")

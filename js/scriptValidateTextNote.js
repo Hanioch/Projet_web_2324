@@ -16,14 +16,12 @@ $(document).ready(function () {
     },
   });
   $("#title_add_text_note").on("input", function () {
-    modifDone();
     console.log("check ");
     validateTitle();
   });
 
   $("#text_add_text_note").on("input", function () {
     console.log("check 2");
-    modifDone();
     validateText();
   });
 

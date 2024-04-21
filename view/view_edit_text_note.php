@@ -40,8 +40,8 @@ include("./utils/header_add_note.php");
 
         <div class="mb-3 text-white">
             <div class="">
-                <label for="title_add_text_note" class="form-label">Title</label>
-                <input required type="text" value="<?= $note->get_Title() ?>" name="title" class="form-control bg-secondary text-white bg-opacity-25 mb-2 <?= !empty($errors['title']) ? 'is-invalid' : '' ?>" id="title_add_text_note">
+                <label for="titleNote" class="form-label">Title</label>
+                <input required type="text" value="<?= $note->get_Title() ?>" name="title" class="form-control bg-secondary text-white bg-opacity-25 mb-2 <?= !empty($errors['title']) ? 'is-invalid' : '' ?>" id="titleNote">
                 <div class="invalid-feedback" id="title_error">
                     <?php
                     if (!empty($errors['title'])) {
@@ -54,8 +54,8 @@ include("./utils/header_add_note.php");
             </div>
         </div>
         <div class="mb-3 text-white">
-            <label for="text_add_text_note" class="form-label">Text</label>
-            <textarea name="text" class="form-control bg-secondary text-white bg-opacity-25 <?= !empty($errors['content']) ? 'is-invalid' : '' ?>" id="text_add_text_note" cols="30" rows="10"><?= $note->get_Content() ?></textarea>
+            <label for="contentNote" class="form-label">Text</label>
+            <textarea name="text" class="form-control bg-secondary text-white bg-opacity-25 <?= !empty($errors['content']) ? 'is-invalid' : '' ?>" id="contentNote" cols="30" rows="10"><?= $note->get_Content() ?></textarea>
         </div>
         <div class="invalid-feedback" id="text_error">
             <?php
@@ -70,6 +70,10 @@ include("./utils/header_add_note.php");
 
     <div id="noteId" data-note-id="<?= $note->get_Id() ?>"></div>
 </div>
+<script>
+    const pageName = "editChecklistnote";
+    const urlToRedirect = "<?= $back_url ?>"
+</script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="js/scriptModalEdit.js"></script>
 <script src="js/scriptValidateTextNote.js"></script>
