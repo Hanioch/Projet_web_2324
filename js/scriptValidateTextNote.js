@@ -5,7 +5,6 @@ $(document).ready(function () {
     type: "GET",
     dataType: "json",
     success: function (data) {
-      console.log(data);
       minTitleLength = data.minTitleLength;
       maxTitleLength = data.maxTitleLength;
       minContentLength = data.minContentLength;
@@ -16,19 +15,16 @@ $(document).ready(function () {
     },
   });
   $("#title_add_text_note").on("input", function () {
-    console.log("check ");
     validateTitle();
   });
 
   $("#text_add_text_note").on("input", function () {
-    console.log("check 2");
     validateText();
   });
 
   function validateTitle() {
     var title = $("#title_add_text_note").val().trim();
     var noteId = $("#noteId").length ? $("#noteId").data("note-id") : -1;
-    console.log(noteId);
     if (title.length === 0) {
       $("#title_add_text_note");
       $("#title_error").text("");
