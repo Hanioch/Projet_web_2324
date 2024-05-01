@@ -796,6 +796,80 @@ class ControllerNotes extends Controller
         echo json_encode($row);
     }
 
+    public function check_new_item_service()
+    {
+        $content = $_POST['content'];
+        $noteId = $_POST['note_id'];
+        $newItem = new ChecklistNoteItems($content, false, $noteId);
+        $newItemId = $newItem->get_Id();
+        $note = ChecklistNote::get_by_id($noteId);
+        $errors = [];
+        $items = $note->get_Items();
+
+        /*
+        $checklist_note = new ChecklistNote($note->get_Title(), $note->get_Owner(), $note->is_Pinned(), $note->is_Archived(), $note->get_Weight(), $note->get_Id());
+        $currentItems = $checklist_note->get_Items();
+        $newNote = clone $checklist_note;
+
+        $newItems = $newNote->get_Items();
+        $newItems [] = $newItem;
+
+
+        $stringNewItems = [];
+
+        */
+
+        /** @var $i ChecklistNoteItems*/
+        foreach ($items as $i) {
+            if($i->get_content() === $content) {
+                $errors['new_item'] = "Item already exists.";
+            }
+
+            /*
+            $id = $i->get_Id();
+            if (isset($_POST['item' . $id])) {
+                $i->set_Content($_POST['item' . $id]);
+                $stringNewItems[] = $i->get_content();
+
+                if (trim($_POST['item' . $id]) == '') {
+                    $errors['item' . $id][] = "Item cannot be empty.";
+                } else {
+                    $item = trim($_POST['item' . $id]);
+                    if (true !== ($duplicates = $this->is_unique($i, $newItems))) {
+                        foreach ($duplicates as $dup) {
+                            if (empty($errors['item' . $dup])) {
+                                $errors['item' . $dup][] = "Item already exists.";
+                            }
+                        }
+                    } else {
+                        $i->persist();
+                    }
+
+
+                    if (!($test = $note->persist()) instanceof Note) {
+                        $errors = array_merge($errors, $test);
+                    }
+                }
+            }
+            */
+        }
+
+
+        //$item = ChecklistNoteItems::get_checklist_note_item_by_id($itemId);
+
+        /*
+        $row = [];
+        $row["content"] = $item->get_content();
+        $row["checked"] = $item->is_Checked();
+        $row["checklist_note"] = $item->get_ChecklistNote();
+        $row["id"] = $item->get_Id();
+        $row["errors"] = $errors;
+        */
+
+
+        echo json_encode($errors);
+    }
+
     public function remove_item_service()
     {
         $itemId = $_POST['item_id'];

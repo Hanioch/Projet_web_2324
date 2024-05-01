@@ -97,11 +97,14 @@ include("./utils/header_add_note.php");
             <button id="add_button" name="add_button" class="btn btn-primary btn-lg rounded-end  border-secondary" type="submit">
                 <i class="bi bi-plus"></i>
             </button>
-            <input type="hidden" name="item_id" value="1">
+            <input type="hidden" name="item_id" value="<?= $item->get_Id() ?>">
+            <input type="hidden" name="note_id" value="<?= $note->get_Id() ?>">
         </div>
-        <?php if (isset($item) && isset($errors['new_item'])) : ?>
-            <span class="error-add-note"><?php echo $errors['new_item'] ?></span>
-        <?php endif; ?>
+        <div id="new_item_error_div">
+            <?php if (isset($item) && isset($errors['new_item'])) : ?>
+                <span class="error-add-note" id="new_item_error"><?php echo $errors['new_item'] ?></span>
+            <?php endif; ?>
+        </div>
     </form>
 </div>
 

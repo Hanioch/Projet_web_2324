@@ -1,5 +1,6 @@
 $(() => {
   handleKeyPress();
+  handleAddKeyPress();
   handleClick();
 
   function handleKeyPress() {
@@ -55,10 +56,43 @@ $(() => {
     });
   }
 
+  function handleAddKeyPress(){
+    $("#add_item").keyup(function() {
+      let noteId = $(this)
+          .closest(".input-group")
+          .find('input[name="note_id"]')
+          .val();
+      let content = $(this).val();
+      $.ajax({
+        url: "notes/check_new_item_service",
+        method: "POST",
+        data: { note_id: noteId, content: content },
+      }).done(function (response) {
+        let jsonResponse = JSON.parse(response);
+        if ("new_item" in jsonResponse) {
+          let html = "<span class=\"error-add-note\" id=\"new_item_error\">"
+          html += jsonResponse.new_item;
+          html += "</span>"
+          console.log(html);
+          console.log($(this))
+          $("#new_item_error_div").html(html);
+          $("#add_item").removeClass("is-valid");
+          $("#add_item").addClass("is-invalid");
+          $("#add_button").disable();
+        } else {
+          $("#new_item_error").remove();
+          $("#add_item").removeClass("is-invalid");
+          $("#add_item").addClass("is-valid");
+          $("#add_button").enable();
+        }
+      });
+    });
+  }
+
   function handleAddClick() {
     $("#add_button").on("click", (e) => {
       e.preventDefault();
-      console.log("added !");
+
     });
   }
 
