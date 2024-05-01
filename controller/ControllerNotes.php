@@ -795,6 +795,17 @@ class ControllerNotes extends Controller
 
         echo json_encode($row);
     }
+
+    public function remove_item_service()
+    {
+        $itemId = $_POST['item_id'];
+        $noteId = $_POST['note_id'];
+        $note = ChecklistNote::get_note($noteId);
+        $item = ChecklistNoteItems::get_checklist_note_item_by_id($itemId);
+
+        $item ->delete();
+    }
+
     public function set_Archive()
     {
         $user = $this->get_user_or_redirect();
