@@ -62,7 +62,7 @@ include("./utils/header_add_note.php");
         <div class="mb-3">
             <div class="">
                 <label class="form-label mb-0">Items</label>
-                <ul class="list-unstyled">
+                <ul class="list-unstyled" id="list_items_ul">
                     <?php foreach ($items as $item) : ?>
                         <li class="list-unstyled" id="list_items_<?= $item->get_Id() ?>">
                             <div class="input-group pt-3 has-validation">
