@@ -1,11 +1,23 @@
 $(() => {
   handleKeyPress();
-  handleAddKeyPress();
   handleClick();
   $("#add_button").prop("disabled", true);
+  $("#save_button").prop("disabled", true).css("opacity", "0.2");
+
+  function handleKeyPress() {
+    handleItemKeyPress();
+    handleAddKeyPress();
+    handleTitleKeyPress();
+  }
+
+  function handleClick() {
+    handleRemoveClick();
+    handleAddClick();
+    handleSaveClick();
+  }
 
   // fonction pour gérer la frappe clavier dans les champs edit_item
-  function handleKeyPress() {
+  function handleItemKeyPress() {
     $('[id^="item"]').keyup(function (event) {
       let itemId = $(this)
         .closest(".input-group")
@@ -30,11 +42,72 @@ $(() => {
     });
   }
 
-  function handleClick() {
-    handleRemoveClick();
-    handleAddClick();
-    handleSaveClick();
+  // fonction pour gérer la frappe clavier dans le champ new_item
+  function handleAddKeyPress(){
+    $("#add_item").keyup(function() {
+      let noteId = $(this)
+          .closest(".input-group")
+          .find('input[name="note_id"]')
+          .val();
+      let content = $(this).val();
+      $.ajax({
+        url: "notes/check_new_item_service",
+        method: "POST",
+        data: { note_id: noteId, content: content },
+      }).done(function (response) {
+        let jsonResponse = JSON.parse(response);
+        if ("new_item" in jsonResponse) {
+          if ($("#add_item").val() === "") {
+            $("#new_item_error").remove();
+            $("#add_item").removeClass("is-invalid");
+            $("#add_item").removeClass("is-valid");
+            $("#add_button").prop("disabled", true);
+          } else {
+            let html = "<span class=\"error-add-note\" id=\"new_item_error\">"
+            html += jsonResponse.new_item;
+            html += "</span>"
+            $("#new_item_error_div").html(html);
+            $("#add_item").removeClass("is-valid");
+            $("#add_item").addClass("is-invalid");
+            $("#add_button").prop("disabled", true);
+          }
+        } else {
+          $("#new_item_error").remove();
+          $("#add_item").removeClass("is-invalid");
+          $("#add_item").addClass("is-valid");
+          $("#add_button").prop("disabled", false);
+        }
+      });
+    });
   }
+
+  // fonction pour gérer la frappe clavier dans le champ titre
+  function handleTitleKeyPress(){
+    $("#titleNote").keyup(function (event) {
+      let notedId = $('input[name="note_id"]').val();
+      let newContent = $("#titleNote").val();
+
+      $.ajax({
+        url: "notes/edit_title_service",
+        method: "POST",
+        data: { note_id: noteId, title: newContent},
+      }).done(function (response) {
+        let jsonResponse = JSON.parse(response);
+        if ("title" in jsonResponse.errors) {
+          $("#save_button").prop("disabled", true).css("opacity", "0.3");
+          let html = "<span class=\"error-add-note\" id=\"error_title_span\">";
+          html += jsonResponse.errors.title;
+          html += "</span>";
+          $("#error_title_span").remove();
+          $("#title_div").append(html);
+        } else {
+          $("#save_button").prop("disabled", false).css("opacity", "1");
+          $("#error_title_span").remove();
+        }
+      });
+    });
+  }
+
 
   // fonction pour gérer le clic sur les boutons remove_item
   function handleRemoveClick() {
@@ -54,44 +127,12 @@ $(() => {
           data: { item_id: itemId, note_id: noteId },
         }).done(function () {
           $("#list_items_" + itemId).remove();
+          $("#save_button").prop("disabled", false).css("opacity", "1");
         });
       });
     });
   }
 
-  // fonction pour gérer la frappe clavier dans le champ new_item
-  function handleAddKeyPress(){
-    $("#add_item").keyup(function() {
-      let noteId = $(this)
-          .closest(".input-group")
-          .find('input[name="note_id"]')
-          .val();
-      let content = $(this).val();
-      $.ajax({
-        url: "notes/check_new_item_service",
-        method: "POST",
-        data: { note_id: noteId, content: content },
-      }).done(function (response) {
-        let jsonResponse = JSON.parse(response);
-        if ("new_item" in jsonResponse) {
-          let html = "<span class=\"error-add-note\" id=\"new_item_error\">"
-          html += jsonResponse.new_item;
-          html += "</span>"
-          console.log(html);
-          console.log($(this))
-          $("#new_item_error_div").html(html);
-          $("#add_item").removeClass("is-valid");
-          $("#add_item").addClass("is-invalid");
-          $("#add_button").prop("disabled", true);
-        } else {
-          $("#new_item_error").remove();
-          $("#add_item").removeClass("is-invalid");
-          $("#add_item").addClass("is-valid");
-          $("#add_button").prop("disabled", false);
-        }
-      });
-    });
-  }
 
   // fonction pour gérer le clic sur le bouton add_item
   function handleAddClick() {
@@ -119,7 +160,7 @@ $(() => {
 
         $("#add_item").val('');
         $("#add_item").removeClass("is-valid");
-        $("#add_item").removeClass("is-invalid");
+        $("#save_button").prop("disabled", false).css("opacity", "1");
       });
 
     });
@@ -160,14 +201,35 @@ function displayItem(itemJson, itemElem) {
 
   // si c'est une array il n'y a pas d'erreur, si c'est un json il y a des erreurs
   if (Array.isArray(itemJson.errors)) {
+    $("#save_button").prop("disabled", false).css("opacity", "1");
+
     itemElem.removeClass("is-invalid");
     itemElem.addClass("is-valid");
     $("#error_text_" + itemJson.id).remove();
   } else {
+    $("#save_button").prop("disabled", true).css("opacity", "0.3");
     if (itemJson.errors.hasOwnProperty("item" + itemJson.id)) {
       itemElem.removeClass("is-valid");
       itemElem.addClass("is-invalid");
       let html = "";
+/*
+      for (let itemId in itemJson.errors) {
+        for (let error of itemJson.errors[itemId]) {
+          html +=
+              "<div id='error_text_" +
+              itemId +
+              "' class='error-add-note pt-1'>" +
+              error +
+              "</div>";
+          // $("#" + itemId).append(html);
+          console.log("#list_items_" + itemId);
+          $("#error_text_" + itemId).remove();
+          $("#list_items_" + itemId).append(html);
+        }
+      }
+      */
+
+
       for (let error of itemJson.errors["item" + itemJson.id]) {
         html +=
           "<div id='" +
@@ -185,8 +247,7 @@ function displayItem(itemJson, itemElem) {
 }
 
 function displayItems(itemsJson) {
-  let html= "<label class=\"form-label mb-0\">Items</label>";
-  html += "<ul class=\"list-unstyled\">";
+  let html = "<ul class=\"list-unstyled\">";
   for (let i of itemsJson) {
 
     html += "<li class=\"list-unstyled\" id=\"list_items_" + i.id + "\">";

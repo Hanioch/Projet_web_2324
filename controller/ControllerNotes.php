@@ -851,6 +851,22 @@ class ControllerNotes extends Controller
         echo json_encode($table);
     }
 
+    public function edit_title_service()
+    {
+        $noteId = $_POST['note_id'];
+        $newContent = $_POST['title'];
+        $note = ChecklistNote::get_note($noteId);
+
+        $errors = [];
+        $errors = $this->edit_title($note, $errors);
+
+        $row = [];
+        $row["errors"] = $errors;
+
+
+        echo json_encode($row);
+    }
+
     public function set_Archive()
     {
         $user = $this->get_user_or_redirect();

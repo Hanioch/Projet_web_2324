@@ -38,7 +38,7 @@ include("./utils/header_add_note.php");
                     <span style="font-size: 0.8em;">Edited <?= Note::time_elapsed_string($note->get_Edited_At()) ?>.</span>
                 <?php endif; ?>
             </div>
-            <div class="">
+            <div class="" id="title_div">
                 <label for="titleNote" class="form-label">Title</label>
                 <input type="text" value="<?php if (isset($_POST['title'])) {
                                                 echo $_POST['title'];
@@ -48,7 +48,7 @@ include("./utils/header_add_note.php");
                 <?php
                 if (!empty($errors['title'])) {
                 ?>
-                    <span class="error-add-note">
+                    <span class="error-add-note" id="error_title_span">
                         <?php
                         echo $errors['title'];
                         ?>
