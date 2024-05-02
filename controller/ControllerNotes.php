@@ -1,6 +1,7 @@
 <?php
 
 require_once 'model/User.php';
+require_once 'model/Label.php';
 require_once 'framework/View.php';
 require_once 'framework/Controller.php';
 require_once "model/NoteShare.php";
@@ -999,5 +1000,20 @@ class ControllerNotes extends Controller
         $isUnique =  Note::is_unique_title_ajax($title, $userId, $noteId);
         header('Content-Type: application/json');
         echo json_encode(['unique' => $isUnique]);
+    }
+
+    public function edit_labels(): void
+    {
+        $user = $this->get_user_or_redirect();
+        $noteId = filter_var($_GET['param1'], FILTER_VALIDATE_INT);
+        $note = ChecklistNote::get_note($noteId);
+        $labels = Label::get_labels_by_note_id($noteId);
+
+        (new View("edit_labels"))->show([
+            'note' => $note,
+            'user' => $user,
+            'note_id' => $noteId,
+            'labels' => $labels
+        ]);
     }
 }

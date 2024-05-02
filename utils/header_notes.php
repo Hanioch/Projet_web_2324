@@ -44,6 +44,14 @@ include('./utils/head.php')
                     </form>
                 </div>
                 <div class="">
+                    <form action="notes/edit_labels/<?=$note->get_Id()?>" method="POST" class="navbar-brand">
+                        <input type="hidden" name="note_id" value="<?= $note->get_Id() ?>">
+                        <button type="submit" class="btn-icon" style="background: none; border: none; color: inherit; ">
+                            <i class="bi bi-tag"></i>
+                        </button>
+                    </form>
+                </div>
+                <div class="">
                     <?php
                     if ($isChecklistNote) {
                         $chevronLink = "./notes/edit_checklist_note/" . $note->get_Id();
