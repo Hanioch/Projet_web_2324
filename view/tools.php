@@ -48,6 +48,14 @@ function show_note(array $arr_notes, string $title, string $titlePage): void
                         }
                         ?>
                     </div>
+                    <div class="form-check">
+                        <?php
+                        $labels = Label::get_labels_by_note_id($note->get_Id());
+                        foreach ($labels as $label) {?>
+                            <span class="badge rounded-pill bg-secondary opacity-50"><?= $label->get_label_name() ?></span>
+                        <?php }
+                        ?>
+                    </div>
                 </a>
                 <?php
                 if ($titlePage === Page::Notes->value) {

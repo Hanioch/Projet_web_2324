@@ -18,6 +18,8 @@ class ControllerNotes extends Controller
         $user = $this->get_user_or_redirect();
         $notes = $user->get_notes();
         $users_shared_notes = $user->get_users_shared_note();
+
+
         (new View("notes"))->show(["notes" => $notes, "users_shared_notes" => $users_shared_notes]);
     }
 
