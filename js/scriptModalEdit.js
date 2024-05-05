@@ -21,6 +21,7 @@ const isItemsUpdated = () => {
 const checkIsNoteModified = () => {
   const newTitleNote = $("#titleNote");
   const newContentNote = $("#contentNote");
+  const addItem = $("#add_item");
 
   if (oldTitleNote !== newTitleNote.val()) {
     return true;
@@ -28,6 +29,10 @@ const checkIsNoteModified = () => {
 
   if (oldContentNote !== undefined) {
     return newContentNote.val() !== oldContentNote;
+  }
+
+  if (addItem.val() !== "") {
+    return true;
   }
 
   //si on arrive ici on est d'office dans une checklistNote
