@@ -47,4 +47,21 @@ class Label extends MyModel {
         }
         return $labels;
     }
+
+    public static function validate_label(string $label): array
+    {
+        $errors = [
+            "label" => []
+        ];
+        $config = parse_ini_file('C:\PRWB2324\projects\prwb_2324_a04\config\dev.ini', true);
+        $label_min_length = $config['Rules']['label_min_length'];
+        $label_max_length = $config['Rules']['label_max_length'];
+        if (strlen($label) < $label_min_length || strlen($label) > $label_max_length) {
+            $errors["label"][] = "Label length must be between 2 and 10.";
+        }
+        if (preg_match("/\s/", $label)) {
+            $errors["label"][] = "Label name cannot contain any space.";
+        }
+        return $errors;
+    }
 }
