@@ -76,6 +76,16 @@ class Label extends MyModel {
         }
         return $labels;
     }
+    public static function is_unique_by_note(string $label, $noteId) {
+        $labels = self::get_labels_by_note_id($noteId);
+        /** @var Label $label */
+        foreach ($labels as $l) {
+            if(strtoupper($l->get_label_name()) === strtoupper($label)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     public function delete(): Label|false
     {
@@ -88,7 +98,7 @@ class Label extends MyModel {
     }
 
 
-    public static function validate_label(string $label): array
+    public static function validate_label(string $label, $noteId): array
     {
         $errors = [
             "label" => []
@@ -96,11 +106,15 @@ class Label extends MyModel {
         $config = parse_ini_file('config/dev.ini', true);
         $label_min_length = $config['Rules']['label_min_length'];
         $label_max_length = $config['Rules']['label_max_length'];
+
         if (strlen($label) < $label_min_length || strlen($label) > $label_max_length) {
             $errors["label"][] = "Label length must be between 2 and 10.";
         }
         if (preg_match("/\s/", $label)) {
             $errors["label"][] = "Label name cannot contain any space.";
+        }
+        if(!(self::is_unique_by_note($label, $noteId))) {
+            $errors["label"][] = "A note cannot contain the same label twice.";
         }
         return $errors;
     }

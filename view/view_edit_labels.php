@@ -34,14 +34,19 @@ include("./utils/header_edit_labels.php");
             </div>
             <label for="add_label" class="form-label">Add a new label : </label>
             <div class="input-group">
-                <input list="label_data_list" type="text" name="new_label" class="form-control bg-secondary text-white bg-opacity-25 border-secondary" id="add_label" placeholder="Type to search or create...">
+                <input <?php if (!empty($errors['label'])) {
+                            echo 'value="' . $_POST['new_label'] . '" class="form-control bg-secondary text-white bg-opacity-25 border-secondary is-invalid"';
+                        } else {
+                            echo 'value=""';
+                        } ?>
+                list="label_data_list" type="text" name="new_label" class="form-control bg-secondary text-white bg-opacity-25 border-secondary" id="add_label" placeholder="Type to search or create...">
                 <button id="add_button" name="add_button" class="btn btn-primary btn-lg rounded-end  border-secondary" type="submit">
                     <i class="bi bi-plus"></i>
                 </button>
                 <datalist id="label_data_list">
                     <?php
                         foreach($labels_to_suggest as $label) { ?>
-                            <option value="<?= $label->get_label_name(); ?>"></option>
+                            <option value="<?= $label; ?>"></option>
                         <?php }
                      ?>
                 </datalist>

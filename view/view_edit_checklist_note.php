@@ -90,7 +90,7 @@ include("./utils/header_add_note.php");
         <label for="add_item" class="form-label">New Item</label>
         <div class="input-group">
             <input <?php if (!empty($errors['new_item'])) {
-                        echo 'value="' . $_POST['new_item'] . '"';
+                        echo 'value="' . $_POST['new_item'] . '" class="form-control bg-secondary text-white bg-opacity-25 border-secondary is-invalid"';
                     } else {
                         echo 'value=""';
                     } ?> type="text" name="new_item" class="form-control bg-secondary text-white bg-opacity-25 border-secondary" id="add_item">

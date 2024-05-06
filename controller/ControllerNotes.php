@@ -1014,9 +1014,10 @@ class ControllerNotes extends Controller
                 }
             }
             if($mustDisplay) {
-                $res[] = $label;
+                $res[] = $label->get_label_name();
             }
         }
+        sort($res);
         return $res;
     }
 
@@ -1038,14 +1039,11 @@ class ControllerNotes extends Controller
                 $labelsByUser = Label::get_labels_by_user_id($user->get_Id());
                 $labelsToSuggest = $this->get_labels_to_suggest($labelsByUser, $labels);
                 $this->redirect("notes", "edit_labels", $noteId);
-            } else if (isset($_POST['add_button']) && trim(($_POST['new_label']) > 0)) {
+            } else if (isset($_POST['add_button']) && (trim(($_POST['new_label']) > 0)) || ($_POST['new_label']) === "") {
                 $labelName = ($_POST['new_label']);
-                $errors[] = Label::validate_label($labelName);
+                $errors = Label::validate_label($labelName, $noteId);
 
                 if (empty($errors['label'])) {
-                    var_dump($labelName);
-                    die();
-
                     $newLabel = new Label($noteId, $labelName);
                     $newLabel->persist();
                     $this->redirect("notes", "edit_labels", $noteId);
