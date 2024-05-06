@@ -1028,16 +1028,29 @@ class ControllerNotes extends Controller
         $labels = Label::get_labels_by_note_id($noteId);
         $labelsByUser = Label::get_labels_by_user_id($user->get_Id());
         $labelsToSuggest = $this->get_labels_to_suggest($labelsByUser, $labels);
+        $errors = [];
         if($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (isset($_POST['remove_button'])) {
                 $labelName = ($_POST['remove_button']);
                 $labelToDelete = Label::get_label_by_note_id_and_label_name($note->get_Id(), $labelName);
                 $labelToDelete->delete();
                 $labels = Label::get_labels_by_note_id($note->get_Id());
+                $labelsByUser = Label::get_labels_by_user_id($user->get_Id());
                 $labelsToSuggest = $this->get_labels_to_suggest($labelsByUser, $labels);
-                $this->redirect("notes", "edit_labels", $note->get_Id());
-            }
+                $this->redirect("notes", "edit_labels", $noteId);
+            } else if (isset($_POST['add_button']) && trim(($_POST['new_label']) > 0)) {
+                $labelName = ($_POST['new_label']);
+                $errors[] = Label::validate_label($labelName);
 
+                if (empty($errors['label'])) {
+                    var_dump($labelName);
+                    die();
+
+                    $newLabel = new Label($noteId, $labelName);
+                    $newLabel->persist();
+                    $this->redirect("notes", "edit_labels", $noteId);
+                }
+            }
         }
 
         (new View("edit_labels"))->show([
@@ -1045,7 +1058,8 @@ class ControllerNotes extends Controller
             'user' => $user,
             'note_id' => $noteId,
             'labels' => $labels,
-            'labels_to_suggest' => $labelsToSuggest
+            'labels_to_suggest' => $labelsToSuggest,
+            'errors' => $errors
         ]);
     }
 

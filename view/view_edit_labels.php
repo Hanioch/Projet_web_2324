@@ -46,9 +46,12 @@ include("./utils/header_edit_labels.php");
                      ?>
                 </datalist>
             </div>
-            <div id="new_label_error_div">
-                <!-- gestion des erreurs à faire -->
-            </div>
+            <?php if (isset($errors['label'])) : ?>
+                <div id="new_label_error_div" class="error-add-note pt-1">
+                    <?php foreach ($errors['label'] as $error) {
+                        echo $error;
+                    } ?></div>
+            <?php endif; ?>
         </form>
     </div>
 

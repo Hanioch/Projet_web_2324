@@ -93,7 +93,7 @@ class Label extends MyModel {
         $errors = [
             "label" => []
         ];
-        $config = parse_ini_file('C:\PRWB2324\projects\prwb_2324_a04\config\dev.ini', true);
+        $config = parse_ini_file('config/dev.ini', true);
         $label_min_length = $config['Rules']['label_min_length'];
         $label_max_length = $config['Rules']['label_max_length'];
         if (strlen($label) < $label_min_length || strlen($label) > $label_max_length) {
@@ -103,5 +103,12 @@ class Label extends MyModel {
             $errors["label"][] = "Label name cannot contain any space.";
         }
         return $errors;
+    }
+    public function persist()
+    {
+        self::execute(
+            "INSERT INTO note_labels (note, label) VALUES (:note, :label)",
+            ["note" => $this->noteId, "label" => $this->labelName]
+        );
     }
 }
