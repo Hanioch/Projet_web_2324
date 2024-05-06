@@ -5,7 +5,7 @@ require_once "model/User.php";
 require_once "model/Note.php";
 
 class Label extends MyModel {
-    public function __construct(private int $noteId, private string $labelName, private ?int $id = NULL) {}
+    public function __construct(private ?int $noteId, private string $labelName, private ?int $id = NULL) {}
 
     public function get_id(): ?int
     {
@@ -47,6 +47,28 @@ class Label extends MyModel {
         }
         return $labels;
     }
+
+    /*public static function get_labels_by_user_id($userId) {
+        $query = self::execute("SELECT FROM note_labels l, notes n WHERE l.note = n.id AND n.owner = :user_id", ['user_id' => $userId]);
+        $data = $query->fetchAll();
+        $labels = [];
+        foreach ($data as $row) {
+            $labels[] = new Label($row['note'], $row['label']);
+        }
+        return $labels;
+    }*/
+    public static function get_labels_by_user_id($userId) {
+        $query = self::execute("SELECT DISTINCT l.label FROM note_labels l
+                            INNER JOIN notes n ON l.note = n.id
+                            WHERE n.owner = :user_id",
+            ['user_id' => $userId]);
+        $data = $query->fetchAll();
+        $labels = [];
+        foreach ($data as $row) {
+            $labels[] = new Label(null, $row['label']);
+        }
+        return $labels;
+        }
 
     public static function validate_label(string $label): array
     {

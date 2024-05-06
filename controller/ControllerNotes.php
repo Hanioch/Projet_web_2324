@@ -1010,12 +1010,27 @@ class ControllerNotes extends Controller
         $noteId = filter_var($_GET['param1'], FILTER_VALIDATE_INT);
         $note = ChecklistNote::get_note($noteId);
         $labels = Label::get_labels_by_note_id($noteId);
+        $labelsByUser = Label::get_labels_by_user_id($user->get_Id());
+        $labelsToSuggest = [];
+        foreach($labelsByUser as $label){
+            $mustDisplay = true;
+            foreach($labels as $l) {
+                if($label->get_label_name() === $l->get_label_name()) {
+                    $mustDisplay = false;
+                    break;
+                }
+            }
+            if($mustDisplay) {
+                $labelsToSuggest[] = $label;
+            }
+        }
 
         (new View("edit_labels"))->show([
             'note' => $note,
             'user' => $user,
             'note_id' => $noteId,
-            'labels' => $labels
+            'labels' => $labels,
+            'labels_to_suggest' => $labelsToSuggest
         ]);
     }
 }
