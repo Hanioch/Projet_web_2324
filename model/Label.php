@@ -47,6 +47,13 @@ class Label extends MyModel {
         }
         return $labels;
     }
+    public static function get_label_by_note_id_and_label_name($noteId, $labelName) {
+        $query = self::execute("SELECT * FROM note_labels WHERE note = :note_id AND label = :label_name", ['note_id' => $noteId, 'label_name' => $labelName]);
+        $row = $query->fetch();
+
+        return new Label($row['note'], $row['label']);
+    }
+
 
     /*public static function get_labels_by_user_id($userId) {
         $query = self::execute("SELECT FROM note_labels l, notes n WHERE l.note = n.id AND n.owner = :user_id", ['user_id' => $userId]);
@@ -68,7 +75,18 @@ class Label extends MyModel {
             $labels[] = new Label(null, $row['label']);
         }
         return $labels;
+    }
+
+    public function delete(): Label|false
+    {
+        try {
+            self::execute("DELETE FROM note_labels WHERE note = :note AND label = :label", ["note" => $this->get_note_id(), "label" => $this->labelName]);
+            return $this;
+        } catch (\Throwable $th) {
+            return false;
         }
+    }
+
 
     public static function validate_label(string $label): array
     {
