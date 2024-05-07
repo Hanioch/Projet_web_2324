@@ -24,12 +24,21 @@ include('./utils/head.php')
                 <div class="">
                     <?php if ($canEdit) : ?>
                         <?php
+
                         if ($isChecklistNote) {
                             $chevronLink = "./notes/edit_checklist_note/" . $note->get_Id();
                         } else {
                             $chevronLink = "./notes/edit_text_note/" . $note->get_Id();
                         }
                         echo '<a class="navbar-brand" href="' . $chevronLink . '">
+                        <div class="d-inline-block">
+                                <form action="notes/edit_labels/' . $note->get_Id() . '" method="POST" class="navbar-brand">
+                                    <input type="hidden" name="note_id" value="' . $note->get_Id() . '">
+                                    <button type="submit" class="btn-icon" style="background: none; border: none; color: inherit; ">
+                                        <i class="bi bi-tag"></i>
+                                    </button>
+                                </form>
+                            </div>
                        <i class="bi bi-pencil"></i>
                     </a>';
                         ?>
