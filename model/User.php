@@ -404,19 +404,13 @@ class User extends MyModel
         ORDER BY pinned DESC, weight DESC;", ["owner" => $this->id, "filters" => $list_filter]);
 
         $data = $query->fetchAll();
-        $shared_notes = [];
-        $shared_notes["editor"] = [];
-        $shared_notes["reader"] = [];
+        $search_notes = [];
         foreach ($data as $row) {
             $note = $this->get_text_note_or_checklist_note($row);
-            if ($row["editor"] === 1) {
-                $shared_notes["editor"][] = $note;
-            } else {
-                $shared_notes["reader"][] = $note;
-            }
+            $search_notes[] = $note;
         }
 
-        return $shared_notes;
+        return $search_notes;
     }
 
     public function get_heaviest_note($pinned = NULL, $archived = NULL): int
