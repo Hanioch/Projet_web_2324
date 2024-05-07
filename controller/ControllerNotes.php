@@ -1041,8 +1041,6 @@ class ControllerNotes extends Controller
                 $this->redirect("notes", "edit_labels", $noteId);
             } else if (isset($_POST['add_button']) && (trim(($_POST['new_label']) > 0) || ($_POST['new_label']) === "")) {
                 $labelName = ($_POST['new_label']);
-                var_dump("$labelName");
-                die();
                 $errors = Label::validate_label($labelName, $noteId);
 
                 if (empty($errors['label'])) {
