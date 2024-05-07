@@ -175,12 +175,40 @@ class ControllerNotes extends Controller
     }
     public function search(): void
     {
-        //d'abord check si on recoit qlq chose si oui on rajoute dans la liste de filtre
         $list_filter = [];
+
+        foreach ($_POST as $filter => $value) {
+            if ($value === "on") {
+                $list_filter[] = $filter;
+            }
+        }
+        //d'abord check si on recoit qlq chose si oui on rajoute dans la liste de filtre
         $user = $this->get_user_or_redirect();
-        $notes_searched = $user->get_notes_searched($list_filter);
+        $notes_searched["personal"] = $user->get_notes_searched($list_filter);
         $users_shared_notes = $user->get_users_shared_note();
-        (new View("search"))->show(["notes_searched" => $notes_searched, "users_shared_notes" => $users_shared_notes]);
+        $list_label = $user->get_filter_list();
+        $new_list_label = [];
+
+        foreach ($list_label as $label) {
+            $checked = false;
+            foreach ($list_filter as $filter) {
+                if ($filter === $label) {
+                    $checked = true;
+                }
+            }
+            $new_list_label[$label] = $checked;
+        }
+
+        $notes_searched["shared"] = [];
+
+        foreach ($users_shared_notes as $u) {
+            $note_by_someone = $user->get_notes_with_label_shared_by($u->get_Id(), $list_filter);
+            if (count($note_by_someone) > 0) {
+                $notes_searched["shared"][$u->get_Full_Name()] = $note_by_someone;
+            }
+        }
+
+        (new View("search"))->show(["notes_searched" => $notes_searched, "users_shared_notes" => $users_shared_notes, "list_label" => $new_list_label]);
     }
 
     public function shared_by(): void
