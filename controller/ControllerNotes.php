@@ -1062,16 +1062,23 @@ class ControllerNotes extends Controller
     }
 
     public function remove_label_service(): void {
+        $user = $this->get_user_or_redirect();
         $noteId = $_POST['note_id'];
         $labelName = $_POST['label_name'];
         $labelToDelete = Label::get_label_by_note_id_and_label_name($noteId, $labelName);
         $labelToDelete->delete();
 
         $labels = Label::get_labels_by_note_id($noteId);
+        $labelsByUser = Label::get_labels_by_user_id($user->get_Id());
+        $labelsToSuggest = $this->get_labels_to_suggest($labelsByUser, $labels);
+
         $table = [];
         /** @var Label $l */
         foreach ($labels as $l) {
-            $table[] = $l->get_label_name();
+            $table["labels"][] = $l->get_label_name();
+        }
+        foreach ($labelsToSuggest as $l) {
+            $table["suggestions"][] = $l;
         }
 
         echo json_encode($table);
@@ -1079,47 +1086,26 @@ class ControllerNotes extends Controller
 
     public function add_label_service()
     {
+        $user = $this->get_user_or_redirect();
         $noteId = $_POST['note_id'];
         $newLabelName = $_POST['new_label'];
         $label = new Label($noteId, $newLabelName);
         $label->persist();
 
         $labelsToDisplay = Label::get_labels_by_note_id($noteId);
-        $table = [];
+        $labelsByUser = Label::get_labels_by_user_id($user->get_Id());
+        $labelsToSuggest = $this->get_labels_to_suggest($labelsByUser, $labelsToDisplay);
 
+        $table = [];
         /** @var Label $l */
         foreach ($labelsToDisplay as $l) {
-            $table[] = $l->get_label_name();
+            $table["labels"][] = $l->get_label_name();
+        }
+        foreach ($labelsToSuggest as $l) {
+            $table["suggestions"][] = $l;
         }
 
         echo json_encode($table);
-
-
-
-
-
-
-
-
-        /*$noteId = $_POST['note_id'];
-        $note = ChecklistNote::get_note($noteId);
-        $checklist_note = new ChecklistNote($note->get_Title(), $note->get_Owner(), $note->is_Pinned(), $note->is_Archived(), $note->get_Weight(), $note->get_Id());
-        $errors = [];
-        $this->add_item($checklist_note, $errors);
-
-        $items = ChecklistNoteItems::get_items_by_checklist_note_id($noteId);
-        $table = [];
-        /** @var CheckListNoteItems $i
-        foreach ($items as $i) {
-            $row = [];
-            $row["content"] = $i->get_content();
-            $row["checked"] = $i->is_Checked();
-            $row["checklist_note"] = $i->get_ChecklistNote();
-            $row["id"] = $i->get_Id();
-            $table[] = $row;
-        }
-
-        echo json_encode($table);*/
     }
 
 }
