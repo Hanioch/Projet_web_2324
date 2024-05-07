@@ -89,7 +89,7 @@ CREATE TABLE `note_labels` (
 
 LOCK TABLES `note_labels` WRITE;
 /*!40000 ALTER TABLE `note_labels` DISABLE KEYS */;
-INSERT INTO `note_labels` VALUES (21,'Maison'),(21,'Priv&eacute;'),(22,'Travail'),(23,'Maison'),(23,'Priv&eacute;'),(23,'Travail'),(24,'Loisirs'),(24,'Maison'),(25,'Travail'),(27,'Loisirs'),(27,'Maison'),(27,'Travail'),(29,'Travail');
+INSERT INTO `note_labels` VALUES (21,'Maison'),(21,'Privé'),(22,'Travail'),(23,'Maison'),(23,'Privé'),(23,'Travail'),(24,'Loisirs'),(24,'Maison'),(25,'Travail'),(27,'Loisirs'),(27,'Maison'),(27,'Travail'),(29,'Travail');
 /*!40000 ALTER TABLE `note_labels` ENABLE KEYS */;
 UNLOCK TABLES;
 
