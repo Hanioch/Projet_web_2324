@@ -173,6 +173,43 @@ class ControllerNotes extends Controller
         $users_shared_notes = $user->get_users_shared_note();
         (new View("archives"))->show(["notes_archives" => $notes_archives, "users_shared_notes" => $users_shared_notes]);
     }
+    public function search(): void
+    {
+        $list_filter = [];
+
+        foreach ($_POST as $filter => $value) {
+            if ($value === "on") {
+                $list_filter[] = $filter;
+            }
+        }
+        //d'abord check si on recoit qlq chose si oui on rajoute dans la liste de filtre
+        $user = $this->get_user_or_redirect();
+        $notes_searched["personal"] = $user->get_notes_searched($list_filter);
+        $users_shared_notes = $user->get_users_shared_note();
+        $list_label = $user->get_filter_list();
+        $new_list_label = [];
+
+        foreach ($list_label as $label) {
+            $checked = false;
+            foreach ($list_filter as $filter) {
+                if ($filter === $label) {
+                    $checked = true;
+                }
+            }
+            $new_list_label[$label] = $checked;
+        }
+
+        $notes_searched["shared"] = [];
+
+        foreach ($users_shared_notes as $u) {
+            $note_by_someone = $user->get_notes_with_label_shared_by($u->get_Id(), $list_filter);
+            if (count($note_by_someone) > 0) {
+                $notes_searched["shared"][$u->get_Full_Name()] = $note_by_someone;
+            }
+        }
+
+        (new View("search"))->show(["notes_searched" => $notes_searched, "users_shared_notes" => $users_shared_notes, "list_label" => $new_list_label]);
+    }
 
     public function shared_by(): void
     {
@@ -811,7 +848,7 @@ class ControllerNotes extends Controller
 
         /** @var $i ChecklistNoteItems*/
         foreach ($items as $i) {
-            if(strtoupper($i->get_content()) === strtoupper($content)) {
+            if (strtoupper($i->get_content()) === strtoupper($content)) {
                 $errors['new_item'] = "Item already exists.";
             } else if (trim($content) === "") {
                 $errors['new_item'] = "Item cannot be empty.";
@@ -828,7 +865,7 @@ class ControllerNotes extends Controller
         $note = ChecklistNote::get_note($noteId);
         $item = ChecklistNoteItems::get_checklist_note_item_by_id($itemId);
 
-        $item ->delete();
+        $item->delete();
     }
 
     public function add_item_service()
@@ -1003,17 +1040,18 @@ class ControllerNotes extends Controller
         header('Content-Type: application/json');
         echo json_encode(['unique' => $isUnique]);
     }
-    private static function get_labels_to_suggest($labelsByUser, $labels): array {
+    private static function get_labels_to_suggest($labelsByUser, $labels): array
+    {
         $res = [];
-        foreach($labelsByUser as $label){
+        foreach ($labelsByUser as $label) {
             $mustDisplay = true;
-            foreach($labels as $l) {
-                if($label->get_label_name() === $l->get_label_name()) {
+            foreach ($labels as $l) {
+                if ($label->get_label_name() === $l->get_label_name()) {
                     $mustDisplay = false;
                     break;
                 }
             }
-            if($mustDisplay) {
+            if ($mustDisplay) {
                 $res[] = $label->get_label_name();
             }
         }
@@ -1030,7 +1068,7 @@ class ControllerNotes extends Controller
         $labelsByUser = Label::get_labels_by_user_id($user->get_Id());
         $labelsToSuggest = $this->get_labels_to_suggest($labelsByUser, $labels);
         $errors = [];
-        if($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (isset($_POST['remove_button'])) {
                 $labelName = ($_POST['remove_button']);
                 $labelToDelete = Label::get_label_by_note_id_and_label_name($note->get_Id(), $labelName);

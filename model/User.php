@@ -374,8 +374,10 @@ class User extends MyModel
         $shared_notes = [];
         $shared_notes["editor"] = [];
         $shared_notes["reader"] = [];
+
         foreach ($data as $row) {
             $note = $this->get_text_note_or_checklist_note($row);
+
             if ($row["editor"] === 1) {
                 $shared_notes["editor"][] = $note;
             } else {
@@ -383,7 +385,135 @@ class User extends MyModel
             }
         }
 
+
         return $shared_notes;
+    }
+    public function get_notes_with_label_shared_by($sender_id, $list_filter): array
+    {
+        $params = ["owner" => $this->id, "sender" => $sender_id];
+
+        if (!empty($list_filter)) {
+            // Convertir la liste de filtres en une chaîne de caractères pour la clause IN
+            $filters_string = implode(',', array_map(function ($i) use ($list_filter) {
+                return ":filter$i";
+            }, range(0, count($list_filter) - 1)));
+            // Ajouter les paramètres pour les filtres
+            foreach ($list_filter as $index => $filter) {
+                $params[":filter$index"] = $filter;
+            }
+            // Ajouter la condition pour les filtres
+            $labels_condition = 'AND n.id IN (SELECT note FROM note_labels WHERE label IN (' . $filters_string . ')
+                              GROUP BY note HAVING COUNT(DISTINCT label) = ' . count($list_filter) . ')';
+        } else {
+            // Si la liste de filtres est vide, construire une requête pour récupérer toutes les notes ayant au moins un label
+            $labels_condition = 'AND EXISTS (SELECT 1 FROM note_labels WHERE note_labels.note = n.id)';
+        }
+
+        $query = self::execute(
+            "SELECT
+        n.*,
+        tn.content AS text_content,
+        cn.id AS checklist_id,
+        ns.editor,
+        GROUP_CONCAT(cni.id) AS checklist_items,
+        GROUP_CONCAT(nl.label) AS labels
+        FROM notes n
+        LEFT JOIN text_notes tn ON n.id = tn.id
+        LEFT JOIN checklist_notes cn ON n.id = cn.id
+        LEFT JOIN checklist_note_items cni ON cn.id = cni.checklist_note
+        LEFT JOIN note_shares ns ON n.id = ns.note
+        LEFT JOIN note_labels nl ON n.id = nl.note
+        WHERE ns.user = :owner AND n.owner = :sender $labels_condition
+        GROUP BY n.id, n.title, n.owner, n.created_at, n.edited_at, n.pinned, n.archived, n.weight,tn.content,cn.id,ns.editor
+        ORDER BY weight DESC;",
+            $params
+        );
+
+        $data = $query->fetchAll();
+        $shared_notes = [];
+
+        foreach ($data as $row) {
+            if (empty($list_filter) || count(array_intersect($list_filter, explode(',', $row['labels']))) == count($list_filter)) {
+                $note = $this->get_text_note_or_checklist_note($row);
+                $shared_notes[] = $note;
+            }
+        }
+
+        return $shared_notes;
+    }
+
+    public function get_notes_searched($list_filter): array
+    {
+        //PAS FAN du tout SI on peut tout chnger on change tout
+        $params = ["owner" => $this->id];
+
+        if (!empty($list_filter)) {
+            // Convertir la liste de filtres en une chaîne de caractères pour la clause IN
+            $filters_string = implode(',', array_map(function ($i) use ($list_filter) {
+                return ":filter$i";
+            }, range(0, count($list_filter) - 1)));
+            // Ajouter les paramètres pour les filtres
+            foreach ($list_filter as $index => $filter) {
+                $params[":filter$index"] = $filter;
+            }
+            // Ajouter la condition pour les filtres
+            $labels_condition = 'AND n.id IN (SELECT note FROM note_labels WHERE label IN (' . $filters_string . ')
+                              GROUP BY note HAVING COUNT(DISTINCT label) = ' . count($list_filter) . ')';
+        } else {
+            // Si la liste de filtres est vide, construire une requête pour récupérer toutes les notes ayant au moins un label
+            $labels_condition = 'AND EXISTS (SELECT 1 FROM note_labels WHERE note_labels.note = n.id)';
+        }
+
+        $query = self::execute("SELECT
+            n.*,
+            tn.content AS text_content,
+            cn.id AS checklist_id,
+            GROUP_CONCAT(cni.id) AS checklist_items,
+            GROUP_CONCAT(nl.label) AS labels
+            FROM notes n
+            LEFT JOIN text_notes tn ON n.id = tn.id
+            LEFT JOIN checklist_notes cn ON n.id = cn.id
+            LEFT JOIN checklist_note_items cni ON cn.id = cni.checklist_note
+            LEFT JOIN note_labels nl ON n.id = nl.note
+            WHERE n.owner = :owner $labels_condition
+            GROUP BY n.id, n.title, n.owner, n.created_at, n.edited_at, n.pinned, n.archived, n.weight, tn.content, cn.id
+            ORDER BY weight DESC;", $params);
+
+        $data = $query->fetchAll();
+        $search_notes = [];
+
+        foreach ($data as $row) {
+            // Vérifier si la note contient tous les labels filtrés
+            if (empty($list_filter) || count(array_intersect($list_filter, explode(',', $row['labels']))) == count($list_filter)) {
+                $note = $this->get_text_note_or_checklist_note($row);
+                $search_notes[] = $note;
+            }
+        }
+
+        return $search_notes;
+    }
+    public function get_filter_list(): array
+    {
+        //pas sur du where
+        $query = self::execute(
+            "SELECT
+            DISTINCT nl.label
+            FROM notes n
+            LEFT JOIN note_labels nl ON n.id = nl.note
+            LEFT JOIN note_shares ns ON n.id = ns.note
+            WHERE n.owner = :owner OR ns.user!= :owner ;",
+            ["owner" => $this->id]
+        );
+
+        $data = $query->fetchAll();
+        $filter_list = [];
+        foreach ($data as $row) {
+            if ($row["label"]) {
+                $filter_list[] = $row["label"];
+            }
+        }
+
+        return $filter_list;
     }
 
     public function get_heaviest_note($pinned = NULL, $archived = NULL): int
