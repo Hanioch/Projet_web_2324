@@ -1,7 +1,7 @@
 $(() => {
     handleKeyPress();
     handleClick();
-    $("#add_button").prop("disabled", false);
+    $("#add_button").prop("disabled", true);
 
     function handleClick() {
         handleRemoveClick();
@@ -32,6 +32,7 @@ function handleRemoveClick() {
                     labelsToSuggest = jsonResponse.suggestions;
                 }
                 refreshDataList(labelsToSuggest);
+                handleKeyPress();
             });
         });
     });
@@ -54,6 +55,8 @@ function handleAddClick() {
             $("#list_labels").html(html);
             $("#add_label").val("");
             handleRemoveClick();
+            handleKeyPress();
+            $("#add_button").prop("disabled", true);
 
             labelsToSuggest = [];
             if("suggestions" in jsonResponse) {
@@ -67,24 +70,33 @@ function handleAddClick() {
 
 // fonction pour gérer la frappe clavier dans le champ new_label
 function handleKeyPress() {
-
-
-
-
-
-
-
-
-
-    $("#add_item").keyup(function () {
+    $("#add_label").keyup(function () {
         let content = $(this).val();
         $.ajax({
-            url: "notes/check_new_item_service",
+            url: "notes/check_new_label_service",
             method: "POST",
             data: { note_id: noteId, content: content },
         }).done(function (response) {
             let jsonResponse = JSON.parse(response);
-            if ("new_item" in jsonResponse) {
+            html = "";
+            if(jsonResponse.label.length !== 0) {
+                $("#add_button").prop("disabled", true);
+                for (let error of jsonResponse.label) {
+                    html += "<div id=\"new_label_error_div\" class=\"error-add-note pt-1\">";
+                    html += error;
+                    html += "</div>";
+                }
+                $("#error_div").html(html);
+            } else {
+                $("#add_button").prop("disabled", false);
+                $("#error_div").html("");
+            }
+
+
+
+
+
+            /*if ("new_item" in jsonResponse) {
                 if ($("#add_item").val() === "") {
                     $("#new_item_error").remove();
                     $("#add_item").removeClass("is-invalid");
@@ -104,7 +116,7 @@ function handleKeyPress() {
                 $("#add_item").removeClass("is-invalid");
                 $("#add_item").addClass("is-valid");
                 $("#add_button").prop("disabled", false);
-            }
+            }*/
         });
     });
 }

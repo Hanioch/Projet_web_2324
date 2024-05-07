@@ -1108,4 +1108,13 @@ class ControllerNotes extends Controller
         echo json_encode($table);
     }
 
+    public function check_new_label_service()
+    {
+        $content = $_POST['content'];
+        $noteId = $_POST['note_id'];
+        $errors = Label::validate_label( $content, $noteId);
+
+        echo json_encode($errors);
+    }
+
 }
