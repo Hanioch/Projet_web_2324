@@ -32,13 +32,13 @@ include('./utils/head.php')
                         }
                         echo '<a class="navbar-brand" href="' . $chevronLink . '">
                         <div class="d-inline-block">
-                                <form action="notes/edit_labels/' . $note->get_Id() . '" method="POST" class="navbar-brand">
-                                    <input type="hidden" name="note_id" value="' . $note->get_Id() . '">
-                                    <button type="submit" class="btn-icon" style="background: none; border: none; color: inherit; ">
-                                        <i class="bi bi-tag"></i>
-                                    </button>
-                                </form>
-                            </div>
+                            <form action="notes/edit_labels/' . $note->get_Id() . '" method="POST" class="navbar-brand">
+                                <input type="hidden" name="note_id" value="' . $note->get_Id() . '">
+                                <button type="submit" class="btn-icon" style="background: none; border: none; color: inherit; ">
+                                    <i class="bi bi-tag"></i>
+                                </button>
+                            </form>
+                        </div>
                        <i class="bi bi-pencil"></i>
                     </a>';
                         ?>
