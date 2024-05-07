@@ -26,6 +26,10 @@ include('./utils/head.php')
                         "url" => $base_url
                     );
                     $nav_list[] = array(
+                        "title" => Page::Search->value,
+                        "url" => $base_url . "search"
+                    );
+                    $nav_list[] = array(
                         "title" => Page::Archives->value,
                         "url" => $base_url . "archives"
                     );

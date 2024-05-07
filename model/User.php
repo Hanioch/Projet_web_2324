@@ -385,6 +385,39 @@ class User extends MyModel
 
         return $shared_notes;
     }
+    public function get_notes_searched($list_filter): array
+    //TODO TESTTTTT
+    {
+        $query = self::execute("SELECT
+        n.*,
+        tn.content AS text_content,
+        cn.id AS checklist_id,
+        ns.editor,
+        GROUP_CONCAT(cni.id) AS checklist_items
+        FROM notes n
+        LEFT JOIN text_notes tn ON n.id = tn.id
+        LEFT JOIN checklist_notes cn ON n.id = cn.id
+        LEFT JOIN checklist_note_items cni ON cn.id = cni.checklist_note
+        LEFT JOIN note_labels nl ON n.id = nl.note
+        WHERE n.owner = :owner AND(:filters IS NULL OR nl.label IN (:filters))
+        GROUP BY n.id, n.title, n.owner, n.created_at, n.edited_at, n.pinned, n.archived, n.weight,tn.content,cn.id,ns.editor
+        ORDER BY pinned DESC, weight DESC;", ["owner" => $this->id, "filters" => $list_filter]);
+
+        $data = $query->fetchAll();
+        $shared_notes = [];
+        $shared_notes["editor"] = [];
+        $shared_notes["reader"] = [];
+        foreach ($data as $row) {
+            $note = $this->get_text_note_or_checklist_note($row);
+            if ($row["editor"] === 1) {
+                $shared_notes["editor"][] = $note;
+            } else {
+                $shared_notes["reader"][] = $note;
+            }
+        }
+
+        return $shared_notes;
+    }
 
     public function get_heaviest_note($pinned = NULL, $archived = NULL): int
     {

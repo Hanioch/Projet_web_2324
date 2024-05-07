@@ -50,17 +50,17 @@ function show_note(array $arr_notes, string $title, string $titlePage): void
                     </div>
                     <div class="form-check">
                         <?php
-                            $labels = Label::get_labels_by_note_id($note->get_Id());
-                            if(!empty($labels)) {?>
-                            <form action="notes/edit_labels/<?=$note->get_Id()?>" method="POST" class="navbar-brand d-inline-block">
+                        $labels = Label::get_labels_by_note_id($note->get_Id());
+                        if (!empty($labels)) { ?>
+                            <form action="notes/edit_labels/<?= $note->get_Id() ?>" method="POST" class="navbar-brand d-inline-block">
                                 <input type="hidden" name="note_id" value="<?= $note->get_Id() ?>">
                                 <button type="submit" class="btn-icon" style="background: none; border: none; color: inherit; ">
                                     <i class="bi bi-tag"></i>
                                 </button>
                             </form>
-                        <?php }?>
+                        <?php } ?>
                         <?php
-                        foreach ($labels as $label) {?>
+                        foreach ($labels as $label) { ?>
                             <span class="badge rounded-pill bg-secondary opacity-50"><?= $label->get_label_name() ?></span>
                         <?php }
                         ?>
@@ -111,4 +111,5 @@ enum Page: string
     case Archives = "My archives";
     case Shared_by = "Shared by";
     case Settings = "Settings";
+    case Search = "Search";
 }; ?>
