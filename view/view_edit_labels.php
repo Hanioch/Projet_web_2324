@@ -20,7 +20,7 @@ include("./utils/header_edit_labels.php");
                             <?php }
                         ?>
                         <?php foreach ($labels as $label) : ?>
-                            <li class="list-unstyled" id="list_labels_<?= $label->get_id() ?>">
+                            <li class="list-unstyled" id="list_labels_<?= $label->get_label_name() ?>">
                                 <div class="input-group pt-3 has-validation">
                                     <input readonly value="<?= $label->get_label_name() ?>" type="text" name="label<?php echo $label->get_id() ?>" class="form-control bg-secondary text-white bg-opacity-25 border-secondary" id="label<?php echo $label->get_id() ?>" >
                                     <button name="remove_button" value="<?= $label->get_label_name() ?>" class="btn btn-danger btn-lg rounded-end  border-secondary" type="submit">
@@ -61,10 +61,11 @@ include("./utils/header_edit_labels.php");
     </div>
 
     <script>
-        const pageName = "editChecklistnote";
+        const pageName = "editLabels";
         const urlToRedirect = "<?= $back_url ?>"
         const noteId = <?= $note->get_Id() ?>
     </script>
     <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="js/scriptEditLabels.js"></script>
 
 <?php include('./utils/footer.php'); ?>

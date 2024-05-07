@@ -1061,78 +1061,65 @@ class ControllerNotes extends Controller
         ]);
     }
 
-    /*
-    public function edit_checklist_note(): void
-    {
-        $is_javascript_request = isset($_POST["noteId"]);
-        $errors = [];
-        $shared_note_id = NULL;
-        $note_id = $is_javascript_request ? intval($_POST["noteId"]) : $_GET['param1'];
-        $user = $this->get_user_or_redirect();
-        $user_id = $user->get_Id();
-        $note = ChecklistNote::get_note($note_id);
-        $items = ChecklistNoteItems::get_items_by_checklist_note_id($note_id);
+    public function remove_label_service(): void {
+        $noteId = $_POST['note_id'];
+        $labelName = $_POST['label_name'];
+        $labelToDelete = Label::get_label_by_note_id_and_label_name($noteId, $labelName);
+        $labelToDelete->delete();
 
-        //On verifie les erreurs.
-        if (!($note instanceof Note)) {
-            //la checklist note n'existe pas.
-            (new View("error"))->show(["error" => "Page doesn't exist."]);
-            return;
+        $labels = Label::get_labels_by_note_id($noteId);
+        $table = [];
+        /** @var Label $l */
+        foreach ($labels as $l) {
+            $table[] = $l->get_label_name();
         }
 
-        foreach ($items as $item) {
-            if (!($item instanceof ChecklistNoteItems)) {
-                // un item n'existe pas.
-                (new View("error"))->show(["error" => "Page doesn't exist."]);
-                return;
-            }
-        }
-
-        $is_shared_note = NoteShare::is_Note_Shared_With_User($note_id, $user_id);
-        $can_edit = $is_shared_note ? NoteShare::can_Edit($note_id, $user_id)  : true;
-
-        if ($is_shared_note) {
-            $shared_note_id = $note->get_Owner()->get_Id();
-        }
-
-        $canAccess = ($note->get_Owner()->get_Id() === $user_id) || ($is_shared_note && $can_edit);
-        if (!$canAccess) {
-            (new View("error"))->show(["error" => "Page doesn't exist."]);
-            return;
-        }
-
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-            $checklist_note = new ChecklistNote($note->get_Title(), $note->get_Owner(), $note->is_Pinned(), $note->is_Archived(), $note->get_Weight(), $note->get_Id());
-            if (isset($_POST['save_button'])) {
-                $errors = $this->edit_title($note, $errors);
-                $errors = array_merge($errors, $this->edit_items($note, $errors));
-            } else if (isset($_POST['add_button'])) {
-                $errors = $this->add_item($checklist_note, $errors);
-                if (empty($errors)) {
-                    $items = ChecklistNoteItems::get_items_by_checklist_note_id($note_id);
-                    $errors = array_merge($errors, $this->edit_title($note, $errors));
-                    $this->redirect("notes", "edit_checklist_note", $note->get_Id());
-                }
-            } else if (isset($_POST['remove_button'])) {
-                $item = ChecklistNoteItems::get_checklist_note_item_by_id($_POST['remove_button']);
-                $item->delete();
-                $items = ChecklistNoteItems::get_items_by_checklist_note_id($note_id);
-                $errors = $this->edit_title($note, $errors);
-                $this->redirect("notes", "edit_checklist_note", $note->get_Id());
-            }
-            $note = ChecklistNote::get_note($note_id);
-            if (empty($errors) && isset($_POST['save_button'])) {
-                $this->redirect("notes", "open_note", $note->get_Id());
-            }
-        }
-
-        (new View("edit_checklist_note"))->show([
-            'note' => $note,
-            'items' => $items,
-            'shared_note_id' => $shared_note_id,
-            'errors' => $errors
-        ]);
+        echo json_encode($table);
     }
-    */
+
+    public function add_label_service()
+    {
+        $noteId = $_POST['note_id'];
+        $newLabelName = $_POST['new_label'];
+        $label = new Label($noteId, $newLabelName);
+        $label->persist();
+
+        $labelsToDisplay = Label::get_labels_by_note_id($noteId);
+        $table = [];
+
+        /** @var Label $l */
+        foreach ($labelsToDisplay as $l) {
+            $table[] = $l->get_label_name();
+        }
+
+        echo json_encode($table);
+
+
+
+
+
+
+
+
+        /*$noteId = $_POST['note_id'];
+        $note = ChecklistNote::get_note($noteId);
+        $checklist_note = new ChecklistNote($note->get_Title(), $note->get_Owner(), $note->is_Pinned(), $note->is_Archived(), $note->get_Weight(), $note->get_Id());
+        $errors = [];
+        $this->add_item($checklist_note, $errors);
+
+        $items = ChecklistNoteItems::get_items_by_checklist_note_id($noteId);
+        $table = [];
+        /** @var CheckListNoteItems $i
+        foreach ($items as $i) {
+            $row = [];
+            $row["content"] = $i->get_content();
+            $row["checked"] = $i->is_Checked();
+            $row["checklist_note"] = $i->get_ChecklistNote();
+            $row["id"] = $i->get_Id();
+            $table[] = $row;
+        }
+
+        echo json_encode($table);*/
+    }
+
 }
