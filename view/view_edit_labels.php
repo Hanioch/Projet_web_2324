@@ -55,7 +55,9 @@ include("./utils/header_edit_labels.php");
                 <?php if (isset($errors['label'])) : ?>
                     <div id="new_label_error_div" class="error-add-note pt-1">
                         <?php foreach ($errors['label'] as $error) {
-                            echo $error;
+                            ?> <div> <?php
+                                echo $error;
+                            ?> </div> <?php
                         } ?></div>
                 <?php endif; ?>
             </div>
