@@ -495,13 +495,23 @@ class User extends MyModel
     public function get_filter_list(): array
     {
         //pas sur du where
-        $query = self::execute(
+        /*$query = self::execute(
             "SELECT
             DISTINCT nl.label
             FROM notes n
             LEFT JOIN note_labels nl ON n.id = nl.note
             LEFT JOIN note_shares ns ON n.id = ns.note
             WHERE n.owner = :owner OR ns.user!= :owner ;",
+            ["owner" => $this->id]
+        );*/
+
+        $query = self::execute(
+            "SELECT DISTINCT
+             nl.label
+            FROM note_labels nl 
+            LEFT JOIN notes n ON n.id = nl.note
+            LEFT JOIN note_shares ns ON ns.note = n.id
+            WHERE n.owner = :owner OR (ns.user = :owner AND ns.editor = 1);",
             ["owner" => $this->id]
         );
 
