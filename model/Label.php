@@ -125,4 +125,11 @@ class Label extends MyModel {
             ["note" => $this->noteId, "label" => $this->labelName]
         );
     }
+
+    public static function fix_label_format($content) : string {
+        if(strlen($content) > 0) {
+            $content = ucfirst($content);
+        }
+        return $content;
+    }
 }

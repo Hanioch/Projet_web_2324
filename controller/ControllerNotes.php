@@ -1078,7 +1078,7 @@ class ControllerNotes extends Controller
                 $labelsToSuggest = $this->get_labels_to_suggest($labelsByUser, $labels);
                 $this->redirect("notes", "edit_labels", $noteId);
             } else if (isset($_POST['add_button']) && (trim(($_POST['new_label']) > 0) || ($_POST['new_label']) === "")) {
-                $labelName = ($_POST['new_label']);
+                $labelName = Label::fix_label_format($_POST['new_label']);
                 $errors = Label::validate_label($labelName, $noteId);
 
                 if (empty($errors['label'])) {
@@ -1126,7 +1126,7 @@ class ControllerNotes extends Controller
     {
         $user = $this->get_user_or_redirect();
         $noteId = $_POST['note_id'];
-        $newLabelName = $_POST['new_label'];
+        $newLabelName = Label::fix_label_format($_POST['new_label']);
         $label = new Label($noteId, $newLabelName);
         $label->persist();
 
@@ -1148,9 +1148,9 @@ class ControllerNotes extends Controller
 
     public function check_new_label_service()
     {
-        $content = $_POST['content'];
+        $content = Label::fix_label_format($_POST['content']);
         $noteId = $_POST['note_id'];
-        $errors = Label::validate_label( $content, $noteId);
+        $errors = Label::validate_label($content, $noteId);
 
         echo json_encode($errors);
     }
