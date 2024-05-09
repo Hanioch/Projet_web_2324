@@ -14,6 +14,7 @@ $shared_notes = $notes_searched['shared'];
 ?>
 <?php
 if (count($list_label) > 0) {
+    ksort($list_label);
 ?>
     <h3 class="title-note">Search notes by tags :</h3>
     <form action="notes/search" method="post">
