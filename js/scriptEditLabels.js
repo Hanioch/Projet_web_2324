@@ -80,15 +80,26 @@ function handleKeyPress() {
             let jsonResponse = JSON.parse(response);
             html = "";
             if(jsonResponse.label.length !== 0) {
-                $("#add_button").prop("disabled", true);
-                for (let error of jsonResponse.label) {
-                    html += "<div id=\"new_label_error_div\" class=\"error-add-note pt-1\">";
-                    html += error;
-                    html += "</div>";
+                if($("#add_label").val() === "") {
+                    $("#add_button").prop("disabled", true);
+                    $("#add_label").removeClass("is-valid");
+                    $("#add_label").removeClass("is-invalid");
+                    $("#error_div").html("");
+                } else {
+                    $("#add_button").prop("disabled", true);
+                    $("#add_label").addClass("is-invalid");
+                    $("#add_label").removeClass("is-valid");
+                    for (let error of jsonResponse.label) {
+                        html += "<div id=\"new_label_error_div\" class=\"error-add-note pt-1\">";
+                        html += error;
+                        html += "</div>";
+                    }
                 }
                 $("#error_div").html(html);
             } else {
                 $("#add_button").prop("disabled", false);
+                $("#add_label").addClass("is-valid");
+                $("#add_label").removeClass("is-invalid");
                 $("#error_div").html("");
             }
 
