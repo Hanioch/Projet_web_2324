@@ -511,7 +511,8 @@ class User extends MyModel
             FROM note_labels nl 
             LEFT JOIN notes n ON n.id = nl.note
             LEFT JOIN note_shares ns ON ns.note = n.id
-            WHERE n.owner = :owner OR (ns.user = :owner AND ns.editor = 1);",
+            WHERE n.owner = :owner OR ns.user = :owner 
+            ORDER BY LOWER(nl.label) ASC;",
             ["owner" => $this->id]
         );
 

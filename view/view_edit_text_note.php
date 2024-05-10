@@ -30,7 +30,12 @@ include("./utils/header_add_note.php");
     </div>
     <!-- fin modal -->
 
-    <form id="<?= $id_form ?>" action="notes/edit_text_note/<?= $note->get_Id() ?>" method="post">
+    <?php
+    $action_form = "notes/edit_text_note/" . $note->get_Id();
+    if ($is_list_filter_exist) $action_form .= "/" . $list_filter_encoded;
+    ?>
+
+    <form id="<?= $id_form ?>" action="<?= $action_form ?>" method="post">
         <div class="card-header text-white mb-2 fst-italic fs-6">
             <span style="font-size: 0.8em;">Created <?= Note::time_elapsed_string($note->get_Created_At()) ?> . </span>
             <?php if ($note->get_Edited_At() !== null) : ?>

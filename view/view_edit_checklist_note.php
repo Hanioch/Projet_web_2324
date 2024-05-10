@@ -29,8 +29,12 @@ include("./utils/header_add_note.php");
         </div>
     </div>
     <!-- fin modal -->
+    <?php
+    $action_form = "notes/edit_checklist_note/" . $note->get_Id();
+    if ($is_list_filter_exist) $action_form .= "/" . $list_filter_encoded;
+    ?>
 
-    <form id="<?= $id_form ?>" class="p-3 text-white " action="notes/edit_checklist_note/<?= $note->get_Id() ?>" method="post">
+    <form id="<?= $id_form ?>" class="p-3 text-white " action="<?= $action_form ?>" method="post">
         <div class="mb-3">
             <div class="card-header text-white mb-2 fst-italic fs-6">
                 <span style="font-size: 0.8em;">Created <?= Note::time_elapsed_string($note->get_Created_At()) ?> . </span>
