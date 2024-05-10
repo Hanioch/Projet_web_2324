@@ -4,16 +4,21 @@ function show_note(array $arr_notes, string $title, string $titlePage): void
 ?>
     <h4 class="title-note"><?= $title ?></h4>
     <?php
+    $is_param_exist = isset($_GET["param1"]);
+    $param = $is_param_exist ? $_GET["param1"] : "";
+
     $numList = $title === "Pinned" ? 1 : 2;
     ?>
     <ul id="sortable<?= $numList ?>" class="list-note connectedSortable">
         <?php
         for ($i = 0; $i < count($arr_notes); $i++) {
             $note = $arr_notes[$i];
-            $openNoteUrl = "./Notes/open_note/" . $note->get_Id();
+            $open_note_url = "./Notes/open_note/" . $note->get_Id();
+
+            if ($is_param_exist) $open_note_url = $open_note_url . "/" . $param;
         ?>
             <li id="<?= $note->get_Id() ?>" class="note ui-state-<?= $numList === 1 ? "default" : "highlight" ?>ui-state-default">
-                <a href="<?= $openNoteUrl ?>" class="link-open-note">
+                <a href="<?= $open_note_url ?>" class="link-open-note">
                     <div class="header-in-note"><?= $note->get_Title() ?></div>
                     <div class="body-note">
                         <?php
