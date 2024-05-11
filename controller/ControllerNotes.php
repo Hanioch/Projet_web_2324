@@ -416,6 +416,7 @@ class ControllerNotes extends Controller
                     $this->redirect("notes", "edit_checklist_note", $note->get_Id());
             }
             $note = ChecklistNote::get_note($note_id);
+
             if (empty($errors) && isset($_POST['save_button'])) {
 
                 $is_list_filter_exist = isset($_GET["param2"]);
@@ -484,8 +485,7 @@ class ControllerNotes extends Controller
         $newNote = clone $checklist_note;
         $newItems = $newNote->get_Items();
         $stringNewItems = [];
-
-        /** @var $i ChecklistNoteItems*/
+        /** @var  ChecklistNoteItems $i*/
         foreach ($newItems as $i) {
             $id = $i->get_Id();
             if (isset($_POST['item' . $id])) {

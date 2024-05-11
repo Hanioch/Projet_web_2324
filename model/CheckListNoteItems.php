@@ -76,7 +76,7 @@ class ChecklistNoteItems extends MyModel
             } else {
                 self::execute('UPDATE checklist_note_items SET  content = :content, checked = :checked WHERE id = :id', [
                     'content' => $this->content,
-                    'checked' => $this->checked,
+                    'checked' => $this->checked ? 1 : 0,
                     'id' => $this->id
                 ]);
                 return $this;
