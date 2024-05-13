@@ -111,9 +111,9 @@ class ControllerNotes extends Controller
 
     public function move_note(): void
     {
-        if (isset($_GET['param1']) && isset($_GET['param2'])) {
-            $note_id = $_GET['param1'];
-            $action = $_GET['param2'];
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $note_id = $_POST['id'];
+            $action = $_POST['action'];
 
             if ($action === 'increment') {
                 $this->modif_weight(true, $note_id);
@@ -293,7 +293,7 @@ class ControllerNotes extends Controller
                 $itemContent = trim($_POST['item' . $i] ?? '');
                 if (!empty($itemContent)) {
                     $test = new ChecklistNoteItems($itemContent, false);
-                    if(!empty($test->validate())) {
+                    if (!empty($test->validate())) {
                         $errors['item' . $i] = ($test->validate())[0];
                     }
                     if (!array_key_exists($itemContent, $itemsInput)) {
@@ -504,7 +504,7 @@ class ControllerNotes extends Controller
                     $errors['item' . $id][] = "Item cannot be empty.";
                 } else {
                     $item = trim($_POST['item' . $id]);
-                    if(!empty($test = $i->validate())) {
+                    if (!empty($test = $i->validate())) {
                         $errors['item' . $id][] = $test[0];
                     }
                     if (true !== ($duplicates = $this->is_unique($i, $newItems))) {
@@ -895,7 +895,7 @@ class ControllerNotes extends Controller
         $errors = [];
         $items = $note->get_Items();
 
-        if(!empty($test = $newItem->validate())) {
+        if (!empty($test = $newItem->validate())) {
             $errors['new_item'] = $test[0];
         } else {
             /** @var $i ChecklistNoteItems */
