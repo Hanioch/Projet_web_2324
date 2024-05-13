@@ -33,9 +33,8 @@ class TextNote extends Note
     {
         $errors = parent::validate();
 
-        $config = parse_ini_file('config/dev.ini', true);
-        $note_content_min_length = $config['Rules']['note_min_length'];
-        $note_content_max_length = $config['Rules']['note_max_length'];
+        $note_content_min_length = Configuration::get("note_min_length");
+        $note_content_max_length = Configuration::get("note_max_length");
 
         if ($this->get_Content() !== "" && $this->get_Content() !== NULL) {
             $content_length = mb_strlen($this->get_Content());

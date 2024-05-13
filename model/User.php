@@ -119,8 +119,10 @@ class User extends MyModel
         $errors = [
             "password" => []
         ];
-        $config = parse_ini_file('C:\PRWB2324\projects\prwb_2324_a04\config\dev.ini', true);
-        $password_min_length = $config['Rules']['password_min_length'];
+
+        $password_min_length = Configuration::get("password_min_length");
+
+
         if (mb_strlen($password) === 0) {
             $errors["password"][] = "Password is required.";
         }
@@ -138,8 +140,9 @@ class User extends MyModel
         $errors = [
             "full_name" => []
         ];
-        $config = parse_ini_file('config/dev.ini', true);
-        $fullname_min_length = $config['Rules']['fullname_min_length'];
+
+        $fullname_min_length = Configuration::get("fullname_min_length");
+
         if (!mb_strlen($full_name) > 0) {
             $errors["full_name"][] = "Name is required.";
         } else if (mb_strlen($full_name) < $fullname_min_length) {

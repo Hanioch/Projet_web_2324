@@ -103,9 +103,10 @@ class Label extends MyModel {
         $errors = [
             "label" => []
         ];
-        $config = parse_ini_file('config/dev.ini', true);
-        $label_min_length = $config['Rules']['label_min_length'];
-        $label_max_length = $config['Rules']['label_max_length'];
+
+        $label_min_length = Configuration::get("label_min_length");
+        $label_max_length = Configuration::get("label_max_length");
+
         if (mb_strlen($label) < $label_min_length || mb_strlen($label) > $label_max_length) {
             $errors["label"][] = "Label length must be between 2 and 10.";
         }

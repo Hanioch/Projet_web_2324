@@ -1067,12 +1067,10 @@ class ControllerNotes extends Controller
     }
     public function getValidationRules(): void
     {
-        $config = parse_ini_file('config/dev.ini', true);
-
-        $minTitleLength = $config['Rules']['note_title_min_length'];
-        $maxTitleLength = $config['Rules']['note_title_max_length'];
-        $minContentLength = $config['Rules']['note_min_length'];
-        $maxContentLength = $config['Rules']['note_max_length'];
+        $minTitleLength = Configuration::get("note_title_min_length");
+        $maxTitleLength = Configuration::get("note_title_max_length");
+        $minContentLength = Configuration::get("note_min_length");
+        $maxContentLength = Configuration::get("note_max_length");
 
         $validationRules = [
             'minTitleLength' => $minTitleLength,

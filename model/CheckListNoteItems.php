@@ -111,9 +111,9 @@ class ChecklistNoteItems extends MyModel
     private function validate_content(string $content): array
     {
         $errors = [];
-        $config = parse_ini_file('config/dev.ini', true);
-        $item_min_length = $config['Rules']['item_min_length'];
-        $item_max_length = $config['Rules']['item_max_length'];
+
+        $item_min_length = Configuration::get("item_min_length");
+        $item_max_length = Configuration::get("item_max_length");
 
         if (mb_strlen($content) > 0 && (mb_strlen($content) < $item_min_length || mb_strlen($content) > $item_max_length)) {
             $errors[] = "Item must be between {$item_min_length} and {$item_max_length} characters long.";
