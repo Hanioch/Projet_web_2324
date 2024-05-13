@@ -115,7 +115,7 @@ include("./utils/header_add_note.php");
 <script>
     const pageName = "editChecklistnote";
     const urlToRedirect = "<?= $back_url ?>"
-    const noteId = <?= $note->get_Id() ?>
+    const noteId = <?= $note->get_Id() ?>;
 </script>
 <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
 <script src="js/scriptModalEdit.js"></script>

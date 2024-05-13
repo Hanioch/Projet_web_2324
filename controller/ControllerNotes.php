@@ -442,7 +442,8 @@ class ControllerNotes extends Controller
         if (isset($_POST['title'])) {
             $title = trim($_POST['title']);
             $note->set_Title($title);
-            if (!($test = $note->persist()) instanceof Note) {
+            $noteCopy = $note;
+            if (!($test = $noteCopy->persist()) instanceof Note) {
                 $errors = $test;
             }
         }
@@ -936,7 +937,8 @@ class ControllerNotes extends Controller
         $note = ChecklistNote::get_note($noteId);
 
         $errors = [];
-        $errors = $this->edit_title($note, $errors);
+        //$errors = $this->edit_title($note, $errors);
+        $errors = $note->validate();
 
         $row = [];
         $row["errors"] = $errors;
