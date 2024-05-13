@@ -102,7 +102,7 @@ class ChecklistNoteItems extends MyModel
         $note = ChecklistNote::get_by_id($noteId);
 
         if (!$note) {
-            $errors[] = "La note n'existe pas.";
+            $errors[] = "Note does not exist.";
         }
 
         return $errors;
@@ -116,7 +116,7 @@ class ChecklistNoteItems extends MyModel
         $item_max_length = $config['Rules']['item_max_length'];
 
         if (mb_strlen($content) > 0 && (mb_strlen($content) < $item_min_length || mb_strlen($content) > $item_max_length)) {
-            $errors[] = "Le contenu doit avoir entre {$item_min_length} et {$item_max_length} caractères.";
+            $errors[] = "Item must be between {$item_min_length} and {$item_max_length} characters long.";
         }
 
         return $errors;
@@ -127,7 +127,7 @@ class ChecklistNoteItems extends MyModel
         $errors = [];
 
         if (!in_array($checked, [true, false], true)) {
-            $errors[] = "La valeur de 'checked' doit être true ou false.";
+            $errors[] = "'Checked' value must be true or false.";
         }
 
         return $errors;

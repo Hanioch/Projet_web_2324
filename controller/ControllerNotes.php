@@ -292,6 +292,10 @@ class ControllerNotes extends Controller
             for ($i = 1; $i <= 5; $i++) {
                 $itemContent = trim($_POST['item' . $i] ?? '');
                 if (!empty($itemContent)) {
+                    $test = new ChecklistNoteItems($itemContent, false);
+                    if(!empty($test->validate())) {
+                        $errors['item' . $i] = ($test->validate())[0];
+                    }
                     if (!array_key_exists($itemContent, $itemsInput)) {
                         $itemsInput[$itemContent] = [];
                     }
