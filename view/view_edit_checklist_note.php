@@ -73,7 +73,7 @@ include("./utils/header_add_note.php");
                                 <div class="input-group-text bg-primary  border-secondary ">
                                     <input class="form-check-input border align-middle " type="checkbox" name="checked" value="1" <?= $item->is_Checked() ? 'checked' : '' ?> aria-label="Checkbox for following text input" disabled> <!-- onchange="this.form.submit()" -->
                                 </div>
-                                <input defaultValue="<?= $item->get_Content() ?>" value="<?= $item->get_Content() ?>" type="text" name="item<?php echo $item->get_Id() ?>" class="item-editable form-control bg-secondary text-white bg-opacity-25 border-secondary" id="item<?php echo $item->get_Id() ?>" value="<?php echo isset($_POST['item' . $item->get_Id()]) ? htmlspecialchars($_POST['item' . $item->get_Id()]) : ''; ?>">
+                                <input defaultValue="<?= $item->get_Content() ?>" value="<?= $item->get_Content() ?>" type="text" name="item<?php echo $item->get_Id() ?>" class="item-editable form-control bg-secondary text-white bg-opacity-25 border-secondary" id="item<?php echo $item->get_Id() ?>" value="<?php echo isset($_POST['item' . $item->get_Id()]) ? $_POST['item' . $item->get_Id()] : ''; ?>">
                                 <button name="remove_button" value="<?= $item->get_Id() ?>" class="btn btn-danger btn-lg rounded-end  border-secondary" type="submit">
                                     <i class="bi bi-x"></i>
                                 </button>

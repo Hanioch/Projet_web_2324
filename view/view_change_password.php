@@ -7,7 +7,7 @@ include("./utils/header_settings.php");
             <div class="form-group m-3">
                 <label for="old_password" class="form-label">Old password</label>
                 <div class="input-group">
-                    <input type="password" class="form-control <?php if (count($errors["old_password"]) > 0): ?>is-invalid<?php endif; ?>" id="old_password" name="old_password" placeholder="Old" autocomplete="off" value="<?= htmlspecialchars($old_password) ?>">
+                    <input type="password" class="form-control <?php if (count($errors["old_password"]) > 0): ?>is-invalid<?php endif; ?>" id="old_password" name="old_password" placeholder="Old" autocomplete="off" value="<?= $old_password?>">
                 </div>
                 <?php if (count($errors["old_password"]) > 0): ?>
                     <div class="text-left invalid-feedback">
@@ -22,7 +22,7 @@ include("./utils/header_settings.php");
             <div class="form-group m-3">
                 <label for="password" class="form-label">New password</label>
                 <div class="input-group">
-                    <input type="password" class="form-control <?php if (count($errors["password"]) > 0): ?>is-invalid<?php endif; ?>" id="password" name="password" placeholder="New" value="<?= htmlspecialchars($password) ?>">
+                    <input type="password" class="form-control <?php if (count($errors["password"]) > 0): ?>is-invalid<?php endif; ?>" id="password" name="password" placeholder="New" value="<?= $password ?>">
                 </div>
                 <?php if (count($errors["password"]) > 0): ?>
                     <div class="text-left invalid-feedback">
@@ -37,7 +37,7 @@ include("./utils/header_settings.php");
             <div class="form-group m-3">
                 <label for="password_confirm" class="form-label">Confirm password</label>
                 <div class="input-group">
-                    <input type="password" class="form-control <?php if (count($errors["password_confirm"]) > 0): ?>is-invalid<?php endif; ?>" id="password_confirm" name="password_confirm" placeholder="Confirm" value="<?= htmlspecialchars($password_confirm) ?>">
+                    <input type="password" class="form-control <?php if (count($errors["password_confirm"]) > 0): ?>is-invalid<?php endif; ?>" id="password_confirm" name="password_confirm" placeholder="Confirm" value="<?= $password_confirm ?>">
                 </div>
                 <?php if (count($errors["password_confirm"]) > 0): ?>
                     <div class="text-left invalid-feedback">

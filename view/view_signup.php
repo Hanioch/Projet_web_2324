@@ -11,7 +11,7 @@ include("./utils/header_login.php");
                     <span class="input-group-text">
                         <i class="bi bi-envelope"></i>
                     </span>
-                    <input type="email" class="form-control <?php if (count($errors["mail"]) > 0): ?>is-invalid<?php endif; ?>" id="mail" name="mail" placeholder="Email" value="<?= htmlspecialchars($mail) ?>">
+                    <input type="email" class="form-control <?php if (count($errors["mail"]) > 0): ?>is-invalid<?php endif; ?>" id="mail" name="mail" placeholder="Email" value="<?=$mail ?>">
                     <?php if (count($errors["mail"]) > 0): ?>
                         <div class="text-start invalid-feedback">
                             <ul class="list-unstyled">
@@ -28,7 +28,7 @@ include("./utils/header_login.php");
                     <span class="input-group-text">
                         <i class="bi bi-person"></i>
                     </span>
-                    <input type="text" class="form-control <?php if (count($errors["full_name"]) > 0): ?>is-invalid<?php endif; ?>" id="full_name" name="full_name" placeholder="Full Name" value="<?= htmlspecialchars($full_name) ?>">
+                    <input type="text" class="form-control <?php if (count($errors["full_name"]) > 0): ?>is-invalid<?php endif; ?>" id="full_name" name="full_name" placeholder="Full Name" value="<?= $full_name ?>">
                     <?php if (count($errors["full_name"]) > 0): ?>
                         <div class="text-start invalid-feedback">
                             <ul class="list-unstyled">
@@ -45,7 +45,7 @@ include("./utils/header_login.php");
                     <span class="input-group-text">
                         <i class="bi bi-key"></i>
                     </span>
-                    <input type="password" class="form-control <?php if (count($errors["password"]) > 0): ?>is-invalid<?php endif; ?>" id="password" name="password" placeholder="Password" value="<?= htmlspecialchars($password) ?>">
+                    <input type="password" class="form-control <?php if (count($errors["password"]) > 0): ?>is-invalid<?php endif; ?>" id="password" name="password" placeholder="Password" value="<?= $password ?>">
                     <?php if (count($errors["password"]) > 0): ?>
                         <div class="text-start invalid-feedback">
                             <ul class="list-unstyled">
@@ -62,7 +62,7 @@ include("./utils/header_login.php");
                     <span class="input-group-text">
                         <i class="bi bi-key"></i>
                     </span>
-                    <input type="password" class="form-control <?php if (count($errors["password_confirm"]) > 0): ?>is-invalid<?php endif; ?>" id="password_confirm" name="password_confirm" placeholder="Confirm your password" value="<?= htmlspecialchars($password_confirm) ?>">
+                    <input type="password" class="form-control <?php if (count($errors["password_confirm"]) > 0): ?>is-invalid<?php endif; ?>" id="password_confirm" name="password_confirm" placeholder="Confirm your password" value="<?= $password_confirm ?>">
                     <?php if (count($errors["password_confirm"]) > 0): ?>
                         <div class="text-start invalid-feedback">
                             <ul class="list-unstyled">
