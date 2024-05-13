@@ -31,11 +31,11 @@ $(document).ready(function () {
     } else if (title.length < minTitleLength || title.length > maxTitleLength) {
       $("#titleNote").addClass("is-invalid");
       $("#title_error").text(
-        "Le titre doit avoir entre " +
+        "Title must be between " +
           minTitleLength +
-          " et " +
+          " and " +
           maxTitleLength +
-          " caractères."
+          " characters."
       );
     } else {
       $.ajax({
@@ -49,7 +49,7 @@ $(document).ready(function () {
         success: function (response) {
           if (!response.unique) {
             $("#titleNote").addClass("is-invalid");
-            $("#title_error").text("Ce titre est déjà utilisé.");
+            $("#title_error").text("Title is already used.");
           } else {
             $("#titleNote")
               .removeClass("is-invalid")
@@ -78,11 +78,11 @@ $(document).ready(function () {
     ) {
       $("#contentNote").addClass("is-invalid");
       $("#text_error").text(
-        "Le texte doit avoir entre " +
+        "Content must be between " +
           minContentLength +
-          " et " +
+          " and " +
           maxContentLength +
-          " caractères."
+          " characters."
       );
     } else {
       $("#contentNote").removeClass("is-invalid").addClass("is-valid");

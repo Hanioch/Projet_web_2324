@@ -49,7 +49,7 @@ foreach ($shared_notes as $user_shared => $ns) {
 if (count($personal_notes) === 0 && count($shared_notes) === 0) {
 ?>
     <h3 class="title-note">
-        Pas de notes ici..
+        Your notes are empty.
     </h3>
 <?php
 }
