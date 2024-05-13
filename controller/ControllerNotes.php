@@ -935,11 +935,11 @@ class ControllerNotes extends Controller
         $noteId = $_POST['note_id'];
         $newContent = $_POST['title'];
         $note = ChecklistNote::get_note($noteId);
+        $note->set_Title($newContent);
 
         $errors = [];
         //$errors = $this->edit_title($note, $errors);
         $errors = $note->validate();
-
         $row = [];
         $row["errors"] = $errors;
 

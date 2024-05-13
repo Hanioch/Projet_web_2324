@@ -17,7 +17,7 @@ include("./utils/header_add_note.php");
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Do you really want to quit without save ?</p>
+                    <p>Do you really want to quit without saving ?</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
