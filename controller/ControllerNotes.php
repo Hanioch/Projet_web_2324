@@ -467,8 +467,11 @@ class ControllerNotes extends Controller
                 $errors['new_item'] = "Item cannot be empty.";
             } else {
                 $item = trim($_POST['new_item']);
+                $new_item = new ChecklistNoteItems($item, false, $note->get_Id());
+                if (!empty($test = $new_item->validate())) {
+                    $errors['new_item'] = $test[0];
+                }
                 if (!($this->item_exists($string_items, $item))) {
-                    $new_item = new ChecklistNoteItems($item, false, $note->get_Id());
                     $new_item->persist();
                 } else {
                     $errors['new_item'] = "Item already exists.";
@@ -889,14 +892,20 @@ class ControllerNotes extends Controller
         $errors = [];
         $items = $note->get_Items();
 
-        /** @var $i ChecklistNoteItems*/
-        foreach ($items as $i) {
-            if (strtoupper($i->get_content()) === strtoupper($content)) {
-                $errors['new_item'] = "Item already exists.";
-            } else if (trim($content) === "") {
-                $errors['new_item'] = "Item cannot be empty.";
+        if(!empty($test = $newItem->validate())) {
+            $errors['new_item'] = $test[0];
+        } else {
+            /** @var $i ChecklistNoteItems */
+            foreach ($items as $i) {
+                if (strtoupper($i->get_content()) === strtoupper($content)) {
+                    $errors['new_item'] = "Item already exists.";
+                } else if (trim($content) === "") {
+                    $errors['new_item'] = "Item cannot be empty.";
+                }
             }
         }
+
+
 
         echo json_encode($errors);
     }
