@@ -196,9 +196,9 @@ class ControllerNotes extends Controller
             $user = $this->get_user_or_redirect();
             $notes_searched["personal"] = $user->get_notes_searched($list_filter);
             $users_shared_notes = $user->get_users_shared_note();
+
             $list_label = $user->get_filter_list();
             $new_list_label = [];
-
             foreach ($list_label as $label) {
                 $checked = false;
                 foreach ($list_filter as $filter) {

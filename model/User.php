@@ -392,7 +392,9 @@ class User extends MyModel
     {
         $params = ["owner" => $this->id, "sender" => $sender_id];
 
-        if (!empty($list_filter)) {
+        if (empty($list_filter)) {
+            return [];
+        } else {
             // Convertir la liste de filtres en une chaîne de caractères pour la clause IN
             $filters_string = implode(',', array_map(function ($i) use ($list_filter) {
                 return ":filter$i";
@@ -404,13 +406,9 @@ class User extends MyModel
             // Ajouter la condition pour les filtres
             $labels_condition = 'AND n.id IN (SELECT note FROM note_labels WHERE label IN (' . $filters_string . ')
                               GROUP BY note HAVING COUNT(DISTINCT label) = ' . count($list_filter) . ')';
-        } else {
-            // Si la liste de filtres est vide, construire une requête pour récupérer toutes les notes ayant au moins un label
-            $labels_condition = 'AND EXISTS (SELECT 1 FROM note_labels WHERE note_labels.note = n.id)';
-        }
 
-        $query = self::execute(
-            "SELECT
+            $query = self::execute(
+                "SELECT
         n.*,
         tn.content AS text_content,
         cn.id AS checklist_id,
@@ -426,20 +424,21 @@ class User extends MyModel
         WHERE ns.user = :owner AND n.owner = :sender $labels_condition
         GROUP BY n.id, n.title, n.owner, n.created_at, n.edited_at, n.pinned, n.archived, n.weight,tn.content,cn.id,ns.editor
         ORDER BY weight DESC;",
-            $params
-        );
+                $params
+            );
 
-        $data = $query->fetchAll();
-        $shared_notes = [];
+            $data = $query->fetchAll();
+            $shared_notes = [];
 
-        foreach ($data as $row) {
-            if (empty($list_filter) || count(array_intersect($list_filter, explode(',', $row['labels']))) == count($list_filter)) {
-                $note = $this->get_text_note_or_checklist_note($row);
-                $shared_notes[] = $note;
+            foreach ($data as $row) {
+                if (empty($list_filter) || count(array_intersect($list_filter, explode(',', $row['labels']))) == count($list_filter)) {
+                    $note = $this->get_text_note_or_checklist_note($row);
+                    $shared_notes[] = $note;
+                }
             }
-        }
 
-        return $shared_notes;
+            return $shared_notes;
+        }
     }
 
     public function get_notes_searched($list_filter): array
@@ -447,7 +446,9 @@ class User extends MyModel
         //PAS FAN du tout SI on peut tout chnger on change tout
         $params = ["owner" => $this->id];
 
-        if (!empty($list_filter)) {
+        if (empty($list_filter)) {
+            return [];
+        } else {
             // Convertir la liste de filtres en une chaîne de caractères pour la clause IN
             $filters_string = implode(',', array_map(function ($i) use ($list_filter) {
                 return ":filter$i";
@@ -459,12 +460,8 @@ class User extends MyModel
             // Ajouter la condition pour les filtres
             $labels_condition = 'AND n.id IN (SELECT note FROM note_labels WHERE label IN (' . $filters_string . ')
                               GROUP BY note HAVING COUNT(DISTINCT label) = ' . count($list_filter) . ')';
-        } else {
-            // Si la liste de filtres est vide, construire une requête pour récupérer toutes les notes ayant au moins un label
-            $labels_condition = 'AND EXISTS (SELECT 1 FROM note_labels WHERE note_labels.note = n.id)';
-        }
 
-        $query = self::execute("SELECT
+            $query = self::execute("SELECT
             n.*,
             tn.content AS text_content,
             cn.id AS checklist_id,
@@ -479,14 +476,15 @@ class User extends MyModel
             GROUP BY n.id, n.title, n.owner, n.created_at, n.edited_at, n.pinned, n.archived, n.weight, tn.content, cn.id
             ORDER BY weight DESC;", $params);
 
-        $data = $query->fetchAll();
-        $search_notes = [];
+            $data = $query->fetchAll();
+            $search_notes = [];
 
-        foreach ($data as $row) {
-            // Vérifier si la note contient tous les labels filtrés
-            if (empty($list_filter) || count(array_intersect($list_filter, explode(',', $row['labels']))) == count($list_filter)) {
-                $note = $this->get_text_note_or_checklist_note($row);
-                $search_notes[] = $note;
+            foreach ($data as $row) {
+                // Vérifier si la note contient tous les labels filtrés
+                if (empty($list_filter) || count(array_intersect($list_filter, explode(',', $row['labels']))) == count($list_filter)) {
+                    $note = $this->get_text_note_or_checklist_note($row);
+                    $search_notes[] = $note;
+                }
             }
         }
 
