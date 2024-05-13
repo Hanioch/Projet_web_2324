@@ -115,7 +115,7 @@ class ChecklistNoteItems extends MyModel
         $item_min_length = $config['Rules']['item_min_length'];
         $item_max_length = $config['Rules']['item_max_length'];
 
-        if (strlen($content) > 0 && (strlen($content) < $item_min_length || strlen($content) > $item_max_length)) {
+        if (mb_strlen($content) > 0 && (mb_strlen($content) < $item_min_length || mb_strlen($content) > $item_max_length)) {
             $errors[] = "Le contenu doit avoir entre {$item_min_length} et {$item_max_length} caractères.";
         }
 

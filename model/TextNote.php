@@ -38,7 +38,7 @@ class TextNote extends Note
         $note_content_max_length = $config['Rules']['note_max_length'];
 
         if ($this->get_Content() !== "" && $this->get_Content() !== NULL) {
-            $content_length = strlen($this->get_Content());
+            $content_length = mb_strlen($this->get_Content());
             if ($content_length < $note_content_min_length || $content_length > $note_content_max_length) {
                 $errors['content'] = "Content length must be between {$note_content_min_length} and {$note_content_max_length} characters.";
             }

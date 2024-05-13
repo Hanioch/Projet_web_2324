@@ -121,10 +121,10 @@ class User extends MyModel
         ];
         $config = parse_ini_file('C:\PRWB2324\projects\prwb_2324_a04\config\dev.ini', true);
         $password_min_length = $config['Rules']['password_min_length'];
-        if (strlen($password) === 0) {
+        if (mb_strlen($password) === 0) {
             $errors["password"][] = "Password is required.";
         }
-        if (strlen($password) < $password_min_length) {
+        if (mb_strlen($password) < $password_min_length) {
             $errors["password"][] = "Password must be at least 8 characters long";
         }
         if (!((preg_match("/[A-Z]/", $password)) && preg_match("/\d/", $password) && preg_match("/['\";:,.\/?!\\-]/", $password))) {
@@ -140,10 +140,10 @@ class User extends MyModel
         ];
         $config = parse_ini_file('C:\PRWB2324\projects\prwb_2324_a04\config\dev.ini', true);
         $fullname_min_length = $config['Rules']['fullname_min_length'];
-        if (!strlen($full_name) > 0) {
+        if (!mb_strlen($full_name) > 0) {
             $errors["full_name"][] = "Name is required.";
         }
-        if (strlen($full_name) < $fullname_min_length) {
+        if (mb_strlen($full_name) < $fullname_min_length) {
             $errors["full_name"][] = "Name must be at least 3 characters long";
         }
         return $errors;
@@ -154,7 +154,7 @@ class User extends MyModel
         $errors = [
             "password_confirm" => []
         ];
-        if (!strlen($password_confirm) > 0) {
+        if (!mb_strlen($password_confirm) > 0) {
             $errors["password_confirm"][] = "Password confirmation is required.";
         }
         if ($password != $password_confirm) {
@@ -173,7 +173,7 @@ class User extends MyModel
             $errors["mail"][] = "This user already exists.";
         } else {
 
-            if (!strlen($mail) > 0) {
+            if (!mb_strlen($mail) > 0) {
                 $errors["mail"][] = "Mail is required.";
             }
             if (!(preg_match($regex, $mail))) {

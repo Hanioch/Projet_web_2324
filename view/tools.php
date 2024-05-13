@@ -25,7 +25,7 @@ function show_note(array $arr_notes, string $title, string $titlePage): void
                         if (property_exists($note, 'content')) {
                             $max_lg = 75;
                             $content = $note->get_Content() === null ? "" : $note->get_Content();
-                            $content_sub = strlen($content) > $max_lg ? substr($content, 0, $max_lg) . "..."  : $content;
+                            $content_sub = mb_strlen($content) > $max_lg ? substr($content, 0, $max_lg) . "..."  : $content;
                         ?>
                             <p class='card-text mb-0'><?= $content_sub ?></p>
                             <?php
@@ -35,7 +35,7 @@ function show_note(array $arr_notes, string $title, string $titlePage): void
                             foreach ($list_item_showable as $item) :
                                 $max_lg = 15;
                                 $content = $item->get_Content();
-                                $content_sub = strlen($content) > $max_lg ? substr($content, 0, $max_lg) . "..." : $content;
+                                $content_sub = mb_strlen($content) > $max_lg ? substr($content, 0, $max_lg) . "..." : $content;
                             ?>
                                 <div class="form-check">
                                     <input class="form-check-input cursor-pointer" type="checkbox" value="" <?= $item->is_Checked() ? "checked" : ""  ?> disabled>

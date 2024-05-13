@@ -106,8 +106,7 @@ class Label extends MyModel {
         $config = parse_ini_file('config/dev.ini', true);
         $label_min_length = $config['Rules']['label_min_length'];
         $label_max_length = $config['Rules']['label_max_length'];
-
-        if (strlen($label) < $label_min_length || strlen($label) > $label_max_length) {
+        if (mb_strlen($label) < $label_min_length || mb_strlen($label) > $label_max_length) {
             $errors["label"][] = "Label length must be between 2 and 10.";
         }
         if (preg_match("/\s/", $label)) {
@@ -127,7 +126,7 @@ class Label extends MyModel {
     }
 
     public static function fix_label_format($content) : string {
-        if(strlen($content) > 0) {
+        if(mb_strlen($content) > 0) {
             $content = ucfirst($content);
         }
         return $content;
