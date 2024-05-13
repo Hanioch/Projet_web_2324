@@ -954,7 +954,6 @@ class ControllerNotes extends Controller
         $note->set_Title($newContent);
 
         $errors = [];
-        //$errors = $this->edit_title($note, $errors);
         $errors = $note->validate();
         $row = [];
         $row["errors"] = $errors;

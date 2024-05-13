@@ -93,6 +93,8 @@ function handleTitleKeyPress() {
       let jsonResponse = JSON.parse(response);
       if ("title" in jsonResponse.errors) {
         $("#save_button").prop("disabled", true).css("opacity", "0.3");
+        $("#titleNote").removeClass("is-valid");
+        $("#titleNote").addClass("is-invalid");
         let html = '<span class="error-add-note" id="error_title_span">';
         html += jsonResponse.errors.title;
         html += "</span>";
@@ -100,6 +102,8 @@ function handleTitleKeyPress() {
         $("#title_div").append(html);
       } else {
         $("#save_button").prop("disabled", false).css("opacity", "1");
+        $("#titleNote").removeClass("is-invalid");
+        $("#titleNote").addClass("is-valid");
         $("#error_title_span").remove();
       }
       handleRemoveClick();
