@@ -17,8 +17,8 @@ include("./utils/header_add_note.php");
         <div class="card-body">
             <form id="<?= $id_form ?>" action="notes/add_text_note" method="post">
                 <div class="mb-3">
-                    <label for="title_add_text_note" class="form-label">Title</label>
-                    <input required type="text" value="<?= $default_title ?>" name="title" class="form-control bg-secondary text-white bg-opacity-25 mb-2 <?= !empty($errors['title']) ? 'is-invalid' : '' ?>" id="title_add_text_note">
+                    <label for="titleNote" class="form-label">Title</label>
+                    <input required type="text" value="<?= $default_title ?>" name="title" class="form-control bg-secondary text-white bg-opacity-25 mb-2 <?= !empty($errors['title']) ? 'is-invalid' : '' ?>" id="titleNote">
                     <div class="invalid-feedback" id="title_error">
                     <?php
                     if (!empty($errors['title'])) {
@@ -30,8 +30,8 @@ include("./utils/header_add_note.php");
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label for="text_add_text_note" class="form-label">Text</label>
-                    <textarea name="text" class="form-control bg-secondary text-white bg-opacity-25 <?= !empty($errors['content']) ? 'is-invalid' : '' ?>" id="text_add_text_note" cols="30" rows="10"><?= $default_text ?></textarea>
+                    <label for="contentNote" class="form-label">Text</label>
+                    <textarea name="text" class="form-control bg-secondary text-white bg-opacity-25 <?= !empty($errors['content']) ? 'is-invalid' : '' ?>" id="contentNote" cols="30" rows="10"><?= $default_text ?></textarea>
                     <div class="invalid-feedback" id="text_error">
                     <?php
                     if (!empty($errors['content'])) {

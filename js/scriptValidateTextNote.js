@@ -14,22 +14,22 @@ $(document).ready(function () {
       console.error(error);
     },
   });
-  $("#title_add_text_note").on("input", function () {
+  $("#titleNote").on("input", function () {
     validateTitle();
   });
 
-  $("#text_add_text_note").on("input", function () {
+  $("#contentNote").on("input", function () {
     validateText();
   });
 
   function validateTitle() {
-    var title = $("#title_add_text_note").val().trim();
+    var title = $("#titleNote").val().trim();
     var noteId = $("#noteId").length ? $("#noteId").data("note-id") : -1;
     if (title.length === 0) {
-      $("#title_add_text_note");
+      $("#titleNote");
       $("#title_error").text("");
     } else if (title.length < minTitleLength || title.length > maxTitleLength) {
-      $("#title_add_text_note").addClass("is-invalid");
+      $("#titleNote").addClass("is-invalid");
       $("#title_error").text(
         "Le titre doit avoir entre " +
           minTitleLength +
@@ -48,10 +48,10 @@ $(document).ready(function () {
         dataType: "json",
         success: function (response) {
           if (!response.unique) {
-            $("#title_add_text_note").addClass("is-invalid");
+            $("#titleNote").addClass("is-invalid");
             $("#title_error").text("Ce titre est déjà utilisé.");
           } else {
-            $("#title_add_text_note")
+            $("#titleNote")
               .removeClass("is-invalid")
               .addClass("is-valid");
             $("#title_error").text("");
@@ -67,16 +67,16 @@ $(document).ready(function () {
   }
 
   function validateText() {
-    var text = $("#text_add_text_note").val().trim();
+    var text = $("#contentNote").val().trim();
     if (text.length === 0 || text === null) {
-      $("#text_add_text_note").removeClass("is-invalid");
-      $("#text_add_text_note").removeClass("is-valid");
+      $("#contentNote").removeClass("is-invalid");
+      $("#contentNote").removeClass("is-valid");
       $("#text_error").text("");
     } else if (
       text.length < minContentLength ||
       text.length > maxContentLength
     ) {
-      $("#text_add_text_note").addClass("is-invalid");
+      $("#contentNote").addClass("is-invalid");
       $("#text_error").text(
         "Le texte doit avoir entre " +
           minContentLength +
@@ -85,16 +85,16 @@ $(document).ready(function () {
           " caractères."
       );
     } else {
-      $("#text_add_text_note").removeClass("is-invalid").addClass("is-valid");
+      $("#contentNote").removeClass("is-invalid").addClass("is-valid");
       $("#text_error").text("");
     }
     enableSaveButtonIfValid();
   }
 
   function enableSaveButtonIfValid() {
-    var titleIsValid = !$("#title_add_text_note").hasClass("is-invalid");
-    var textIsValid = !$("#text_add_text_note").hasClass("is-invalid");
-    var titleLength = $("#title_add_text_note").val().trim().length;
+    var titleIsValid = !$("#titleNote").hasClass("is-invalid");
+    var textIsValid = !$("#contentNote").hasClass("is-invalid");
+    var titleLength = $("#titleNote").val().trim().length;
 
     if (titleIsValid && textIsValid && titleLength > 0) {
       $("#save_button").prop("disabled", false).removeClass("disabled-button");
