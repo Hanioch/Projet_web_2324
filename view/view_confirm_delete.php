@@ -7,7 +7,7 @@ if (isset($headerType) && empty($error)) {
 ?>
 <?php if (isset($error) && !empty($error)): ?>
     <div class="alert alert-danger" role="alert">
-        <?= htmlspecialchars($error) ?>
+        <?= $error ?>
     </div>
 <?php else: ?>
     <div class="container">

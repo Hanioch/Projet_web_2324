@@ -45,7 +45,7 @@ if (isset($headerType) && empty($error)) {
 <span id="idNote" value="<?= $note->get_Id() ?>" style="display: none;"></span>
 <?php if (isset($error) && !empty($error)) : ?>
     <div class="alert alert-danger" role="alert">
-        <?= htmlspecialchars($error) ?>
+        <?= $error ?>
     </div>
 <?php else : ?>
     <div class="card-header text-white mb-2 fst-italic fs-6">
@@ -57,7 +57,7 @@ if (isset($headerType) && empty($error)) {
 
     <div class="mb-3 text-white">
         <label for="noteTitle" class="form-label">Title</label>
-        <input type="text" id="noteTitle" class="form-control border-0 bg-secondary text-white bg-opacity-25" value="<?= htmlspecialchars($note->get_Title()) ?>" disabled>
+        <input type="text" id="noteTitle" class="form-control border-0 bg-secondary text-white bg-opacity-25" value="<?= $note->get_Title() ?>" disabled>
     </div>
     <div class="card-body text-white" id="itemsDiv">
         <?php if ($isChecklistNote) : ?>
@@ -70,7 +70,7 @@ if (isset($headerType) && empty($error)) {
                                 <input class="form-check-input border opacity-100" id="checkbox_<?= $item->get_Id() ?>" type="checkbox" name="checked" value="1" <?= $item->is_Checked() ? 'checked' : '' ?> aria-label="Checkbox for following text input" disabled>
                             </button>
                         </div>
-                        <input type="text" class="form-control bg-secondary text-white bg-opacity-25 border-0 <?= $item->is_Checked() ? 'text-decoration-line-through' : '' ?>" value="<?= htmlspecialchars($item->get_Content()) ?>" aria-label="Text input with checkbox" disabled>
+                        <input type="text" class="form-control bg-secondary text-white bg-opacity-25 border-0 <?= $item->is_Checked() ? 'text-decoration-line-through' : '' ?>" value="<?= $item->get_Content() ?>" aria-label="Text input with checkbox" disabled>
                         <input type="hidden" name="item_id" value="<?= $item->get_Id() ?>">
                         <input type="hidden" name="note_id" value="<?= $note->get_Id() ?>">
                     </div>

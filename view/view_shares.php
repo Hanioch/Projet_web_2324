@@ -9,7 +9,7 @@ if (isset($error) && !empty($error)) {
 ?>
 <?php if (isset($error) && !empty($error)): ?>
     <div class="alert alert-danger" role="alert">
-        <?= htmlspecialchars($error) ?>
+        <?= $error ?>
     </div>
 <?php else: ?>
     <div class="text-white fst-italic ">
@@ -68,7 +68,7 @@ if (isset($error) && !empty($error)) {
         <div class="" id="errorContainer">
         <?php if (!empty($errorAdd)): ?>
             <div class="alert alert-warning" role="alert">
-                <?= htmlspecialchars($errorAdd) ?>
+                <?= $errorAdd ?>
             </div>
         <?php endif; ?>
         </div>
