@@ -236,6 +236,7 @@ class Note extends MyModel
             } else {
                 self::execute('DELETE FROM text_notes WHERE id = :note_id', ['note_id' => $this->id]);
             }
+            self::execute('DELETE FROM note_labels WHERE note = :note_id', ['note_id' => $this->id]);
 
             self::execute('DELETE FROM notes WHERE id = :note_id', ['note_id' => $this->id]);
             return $this;
