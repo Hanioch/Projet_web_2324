@@ -138,12 +138,11 @@ class User extends MyModel
         $errors = [
             "full_name" => []
         ];
-        $config = parse_ini_file('C:\PRWB2324\projects\prwb_2324_a04\config\dev.ini', true);
+        $config = parse_ini_file('config/dev.ini', true);
         $fullname_min_length = $config['Rules']['fullname_min_length'];
         if (!mb_strlen($full_name) > 0) {
             $errors["full_name"][] = "Name is required.";
-        }
-        if (mb_strlen($full_name) < $fullname_min_length) {
+        } else if (mb_strlen($full_name) < $fullname_min_length) {
             $errors["full_name"][] = "Name must be at least 3 characters long";
         }
         return $errors;
