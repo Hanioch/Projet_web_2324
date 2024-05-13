@@ -504,6 +504,9 @@ class ControllerNotes extends Controller
                     $errors['item' . $id][] = "Item cannot be empty.";
                 } else {
                     $item = trim($_POST['item' . $id]);
+                    if(!empty($test = $i->validate())) {
+                        $errors['item' . $id][] = $test[0];
+                    }
                     if (true !== ($duplicates = $this->is_unique($i, $newItems))) {
                         foreach ($duplicates as $dup) {
                             if (empty($errors['item' . $dup])) {
