@@ -32,9 +32,11 @@ if (count($list_label) > 0) {
             ?>
         </ul>
         <noscript>
-            <button type="submit">Search</button>
+            <button class="btn btn-secondary" type="submit">Search</button>
         </noscript>
     </form>
+    <hr>
+
 <?php
 }
 
@@ -48,9 +50,9 @@ foreach ($shared_notes as $user_shared => $ns) {
 
 if (count($personal_notes) === 0 && count($shared_notes) === 0) {
 ?>
-    <h3 class="title-note">
-        Your notes are empty.
-    </h3>
+    <h4 class="title-note">
+        No note matches.
+    </h4>
 <?php
 }
 
