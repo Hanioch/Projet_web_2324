@@ -146,7 +146,7 @@ class ChecklistNote extends Note
         return $errors;
     }
 
-    public function get_Items(): array
+    public function get_items(): array
     {
         $query = self::execute("SELECT * FROM checklist_note_items WHERE checklist_note = :checklist_note ORDER BY id", ["checklist_note" => $this->id]);
         $data = $query->fetchAll();

@@ -131,18 +131,18 @@ class ControllerNotes extends Controller
     {
         $current_note = Note::get_note($note_id);
         if ($current_note instanceof Note) {
-            $other_notes = $current_note->get_nearest_note($is_more);
-            if ($other_notes instanceof Note) {
+            $other_note = $current_note->get_nearest_note($is_more);
+            if ($other_note instanceof Note) {
                 $weight_current = $current_note->get_Weight();
-                $weight_other = $other_notes->get_Weight();
+                $weight_other = $other_note->get_Weight();
                 $user = $this->get_user_or_redirect();
 
-                $other_notes->set_Weight($user->get_heaviest_note() + 1);
-                $other_notes->persist();
+                $other_note->set_Weight($user->get_heaviest_note() + 1);
+                $other_note->persist();
                 $current_note->set_Weight($weight_other);
                 $current_note->persist();
-                $other_notes->set_Weight($weight_current);
-                $other_notes->persist();
+                $other_note->set_Weight($weight_current);
+                $other_note->persist();
             }
         }
     }
@@ -337,7 +337,7 @@ class ControllerNotes extends Controller
 
     private function validateUniqueItem(ChecklistNote $checklistNote, string $content): bool
     {
-        $existingItems = $checklistNote->get_Items();
+        $existingItems = $checklistNote->get_items();
         foreach ($existingItems as $item) {
             if ($item->get_Content() === $content && $item->get_Content() !== '') {
                 return false;
@@ -456,7 +456,7 @@ class ControllerNotes extends Controller
 
     public function add_item(ChecklistNote $note, array $errors): array
     {
-        $items = $note->get_Items();
+        $items = $note->get_items();
         $string_items = [];
         foreach ($items as $i) {
             $string_items[] = $i->get_content();
@@ -489,9 +489,9 @@ class ControllerNotes extends Controller
     public function edit_items(Note $note, array $errors): array
     {
         $checklist_note = new ChecklistNote($note->get_Title(), $note->get_Owner(), $note->is_Pinned(), $note->is_Archived(), $note->get_Weight(), $note->get_Id());
-        $currentItems = $checklist_note->get_Items();
+        $currentItems = $checklist_note->get_items();
         $newNote = clone $checklist_note;
-        $newItems = $newNote->get_Items();
+        $newItems = $newNote->get_items();
         $stringNewItems = [];
         /** @var  ChecklistNoteItems $i*/
         foreach ($newItems as $i) {
@@ -633,7 +633,16 @@ class ControllerNotes extends Controller
         if ($noteId === false) {
             $error = "Identifiant de note invalide.";
         } else {
-            $note = Note::get_note($noteId);
+            $isChecklistNote = Note::is_checklist_note($noteId);
+            $note = null;
+            if($isChecklistNote) {
+                $note = ChecklistNote::get_note($noteId);
+                var_dump($note);
+                die();
+            } else {
+                $note = TextNote::get_note($noteId);
+            }
+
             if (!($note instanceof Note)) {
                 $error = "Note introuvable.";
             } else {
@@ -648,7 +657,6 @@ class ControllerNotes extends Controller
                     $error = "Accès non autorisé.";
                 } else {
                     $id_sender = $note->get_Owner()->get_Id();
-                    $isChecklistNote = Note::is_checklist_note($noteId);
                     if ($isChecklistNote) {
                         $checklistItems = $note->get_items();
                     } else {
@@ -894,7 +902,7 @@ class ControllerNotes extends Controller
         $newItemId = $newItem->get_Id();
         $note = ChecklistNote::get_by_id($noteId);
         $errors = [];
-        $items = $note->get_Items();
+        $items = $note->get_items();
 
         if (!empty($test = $newItem->validate())) {
             $errors['new_item'] = $test[0];

@@ -5,79 +5,79 @@ require_once "model/User.php";
 require_once "model/Note.php";
 
 
-class Note extends MyModel
+abstract class Note extends MyModel
 {
     public function __construct(private string $title, private User $owner, private  bool $pinned, private bool $archived, private int $weight, private ?int $id = NULL, private ?string $created_at = NULL, private ?string $edited_at = NULL)
     {
     }
-    public function get_Owner(): User
+    public function get_owner(): User
     {
         return $this->owner;
     }
-    public function set_Owner(User $owner): void
+    public function set_owner(User $owner): void
     {
         $this->owner = $owner;
     }
-    public function get_Edited_At(): ?string
+    public function get_edited_at(): ?string
     {
         return $this->edited_at;
     }
 
-    public function set_Edited_At(?string $edited_at): void
+    public function set_edited_at(?string $edited_at): void
     {
         $this->edited_at = $edited_at;
     }
-    public function get_Created_At(): ?string
+    public function get_created_at(): ?string
     {
         return $this->created_at;
     }
 
-    public function set_Created_At(?string $created_at): void
+    public function set_created_at(?string $created_at): void
     {
         $this->created_at = $created_at;
     }
 
-    public function is_Archived(): bool
+    public function is_archived(): bool
     {
         return $this->archived;
     }
 
-    public function set_Archived(bool $archived): void
+    public function set_archived(bool $archived): void
     {
         $this->archived = $archived;
     }
 
-    public function is_Pinned(): bool
+    public function is_pinned(): bool
     {
         return $this->pinned;
     }
 
-    public function set_Pinned(bool $pinned): void
+    public function set_pinned(bool $pinned): void
     {
         $this->pinned = $pinned;
     }
 
-    public function get_Title(): string
+    public function get_title(): string
     {
         return $this->title;
     }
 
-    public function set_Title(string $title): void
+    public function set_title(string $title): void
     {
         $this->title = $title;
     }
 
-    public function get_Id(): ?int
+    public function get_id(): ?int
     {
         return $this->id;
     }
 
-    public function get_Weight(): int
+    public function get_weight(): int
     {
         return $this->weight;
     }
 
-    public function set_Weight(int $weight): void
+    public function set_weight(int $weight): void
     {
         $this->weight = $weight;
     }
@@ -348,18 +348,5 @@ class Note extends MyModel
         return Model::lastInsertId();
     }
 
-    public function get_items(): array
-    {
-        $checklistNoteId = $this->get_Id();
-        $query = self::execute(
-            "SELECT cni.*, n.title, n.owner, n.pinned, n.archived, n.weight, n.created_at, n.edited_at FROM checklist_note_items cni JOIN notes n ON n.id = cni.checklist_note WHERE checklist_note = :checklist_note ORDER BY cni.checked ASC, cni.id ASC",
-            ["checklist_note" => $checklistNoteId]
-        );
-        $data = $query->fetchAll();
-        $items = [];
-        foreach ($data as $row) {
-            $items[] = new ChecklistNoteItems($row['content'], $row['checked'], $row['checklist_note'], $row['id']);
-        }
-        return $items;
-    }
+
 }
