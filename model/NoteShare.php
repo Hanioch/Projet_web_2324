@@ -7,7 +7,7 @@ require_once "model/TextNote.php";
 require_once "model/User.php";
 require_once "model/Note.php";
 require_once "model/NoteShare.php";
-class NoteShare extends MyModel{
+class NoteShare extends MyModel implements JsonSerializable {
 
 
     public function __construct(private int $id, private int $noteId, private int $userId, private int $isEditor) {}
@@ -110,5 +110,11 @@ class NoteShare extends MyModel{
         ]);
         $result = $query->fetch();
         return $result ? $result['editor'] == 1 : false;
+    }
+    public function jsonSerialize(): mixed
+    {
+        $vars = get_object_vars($this);
+
+        return $vars;
     }
 }

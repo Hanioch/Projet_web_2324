@@ -217,11 +217,72 @@ class ControllerNotes extends Controller
                     $notes_searched["shared"][$u->get_Full_Name()] = $note_by_someone;
                 }
             }
-
             (new View("search"))->show(["notes_searched" => $notes_searched, "users_shared_notes" => $users_shared_notes, "list_label" => $new_list_label]);
         }
     }
+    public function search_service(): void
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $list_filter = [];
+            foreach ($_POST as $filter => $value) {
+                if ($value === "on") {
+                    $list_filter[] = $filter;
+                }
+            }
 
+            $data_to_update = $this->getDataToUpdate($list_filter);
+            echo json_encode($data_to_update);
+        } else {
+            http_response_code(405);
+            echo json_encode(["error" => "Method Not Allowed"]);
+        }
+    }
+    public function get_labels_service(): void
+    {
+        $noteId = intval($_POST['note_id'] ?? 0);
+        if ($noteId !== 0) {
+            $labels = Label::get_labels_by_note_id($noteId);
+            echo json_encode($labels);
+        }
+    }
+    private function getDataToUpdate(array $list_filter): array
+    {
+        if (count($list_filter) > 0) {
+            $list_filter_encoded = Utils::url_safe_encode($list_filter);
+        }
+        $user = $this->get_user_or_redirect();
+        $notes_searched["personal"] = $user->get_notes_searched($list_filter);
+        $users_shared_notes = $user->get_users_shared_note();
+
+        $list_label = $user->get_filter_list();
+        $new_list_label = [];
+        foreach ($list_label as $label) {
+            $checked = false;
+            foreach ($list_filter as $filter) {
+                if ($filter === $label) {
+                    $checked = true;
+                }
+            }
+            $new_list_label[$label] = $checked;
+        }
+
+        $notes_searched["shared"] = [];
+
+        foreach ($users_shared_notes as $u) {
+            $note_by_someone = $user->get_notes_with_label_shared_by($u->get_Id(), $list_filter);
+            if (count($note_by_someone) > 0) {
+                $notes_searched["shared"][$u->get_Full_Name()] = $note_by_someone;
+            }
+        }
+        $data_to_update = [
+            "notes_searched" => $notes_searched,
+            "users_shared_notes" => $users_shared_notes,
+            "list_label" => $new_list_label,
+            "list_filter_encoded"=>$list_filter_encoded ?? null,
+        ];
+
+        return $data_to_update;
+    }
     public function shared_by(): void
     {
         $user = $this->get_user_or_redirect();
@@ -1208,4 +1269,5 @@ class ControllerNotes extends Controller
 
         echo json_encode($errors);
     }
+
 }

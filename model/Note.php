@@ -5,7 +5,7 @@ require_once "model/User.php";
 require_once "model/Note.php";
 
 
-class Note extends MyModel
+class Note extends MyModel implements JsonSerializable
 {
     public function __construct(private string $title, private User $owner, private  bool $pinned, private bool $archived, private int $weight, private ?int $id = NULL, private ?string $created_at = NULL, private ?string $edited_at = NULL)
     {
@@ -346,5 +346,11 @@ class Note extends MyModel
     public static function get_last_insert_id(): int
     {
         return Model::lastInsertId();
+    }
+    public function jsonSerialize(): mixed
+    {
+        $vars = get_object_vars($this);
+
+        return $vars;
     }
 }
