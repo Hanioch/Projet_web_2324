@@ -193,8 +193,10 @@ class ControllerNotes extends Controller
                 $this->redirect("notes", "search");
         } else {
             $list_filter = isset($_GET['param1']) ? Utils::url_safe_decode($_GET['param1']) : [];
+            if ($list_filter === NULL) $list_filter = [];
+
             $user = $this->get_user_or_redirect();
-            $notes_searched["personal"] = $user->get_notes_searched($list_filter);
+            $notes_searched["personal"] = count($list_filter) === 0 ? [] : $user->get_notes_searched($list_filter);
             $users_shared_notes = $user->get_users_shared_note();
 
             $list_label = $user->get_filter_list();
@@ -278,7 +280,7 @@ class ControllerNotes extends Controller
             "notes_searched" => $notes_searched,
             "users_shared_notes" => $users_shared_notes,
             "list_label" => $new_list_label,
-            "list_filter_encoded"=>$list_filter_encoded ?? null,
+            "list_filter_encoded" => $list_filter_encoded ?? null,
         ];
 
         return $data_to_update;
@@ -1269,5 +1271,4 @@ class ControllerNotes extends Controller
 
         echo json_encode($errors);
     }
-
 }
