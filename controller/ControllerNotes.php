@@ -240,15 +240,8 @@ class ControllerNotes extends Controller
     private function getDataToUpdate(array $list_filter): array
     {
         $user = $this->get_user_or_redirect();
-        $personal_notes = $user->get_notes_searched($list_filter);
+        $notes_searched["personal"] = $user->get_notes_searched($list_filter);
         $users_shared_notes = $user->get_users_shared_note();
-        $shared_notes = [];
-        foreach ($users_shared_notes as $u) {
-            $note_by_someone = $user->get_notes_with_label_shared_by($u->get_Id(), $list_filter);
-            if (count($note_by_someone) > 0) {
-                $shared_notes[$u->get_Full_Name()] = $note_by_someone;
-            }
-        }
 
         $list_label = $user->get_filter_list();
         $new_list_label = [];
@@ -261,9 +254,17 @@ class ControllerNotes extends Controller
             }
             $new_list_label[$label] = $checked;
         }
+
+        $notes_searched["shared"] = [];
+
+        foreach ($users_shared_notes as $u) {
+            $note_by_someone = $user->get_notes_with_label_shared_by($u->get_Id(), $list_filter);
+            if (count($note_by_someone) > 0) {
+                $notes_searched["shared"][$u->get_Full_Name()] = $note_by_someone;
+            }
+        }
         $data_to_update = [
-            "personal" => $personal_notes,
-            "shared" => $shared_notes,
+            "notes_searched" => $notes_searched,
             "users_shared_notes" => $users_shared_notes,
             "list_label" => $new_list_label
         ];

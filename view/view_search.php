@@ -4,10 +4,6 @@ require_once "tools.php";
 $title_page = Page::Search->value . " my notes";
 include("./utils/header.php");
 
-//$editor_note = $notes_shared["editor"];
-//$reader_note = $notes_shared["reader"];
-//$base_title_component = "Notes shared by " . $full_name . " as ";
-
 $personal_notes = $notes_searched['personal'];
 $shared_notes = $notes_searched['shared'];
 
