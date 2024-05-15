@@ -128,7 +128,7 @@ function show_notes(arrNotes, title, titlePage, param, sectionClass, append = fa
                     html += '</button>';
                     html += '</form>';
                     labels.forEach(function(label) {
-                        html += '<span class="badge rounded-pill bg-secondary opacity-50">' + label.labelName + '</span>';
+                        html += ' <span class="badge rounded-pill bg-secondary opacity-50">' + label.labelName + '</span>';
                     });
                 }
                 html += '</div>';
