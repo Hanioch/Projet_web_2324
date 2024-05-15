@@ -32,30 +32,37 @@ if (count($list_label) > 0) {
         </noscript>
     </form>
     <hr>
-    <div class="notes-section"></div>
-<?php
-}
+    <div class="notes_personal">
+        <?php
+        }
 
-if (count($personal_notes) > 0) {
-    show_note($personal_notes, "Your notes : ", $title_page);
-}
+        if (count($personal_notes) > 0) {
+            show_note($personal_notes, "Your notes : ", $title_page);
+        }
+        ?>
+    </div>
+    <div class="notes_shared">
+        <?php
+        foreach ($shared_notes as $user_shared => $ns) {
+            show_note($ns, "Notes shared by " . $user_shared . " :", $title_page);
+        }
+        ?>
+    </div>
+    <div class="notes_no">
+        <?php
+        if (count($personal_notes) === 0 && count($shared_notes) === 0) {
+        ?>
+            <h4 class="title-note">
+                No note matches.
+            </h4>
+        <?php
+        }
+        ?>
+    </div>
 
-foreach ($shared_notes as $user_shared => $ns) {
-    show_note($ns, "Notes shared by " . $user_shared . " :", $title_page);
-}
-
-if (count($personal_notes) === 0 && count($shared_notes) === 0) {
-?>
-    <h4 class="title-note">
-        No note matches.
-    </h4>
-<?php
-}
-
-?>
-</div>
-
-</div>
+    <script>
+        var titlePage = "<?php echo $title_page; ?>";
+    </script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="js/scriptSearch.js"></script>
 <?php

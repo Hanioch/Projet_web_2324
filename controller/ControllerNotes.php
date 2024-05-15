@@ -237,8 +237,19 @@ class ControllerNotes extends Controller
             echo json_encode(["error" => "Method Not Allowed"]);
         }
     }
+    public function get_labels_service(): void
+    {
+        $noteId = intval($_POST['note_id'] ?? 0);
+        if ($noteId !== 0) {
+            $labels = Label::get_labels_by_note_id($noteId);
+            echo json_encode($labels);
+        }
+    }
     private function getDataToUpdate(array $list_filter): array
     {
+        if (count($list_filter) > 0) {
+            $list_filter_encoded = Utils::url_safe_encode($list_filter);
+        }
         $user = $this->get_user_or_redirect();
         $notes_searched["personal"] = $user->get_notes_searched($list_filter);
         $users_shared_notes = $user->get_users_shared_note();
@@ -266,7 +277,8 @@ class ControllerNotes extends Controller
         $data_to_update = [
             "notes_searched" => $notes_searched,
             "users_shared_notes" => $users_shared_notes,
-            "list_label" => $new_list_label
+            "list_label" => $new_list_label,
+            "list_filter_encoded"=>$list_filter_encoded ?? null,
         ];
 
         return $data_to_update;

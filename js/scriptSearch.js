@@ -13,28 +13,37 @@ $(document).ready(function() {
             data: filters,
             dataType: 'json',
             success: function(response) {
-                if (response.notes_searched.personal.length > 0) {
-                    afficherNotes(response.notes_searched.personal, "Vos notes :", "Search my notes");
+                $('.notes_no').html('');
+                $('.notes_personal').html('');
+                $('.notes_shared').html('');
+                let personal_notes = response.notes_searched['personal'];
+                let shared_notes = response.notes_searched['shared'];
+                if (personal_notes.length > 0) {
+                    show_notes(personal_notes, "Your notes:", titlePage, response.list_filter_encoded,".notes_personal");
                 }
-
-                for (const utilisateur in response.notes_searched.shared) {
-                    const notesPartagees = response.notes_searched.shared[utilisateur];
-                    const titrePartage = "Notes partagées par " + utilisateur + " :";
-                    afficherNotes(notesPartagees, titrePartage, "Search my notes");
+                if (!isEmptyObject(shared_notes)) {
+                    for (const user_shared in shared_notes) {
+                        let notes_shared_by_user = shared_notes[user_shared];
+                        show_notes(notes_shared_by_user, "Notes shared by " + user_shared + ":", titlePage, response.list_filter_encoded,".notes_shared", true);
+                    }
                 }
-
-                if (response.notes_searched.personal.length === 0 && Object.values(response.notes_searched.shared).every(notes => notes.length === 0)) {
-                    const aucunElement = document.createElement('h4');
-                    aucunElement.classList.add('title-note');
-                    aucunElement.textContent = 'Aucune note ne correspond.';
-                    const container = document.querySelector('.notes-section');
-                    container.appendChild(aucunElement);
+                if (!personal_notes.length > 0 && isEmptyObject(shared_notes)) {
+                    $('.notes_no').html('<h4 class="title-note">No note matches.</h4>');
                 }
-               /* var currentUrl = window.location.href;
-
-                var newUrl = currentUrl + 'ok';
-
-                window.location.href = newUrl;*/
+                if (response.list_filter_encoded != null && response.list_filter_encoded.trim() !== '') {
+                    var baseUrl = 'http://localhost/prwb_2324_a04/notes/search';
+                    var newUrl = baseUrl + '/' + response.list_filter_encoded;
+                    history.pushState(null, null, newUrl);
+                } else {
+                    var baseUrl = 'http://localhost/prwb_2324_a04/notes/search';
+                    var currentUrl = window.location.href;
+                    var urlParts = currentUrl.split('/');
+                    if (urlParts[urlParts.length - 1].match(/^[0-9a-zA-Z]+$/)) {
+                        urlParts.pop();
+                    }
+                    var newUrl = urlParts.join('/');
+                    history.pushState(null, null, newUrl);
+                }
             },
             error: function(xhr, status, error) {
                 console.error(xhr.responseText);
@@ -44,67 +53,97 @@ $(document).ready(function() {
         });
     });
 });
-function afficherNotes(arrNotes, titre, titrePage) {
-    const container = document.querySelector('.notes-section');
-    container.innerHTML = ''; // Effacer le contenu précédent
 
-    if (arrNotes.length > 0) {
-        const titreElement = document.createElement('h4');
-        titreElement.classList.add('title-note');
-        titreElement.textContent = titre;
-        container.appendChild(titreElement);
-
-        arrNotes.forEach(note => {
-            const noteElement = document.createElement('li');
-            noteElement.id = note.id;
-            noteElement.classList.add('note');
-            noteElement.classList.add('ui-state-default');
-
-            const lien = document.createElement('a');
-            lien.href = `./Notes/open_note/${note.id}`;
-            lien.classList.add('link-open-note');
-            noteElement.appendChild(lien);
-
-            const enTete = document.createElement('div');
-            enTete.classList.add('header-in-note');
-            enTete.textContent = note.titre;
-            lien.appendChild(enTete);
-
-            const corps = document.createElement('div');
-            corps.classList.add('body-note');
-            lien.appendChild(corps);
-
-            const contenu = document.createElement('p');
-            contenu.classList.add('card-text');
-            contenu.classList.add('mb-0');
-            const longueurMaxContenu = 75;
-            contenu.textContent = note.contenu ?
-                (note.contenu.length > longueurMaxContenu ?
-                    note.contenu.substring(0, longueurMaxContenu) + '...' :
-                    note.contenu) : '';
-            corps.appendChild(contenu);
-
-            const conteneurLabel = document.createElement('div');
-            conteneurLabel.classList.add('form-check');
-            lien.appendChild(conteneurLabel);
-
-            if (note.labels && note.labels.length > 0) {
-                note.labels.forEach(label => {
-                    const spanLabel = document.createElement('span');
-                    spanLabel.classList.add('badge');
-                    spanLabel.classList.add('rounded-pill');
-                    spanLabel.classList.add('bg-secondary');
-                    spanLabel.classList.add('opacity-50');
-                    spanLabel.textContent = label.nom_label;
-                    conteneurLabel.appendChild(spanLabel);
-                });
-            }
-            container.appendChild(noteElement);
-        });
-    } else {
-        const elementAucuneCorrespondance = document.createElement('h4');
-        elementAucuneCorrespondance.classList.add('title-note');
-        elementAucuneCorrespondance.textContent = 'Aucune note ne correspond.';
-        container.appendChild(elementAucuneCorrespondance);
+function isEmptyObject(obj) {
+    for (var key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+            return false;
+        }
     }
+    return true;
 }
+function show_notes(arrNotes, title, titlePage, param, sectionClass, append = false) {
+    var html = '';
+    html += '<h4 class="title-note">' + title + '</h4>';
+    var isParamExist = !!param;
+    html += '<ul id="sortable" class="list-note connectedSortable">';
+
+    var labelPromises = arrNotes.map(function(note) {
+        return new Promise(function(resolve, reject) {
+            $.ajax({
+                type: 'POST',
+                url: 'notes/get_labels_service',
+                data: {note_id: note.id},
+                dataType: 'json',
+                success: function(response) {
+                    resolve(response);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching labels:', error);
+                    reject();
+                }
+            });
+        });
+    });
+
+    Promise.all(labelPromises)
+        .then(function(labelResponses) {
+            arrNotes.forEach(function(note, index) {
+                var openNoteUrl = "./Notes/open_note/" + note.id;
+                if (isParamExist) {
+                    openNoteUrl += "/" + param;
+                }
+
+                html += '<li id="' + note.id + '" class="note ui-state-defaultui-state-default">';
+                html += '<a href="' + openNoteUrl + '" class="link-open-note">';
+                html += '<div class="header-in-note">' + note.title + '</div>';
+                html += '<div class="body-note">';
+                if (note.content) {
+                    var maxLg = 75;
+                    var contentSub = note.content.length > maxLg ? note.content.substring(0, maxLg) + "..." : note.content;
+                    html += '<p class="card-text mb-0">' + contentSub + '</p>';
+                } else {
+                    var items = note.list_item;
+                    var listItemShowable = items.length > 3 ? items.slice(0, 3) : items;
+                    listItemShowable.forEach(function(item) {
+                        var maxLg = 15;
+                        var contentSub = item.content.length > maxLg ? item.content.substring(0, maxLg) + "..." : item.content;
+                        html += '<div class="form-check">';
+                        html += '<input class="form-check-input cursor-pointer" type="checkbox" value=""' + (item.checked ? ' checked' : '') + ' disabled>';
+                        html += '<label class="form-check-label cursor-pointer">' + contentSub + '</label>';
+                        html += '</div>';
+                    });
+                    if (items.length > 3) {
+                        html += '<p class="card-text">...</p>';
+                    }
+                }
+                html += '</div>';
+                html += '<div class="form-check">';
+                var labels = labelResponses[index];
+                if (labels && labels.length > 0) {
+                    html += '<form action="notes/edit_labels/' + note.id + '" method="POST" class="navbar-brand d-inline-block">';
+                    html += '<input type="hidden" name="note_id" value="' + note.id + '">';
+                    html += '<button type="submit" class="btn-icon" style="background: none; border: none; color: inherit; ">';
+                    html += '<i class="bi bi-tag"></i>';
+                    html += '</button>';
+                    html += '</form>';
+                    labels.forEach(function(label) {
+                        html += '<span class="badge rounded-pill bg-secondary opacity-50">' + label.labelName + '</span>';
+                    });
+                }
+                html += '</div>';
+                html += '</a>';
+                html += '</li>';
+            });
+
+            if (append) {
+                $(sectionClass).append(html);
+            } else {
+                document.querySelector(sectionClass).innerHTML = html;
+            }
+        })
+        .catch(function() {
+            console.error('Une ou plusieurs requêtes AJAX ont échoué.');
+        });
+}
+
