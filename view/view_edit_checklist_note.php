@@ -118,7 +118,7 @@ include("./utils/header_add_note.php");
     const noteId = <?= $note->get_Id() ?>;
 </script>
 <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
-<script src="js/scriptModalEdit.js"></script>
 <script src="js/scriptEditChecklistNote.js"></script>
+<script src="js/scriptModalEdit.js"></script>
 
 <?php include('./utils/footer.php'); ?>

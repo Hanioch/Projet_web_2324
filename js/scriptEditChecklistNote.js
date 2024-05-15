@@ -74,8 +74,6 @@ function handleAddKeyPress() {
         $("#add_item").addClass("is-valid");
         $("#add_button").prop("disabled", false);
       }
-      handleRemoveClick();
-      handleAddClick();
     });
   });
 }
@@ -106,8 +104,6 @@ function handleTitleKeyPress() {
         $("#titleNote").addClass("is-valid");
         $("#error_title_span").remove();
       }
-      handleRemoveClick();
-      handleAddClick();
     });
   });
 }
@@ -126,7 +122,6 @@ function handleRemoveClick() {
       }).done(function () {
         $("#list_items_" + itemId).remove();
         $("#save_button").prop("disabled", false).css("opacity", "1");
-        handleAddClick();
       });
     });
   });
@@ -202,22 +197,6 @@ function displayItem(itemJson, itemElem) {
       itemElem.removeClass("is-valid");
       itemElem.addClass("is-invalid");
       let html = "";
-      /*
-      for (let itemId in itemJson.errors) {
-        for (let error of itemJson.errors[itemId]) {
-          html +=
-              "<div id='error_text_" +
-              itemId +
-              "' class='error-add-note pt-1'>" +
-              error +
-              "</div>";
-          // $("#" + itemId).append(html);
-          console.log("#list_items_" + itemId);
-          $("#error_text_" + itemId).remove();
-          $("#list_items_" + itemId).append(html);
-        }
-      }
-      */
 
       for (let error of itemJson.errors["item" + itemJson.id]) {
         html +=
@@ -231,8 +210,6 @@ function displayItem(itemJson, itemElem) {
 
       $("#error_text_" + itemJson.id).remove();
       $("#list_items_" + itemJson.id).append(html);
-      handleRemoveClick();
-      handleAddClick();
     }
   }
 }
@@ -272,8 +249,6 @@ function displayItems(itemsJson) {
     html += "</div>";
     html += "</li>";
   }
-  handleRemoveClick();
-  handleAddClick();
   return html;
 }
 
