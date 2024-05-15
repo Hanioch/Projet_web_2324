@@ -347,4 +347,19 @@ class Note extends MyModel
     {
         return Model::lastInsertId();
     }
+
+    public function get_items(): array
+    {
+        $checklistNoteId = $this->get_Id();
+        $query = self::execute(
+            "SELECT cni.*, n.title, n.owner, n.pinned, n.archived, n.weight, n.created_at, n.edited_at FROM checklist_note_items cni JOIN notes n ON n.id = cni.checklist_note WHERE checklist_note = :checklist_note ORDER BY cni.checked ASC, cni.id ASC",
+            ["checklist_note" => $checklistNoteId]
+        );
+        $data = $query->fetchAll();
+        $items = [];
+        foreach ($data as $row) {
+            $items[] = new ChecklistNoteItems($row['content'], $row['checked'], $row['checklist_note'], $row['id']);
+        }
+        return $items;
+    }
 }

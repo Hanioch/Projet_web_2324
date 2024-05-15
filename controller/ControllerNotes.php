@@ -355,7 +355,7 @@ class ControllerNotes extends Controller
         $user = $this->get_user_or_redirect();
         $user_id = $user->get_Id();
         $note = ChecklistNote::get_note($note_id);
-        $items = ChecklistNoteItems::get_items_by_checklist_note_id($note_id);
+        $items = $note->get_items();
 
         //On verifie les erreurs. 
         if (!($note instanceof Note)) {
@@ -394,7 +394,7 @@ class ControllerNotes extends Controller
             } else if (isset($_POST['add_button'])) {
                 $errors = $this->add_item($checklist_note, $errors);
                 if (empty($errors)) {
-                    $items = ChecklistNoteItems::get_items_by_checklist_note_id($note_id);
+                    $items = $checklist_note->get_items();
                     $errors = array_merge($errors, $this->edit_title($note, $errors));
 
                     $is_list_filter_exist = isset($_GET["param2"]);
@@ -408,7 +408,7 @@ class ControllerNotes extends Controller
             } else if (isset($_POST['remove_button'])) {
                 $item = ChecklistNoteItems::get_checklist_note_item_by_id($_POST['remove_button']);
                 $item->delete();
-                $items = ChecklistNoteItems::get_items_by_checklist_note_id($note_id);
+                $items = $checklist_note->get_items();
                 $errors = $this->edit_title($note, $errors);
 
                 $is_list_filter_exist = isset($_GET["param2"]);
@@ -650,7 +650,7 @@ class ControllerNotes extends Controller
                     $id_sender = $note->get_Owner()->get_Id();
                     $isChecklistNote = Note::is_checklist_note($noteId);
                     if ($isChecklistNote) {
-                        $checklistItems = ChecklistNoteItems::get_items_by_checklist_note_id($noteId);
+                        $checklistItems = $note->get_items();
                     } else {
                         $text = TextNote::get_text_note($noteId);
                     }
@@ -848,9 +848,10 @@ class ControllerNotes extends Controller
     {
         $noteId = $_POST['note_id'];
         $itemId = $_POST['item_id'];
+        $cln = ChecklistNote::get_note($noteId);
         $item = ChecklistNoteItems::get_checklist_note_item_by_id($itemId);
         $item->toggle_Checkbox();
-        $items = ChecklistNoteItems::get_items_by_checklist_note_id($noteId);
+        $items = $cln->get_items();
         $table = [];
         /** @var CheckListNoteItems $i */
         foreach ($items as $i) {
@@ -930,8 +931,7 @@ class ControllerNotes extends Controller
         $checklist_note = new ChecklistNote($note->get_Title(), $note->get_Owner(), $note->is_Pinned(), $note->is_Archived(), $note->get_Weight(), $note->get_Id());
         $errors = [];
         $this->add_item($checklist_note, $errors);
-
-        $items = ChecklistNoteItems::get_items_by_checklist_note_id($noteId);
+        $items = $note->get_items();
         $table = [];
         /** @var CheckListNoteItems $i */
         foreach ($items as $i) {
