@@ -1,6 +1,6 @@
 <?php
 
-class TextNote extends Note
+class TextNote extends Note implements JsonSerializable
 {
 
     public function __construct(private string $title, private User $owner, private  bool $pinned, private bool $archived, private $weight, private ?string $content, private ?int $id = NULL, private ?string $created_at = NULL, private ?string $edited_at = NULL)
@@ -82,5 +82,11 @@ class TextNote extends Note
         } else {
             return $errors;
         }
+    }
+    public function jsonSerialize(): mixed
+    {
+        $vars = get_object_vars($this);
+
+        return $vars;
     }
 }

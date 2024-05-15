@@ -4,7 +4,7 @@ require_once "model/MyModel.php";
 require_once "model/User.php";
 require_once "model/Note.php";
 
-class Label extends MyModel {
+class Label extends MyModel implements JsonSerializable {
     public function __construct(private ?int $noteId, private string $labelName, private ?int $id = NULL) {}
 
     public function get_id(): ?int
@@ -131,5 +131,11 @@ class Label extends MyModel {
             $content = ucfirst($content);
         }
         return $content;
+    }
+    public function jsonSerialize(): mixed
+    {
+        $vars = get_object_vars($this);
+
+        return $vars;
     }
 }

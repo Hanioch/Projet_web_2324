@@ -2,7 +2,7 @@
 
 require_once "model/Note.php";
 
-class ChecklistNote extends Note
+class ChecklistNote extends Note implements JsonSerializable
 {
     public function __construct(private string $title, private User $owner, private  bool $pinned, private bool $archived, private int $weight, private ?int $id = NULL, private ?string $created_at = NULL, private ?string $edited_at = NULL, private ?array $list_item = NULL)
     {
@@ -157,5 +157,11 @@ class ChecklistNote extends Note
         }
 
         return $items;
+    }
+    public function jsonSerialize(): mixed
+    {
+        $vars = get_object_vars($this);
+
+        return $vars;
     }
 }
