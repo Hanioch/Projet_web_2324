@@ -133,15 +133,15 @@ class ControllerNotes extends Controller
         if ($current_note instanceof Note) {
             $other_note = $current_note->get_nearest_note($is_more);
             if ($other_note instanceof Note) {
-                $weight_current = $current_note->get_Weight();
-                $weight_other = $other_note->get_Weight();
+                $weight_current = $current_note->get_weight();
+                $weight_other = $other_note->get_weight();
                 $user = $this->get_user_or_redirect();
 
-                $other_note->set_Weight($user->get_heaviest_note() + 1);
+                $other_note->set_weight($user->get_heaviest_note() + 1);
                 $other_note->persist();
-                $current_note->set_Weight($weight_other);
+                $current_note->set_weight($weight_other);
                 $current_note->persist();
-                $other_note->set_Weight($weight_current);
+                $other_note->set_weight($weight_current);
                 $other_note->persist();
             }
         }

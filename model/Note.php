@@ -301,9 +301,9 @@ abstract class Note extends MyModel
     }
 
 
-    public static function is_checklist_note(int $id): bool
+    public function is_checklist_note(): bool
     {
-        $query = self::execute("SELECT id FROM checklist_notes WHERE id = :id", ["id" => $id]);
+        $query = self::execute("SELECT id FROM checklist_notes WHERE id = :id", ["id" => $this->get_id()]);
         return $query->rowCount() > 0;
     }
     public function toggle_Pin(): static
