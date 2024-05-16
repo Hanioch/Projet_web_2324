@@ -1047,7 +1047,7 @@ class ControllerNotes extends Controller
 
         $this->redirect("notes", "open_note/$noteId");
     }
-    public function delete()
+    public function delete(): void
     {
         $user = $this->get_user_or_redirect();
 
@@ -1061,37 +1061,6 @@ class ControllerNotes extends Controller
                 $this->redirect("notes");
             }
         }
-    }
-    public function confirm_delete(): void
-    {
-        $noteId = filter_var($_GET['param1'], FILTER_VALIDATE_INT);
-        $user = $this->get_user_or_redirect();
-        $userId = $user->get_Id();
-        $note = null;
-        $error = "";
-
-        if ($noteId === false) {
-            $error = "Identifiant de note invalide.";
-        } else {
-            $note = Note::get_note($noteId);
-            if (!($note instanceof Note)) {
-                $error = "Note introuvable.";
-            } else {
-                $canAccess = ($note->get_Owner()->get_Id() === $userId);
-                if (!$canAccess) {
-                    $error = "Accès non autorisé.";
-                } elseif (!$note->is_Archived()) {
-                    $error = "Note non archivée.";
-                }
-            }
-        }
-        $headerType = 'login';
-        (new View("confirm_delete"))->show([
-            "error" => $error,
-            "note" => $note,
-            "canAccess" => $canAccess,
-            "headerType" => $headerType
-        ]);
     }
 
     public function delete_using_js(): void
