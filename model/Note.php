@@ -254,7 +254,16 @@ class Note extends MyModel implements JsonSerializable
             return $errors;
         }
     }
-
+    public function persist_head(): Note|array
+    {
+        $errors = $this->validate();
+        if (empty($errors)) {
+            if ($this->id == NULL) return self::add_note_in_DB();
+            else return self::modify_head_in_DB();
+        } else {
+            return $errors;
+        }
+    }
     protected function add_note_in_DB(): Note
     {
         self::execute(
