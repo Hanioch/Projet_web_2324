@@ -51,7 +51,7 @@ class ControllerNotes extends Controller
 
         if ($is_switched_column) {
             $note_moved->set_Pinned(!$is_note_moved_pinned);
-            $note_moved->persist();
+            $note_moved->persist_head();
             $is_note_moved_pinned = $note_moved->is_Pinned();
         }
 
@@ -138,11 +138,11 @@ class ControllerNotes extends Controller
                 $user = $this->get_user_or_redirect();
 
                 $other_notes->set_Weight($user->get_heaviest_note() + 1);
-                $other_notes->persist();
+                $other_notes->persist_head();
                 $current_note->set_Weight($weight_other);
-                $current_note->persist();
+                $current_note->persist_head();
                 $other_notes->set_Weight($weight_current);
-                $other_notes->persist();
+                $other_notes->persist_head();
             }
         }
     }
@@ -158,11 +158,11 @@ class ControllerNotes extends Controller
                 $user = $this->get_user_or_redirect();
 
                 $other_notes->set_Weight($user->get_heaviest_note() + 1);
-                $other_notes->persist();
+                $other_notes->persist_head();
                 $current_note->set_Weight($weight_other);
-                $current_note->persist();
+                $current_note->persist_head();
                 $other_notes->set_Weight($weight_current);
-                $other_notes->persist();
+                $other_notes->persist_head();
             }
         }
     }
