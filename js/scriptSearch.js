@@ -8,7 +8,6 @@ $(document).ready(function() {
                 filters[name] = 'on';
             }
         });
-
         $.ajax({
             type: 'POST',
             url: 'notes/search_service',
@@ -29,7 +28,6 @@ $(document).ready(function() {
                     let sortedSharedNotes = sortSharedNotes(shared_notes);
                     for (const user_shared in sortedSharedNotes) {
                         let notes_shared_by_user = sortedSharedNotes[user_shared];
-                        console.log(notes_shared_by_user)
                         show_notes(notes_shared_by_user, "Notes shared by " + user_shared + " :", titlePage, response.list_filter_encoded, ".notes_shared", true);
                     }
                 }
@@ -117,23 +115,27 @@ function show_notes(arrNotes, title, titlePage, param, sectionClass, append = fa
                 html += '<a href="' + openNoteUrl + '" class="link-open-note">';
                 html += '<div class="header-in-note">' + note.title + '</div>';
                 html += '<div class="body-note">';
-                if (note.content) {
+                if (note.content != null && note.content !== '') {
                     var maxLg = 75;
                     var contentSub = note.content.length > maxLg ? note.content.substring(0, maxLg) + "..." : note.content;
                     html += '<p class="card-text mb-0">' + contentSub + '</p>';
                 } else {
                     var items = note.list_item;
-                    var listItemShowable = items.length > 3 ? items.slice(0, 3) : items;
-                    listItemShowable.forEach(function(item) {
-                        var maxLg = 15;
-                        var contentSub = item.content.length > maxLg ? item.content.substring(0, maxLg) + "..." : item.content;
-                        html += '<div class="form-check">';
-                        html += '<input class="form-check-input cursor-pointer" type="checkbox" value=""' + (item.checked ? ' checked' : '') + ' disabled>';
-                        html += '<label class="form-check-label cursor-pointer">' + contentSub + '</label>';
-                        html += '</div>';
-                    });
-                    if (items.length > 3) {
-                        html += '<p class="card-text">...</p>';
+                    if (items && items.length > 0) {
+                        var listItemShowable = items.length > 3 ? items.slice(0, 3) : items;
+                        listItemShowable.forEach(function(item) {
+                            var maxLg = 15;
+                            var contentSub = item.content.length > maxLg ? item.content.substring(0, maxLg) + "..." : item.content;
+                            html += '<div class="form-check">';
+                            html += '<input class="form-check-input cursor-pointer" type="checkbox" value=""' + (item.checked ? ' checked' : '') + ' disabled>';
+                            html += '<label class="form-check-label cursor-pointer">' + contentSub + '</label>';
+                            html += '</div>';
+                        });
+                        if (items.length > 3) {
+                            html += '<p class="card-text">...</p>';
+                        }
+                    } else {
+                        html += '';
                     }
                 }
                 html += '</div>';
