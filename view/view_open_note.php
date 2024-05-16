@@ -42,7 +42,9 @@ if (isset($headerType) && empty($error)) {
     </div>
 </div>
 <!-- fin -->
-<span id="idNote" value="<?= $note->get_Id() ?>" style="display: none;"></span>
+<?php if ($note !== null) : ?>
+    <span id="idNote" value="<?= $note->get_Id() ?>" style="display: none;"></span>
+<?php endif; ?>
 <?php if (isset($error) && !empty($error)) : ?>
     <div class="alert alert-danger" role="alert">
         <?= $error ?>

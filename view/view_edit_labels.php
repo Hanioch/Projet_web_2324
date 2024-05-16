@@ -4,7 +4,11 @@ $id_form = "form_edit_labels";
 include("./utils/header_edit_labels.php");
 
 ?>
-
+<?php if (isset($error) && !empty($error)) : ?>
+    <div class="alert alert-danger" role="alert">
+        <?= $error ?>
+    </div>
+<?php else : ?>
 <div class="card-body">
     <span id="idNote" value="<?= $note->get_Id() ?>" style="display: none;"></span>
 
@@ -61,6 +65,7 @@ include("./utils/header_edit_labels.php");
             <?php endif; ?>
         </div>
     </div>
+    <?php endif; ?>
 </div>
 
 <script>

@@ -688,7 +688,8 @@ class ControllerNotes extends Controller
 
     public function open_note(int $id = -1): void
     {
-        $noteId = $id !== -1 ? $id : filter_var($_GET['param1'], FILTER_VALIDATE_INT);
+        $noteId = isset($_GET['param1']) ? filter_var($_GET['param1'], FILTER_VALIDATE_INT) : false;
+        //$noteId = isset($_GET['param1']) ? ($id !== -1 ? $id : filter_var($_GET['param1'], FILTER_VALIDATE_INT)) : false;
         $user = $this->get_user_or_redirect();
         $userId = $user->get_Id();
         $error = "";
@@ -707,7 +708,7 @@ class ControllerNotes extends Controller
                 }
 
                 $canAccess = ($note->get_Owner()->get_Id() === $userId) || $isSharedNote;
-                if (!$canAccess) {
+                if (!$canAccess || !$canEdit) {
                     $error = "Accès non autorisé.";
                 } else {
                     $id_sender = $note->get_Owner()->get_Id();
@@ -1178,40 +1179,61 @@ class ControllerNotes extends Controller
     public function edit_labels(): void
     {
         $user = $this->get_user_or_redirect();
-        $noteId = filter_var($_GET['param1'], FILTER_VALIDATE_INT);
-        $note = ChecklistNote::get_note($noteId);
-        $labels = Label::get_labels_by_note_id($noteId);
-        $labelsByUser = Label::get_labels_by_user_id($user->get_Id());
-        $labelsToSuggest = $this->get_labels_to_suggest($labelsByUser, $labels);
-        $errors = [];
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if (isset($_POST['remove_button'])) {
-                $labelName = ($_POST['remove_button']);
-                $labelToDelete = Label::get_label_by_note_id_and_label_name($note->get_Id(), $labelName);
-                $labelToDelete->delete();
-                $labels = Label::get_labels_by_note_id($note->get_Id());
-                $labelsByUser = Label::get_labels_by_user_id($user->get_Id());
-                $labelsToSuggest = $this->get_labels_to_suggest($labelsByUser, $labels);
-                $this->redirect("notes", "edit_labels", $noteId);
-            } else if (isset($_POST['add_button']) && (trim(($_POST['new_label']) > 0) || ($_POST['new_label']) === "")) {
-                $labelName = Label::fix_label_format($_POST['new_label']);
-                $errors = Label::validate_label($labelName, $noteId);
+        $noteId = isset($_GET['param1']) ? filter_var($_GET['param1'], FILTER_VALIDATE_INT) : false;
 
-                if (empty($errors['label'])) {
-                    $newLabel = new Label($noteId, $labelName);
-                    $newLabel->persist();
-                    $this->redirect("notes", "edit_labels", $noteId);
+        $errors = [];
+        $error = "";
+        if ($noteId === false) {
+            $error = "Identifiant de note invalide.";
+        } else {
+            $note = Note::get_note($noteId);
+            $userId = $user->get_Id();
+            $labels = Label::get_labels_by_note_id($noteId);
+            $labelsByUser = Label::get_labels_by_user_id($userId);
+            $labelsToSuggest = $this->get_labels_to_suggest($labelsByUser, $labels);
+            if (!($note instanceof Note)) {
+                $error = "Note introuvable.";
+            } else {
+                $isSharedNote = NoteShare::is_Note_Shared_With_User($noteId, $userId);
+                $canEdit = True;
+                if ($isSharedNote) {
+                    $canEdit = NoteShare::can_Edit($noteId, $userId);
+                }
+                $canAccess = ($note->get_Owner()->get_Id() === $userId) || $isSharedNote;
+                if (!$canAccess || !$canEdit) {
+                    $error = "Accès non autorisé.";
+                } else {
+                    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                        if (isset($_POST['remove_button'])) {
+                            $labelName = ($_POST['remove_button']);
+                                $labelToDelete = Label::get_label_by_note_id_and_label_name($note->get_Id(), $labelName);
+                            $labelToDelete->delete();
+                            $labels = Label::get_labels_by_note_id($note->get_Id());
+                            $labelsByUser = Label::get_labels_by_user_id($userId);
+                            $labelsToSuggest = $this->get_labels_to_suggest($labelsByUser, $labels);
+                            $this->redirect("notes", "edit_labels", $noteId);
+                        } else if (isset($_POST['add_button']) && (trim(($_POST['new_label']) > 0) || ($_POST['new_label']) === "")) {
+                            $labelName = Label::fix_label_format($_POST['new_label']);
+                            $errors = Label::validate_label($labelName, $noteId);
+
+                            if (empty($errors['label'])) {
+                                $newLabel = new Label($noteId, $labelName);
+                                $newLabel->persist();
+                                $this->redirect("notes", "edit_labels", $noteId);
+                            }
+                        }
+                    }
                 }
             }
         }
-
         (new View("edit_labels"))->show([
-            'note' => $note,
+            'note' => $note ?? null,
             'user' => $user,
             'note_id' => $noteId,
-            'labels' => $labels,
-            'labels_to_suggest' => $labelsToSuggest,
-            'errors' => $errors
+            'labels' => $labels ?? null,
+            'labels_to_suggest' => $labelsToSuggest ?? null,
+            'errors' => $errors,
+            'error'=> $error
         ]);
     }
 
