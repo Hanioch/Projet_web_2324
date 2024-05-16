@@ -1,4 +1,5 @@
 $(document).ready(function() {
+
     $('input[type="checkbox"]').change(function() {
         var filters = {};
         $('input[type="checkbox"]:checked').each(function() {
@@ -7,6 +8,7 @@ $(document).ready(function() {
                 filters[name] = 'on';
             }
         });
+
         $.ajax({
             type: 'POST',
             url: 'notes/search_service',
@@ -16,43 +18,45 @@ $(document).ready(function() {
                 $('.notes_no').html('');
                 $('.notes_personal').html('');
                 $('.notes_shared').html('');
+
                 let personal_notes = response.notes_searched['personal'];
-                let shared_notes = response.notes_searched['shared'];
                 if (personal_notes.length > 0) {
-                    show_notes(personal_notes, "Your notes:", titlePage, response.list_filter_encoded,".notes_personal");
+                    show_notes(personal_notes, "Your notes :", titlePage, response.list_filter_encoded, ".notes_personal");
                 }
+
+                let shared_notes = response.notes_searched['shared'];
                 if (!isEmptyObject(shared_notes)) {
-                    for (const user_shared in shared_notes) {
-                        let notes_shared_by_user = shared_notes[user_shared];
-                        show_notes(notes_shared_by_user, "Notes shared by " + user_shared + ":", titlePage, response.list_filter_encoded,".notes_shared", true);
+                    let sortedSharedNotes = sortSharedNotes(shared_notes);
+                    for (const user_shared in sortedSharedNotes) {
+                        let notes_shared_by_user = sortedSharedNotes[user_shared];
+                        console.log(notes_shared_by_user)
+                        show_notes(notes_shared_by_user, "Notes shared by " + user_shared + " :", titlePage, response.list_filter_encoded, ".notes_shared", true);
                     }
                 }
-                if (!personal_notes.length > 0 && isEmptyObject(shared_notes)) {
-                    $('.notes_no').html('<h4 class="title-note">No note matches.</h4>');
-                }
-                if (response.list_filter_encoded != null && response.list_filter_encoded.trim() !== '') {
-                    var baseUrl = 'http://localhost/prwb_2324_a04/notes/search';
-                    var newUrl = baseUrl + '/' + response.list_filter_encoded;
-                    history.pushState(null, null, newUrl);
-                } else {
-                    var baseUrl = 'http://localhost/prwb_2324_a04/notes/search';
-                    var currentUrl = window.location.href;
-                    var urlParts = currentUrl.split('/');
-                    if (urlParts[urlParts.length - 1].match(/^[0-9a-zA-Z]+$/)) {
-                        urlParts.pop();
-                    }
-                    var newUrl = urlParts.join('/');
-                    history.pushState(null, null, newUrl);
-                }
+                updateURL(response);
             },
             error: function(xhr, status, error) {
-                console.error(xhr.responseText);
-                console.error(status)
-                console.error(error)
+                console.error('Error fetching shared notes:', error);
             }
         });
     });
 });
+
+function updateURL(response) {
+    if (response.list_filter_encoded != null && response.list_filter_encoded.trim() !== '') {
+        var baseUrl = 'http://localhost/prwb_2324_a04/notes/search';
+        var newUrl = baseUrl + '/' + response.list_filter_encoded;
+        history.pushState(null, null, newUrl);
+    } else {
+        var currentUrl = window.location.href;
+        var urlParts = currentUrl.split('/');
+        if (urlParts[urlParts.length - 1].match(/^[0-9a-zA-Z]+$/)) {
+            urlParts.pop();
+        }
+        var newUrl = urlParts.join('/');
+        history.pushState(null, null, newUrl);
+    }
+}
 
 function isEmptyObject(obj) {
     for (var key in obj) {
@@ -62,6 +66,21 @@ function isEmptyObject(obj) {
     }
     return true;
 }
+
+function sortSharedNotes(shared_notes) {
+    if (typeof shared_notes === 'object' && shared_notes !== null) {
+        let userNames = Object.keys(shared_notes);
+        userNames.sort();
+        let sortedSharedNotes = {};
+        userNames.forEach(userName => {
+            sortedSharedNotes[userName] = shared_notes[userName];
+        });
+        return sortedSharedNotes;
+    } else {
+        return {};
+    }
+}
+
 function show_notes(arrNotes, title, titlePage, param, sectionClass, append = false) {
     var html = '';
     html += '<h4 class="title-note">' + title + '</h4>';
