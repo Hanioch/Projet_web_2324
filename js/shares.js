@@ -131,16 +131,18 @@ function removeShares(noteId, userId) {
 
         if (Object.keys(usersToShareWith).length > 0) {
             var noteId = usersToShareWith[Object.keys(usersToShareWith)[0]].note_id;
+            let sortedUsers = Object.entries(usersToShareWith).sort((a, b) => a[1].full_name.localeCompare(b[1].full_name));
+
             var selectHtml = `
-               <form action="./notes/shares/${noteId}" method="post">
-                    <div class="input-group mb-3">
-                        <select class="form-select bg-dark text-white border-secondary" name="user" id="user">
-                            <option disabled selected>-User-</option>
-            `;
-            Object.entries(usersToShareWith).forEach(function([userId, userDetails]) {
+            <form action="./notes/shares/${noteId}" method="post">
+                <div class="input-group mb-3">
+                    <select class="form-select bg-dark text-white border-secondary" name="user" id="user">
+                        <option disabled selected>-User-</option>
+        `;
+
+            sortedUsers.forEach(function([userId, userDetails]) {
                 selectHtml += `<option value="${userId}">${userDetails.full_name}</option>`;
             });
-
 
             selectHtml += `
                         </select>
