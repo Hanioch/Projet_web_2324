@@ -809,7 +809,7 @@ class ControllerNotes extends Controller
             'errorAdd' => $errorAdd
         ]);
     }
-    public function refresh_share_ajax(int $noteId): void
+    public function refresh_share_service(int $noteId): void
     {
         $currentUser = $this->get_user_or_redirect();
         $currentUserId = $currentUser->get_Id();
@@ -837,7 +837,7 @@ class ControllerNotes extends Controller
 
         echo json_encode($responseData);
     }
-    public function add_share_ajax(): void
+    public function add_share_service(): void
     {
         $noteId = $_POST['noteId'] ?? null;
         $userId = $_POST['userId'] ?? null;
@@ -845,7 +845,7 @@ class ControllerNotes extends Controller
 
         if (isset($noteId) && isset($userId) && isset($permission)) {
             if (NoteShare::add_Share($noteId, $userId, $permission)) {
-                $this->refresh_share_ajax($noteId);
+                $this->refresh_share_service($noteId);
             } else {
                 echo json_encode(["success" => false, "error" => "Failed to add share"]);
             }
@@ -853,14 +853,14 @@ class ControllerNotes extends Controller
             echo json_encode(["success" => false, "error" => "Missing parameters"]);
         }
     }
-    public function remove_share_ajax(): void
+    public function remove_share_service(): void
     {
         $noteId = $_POST['noteId'] ?? null;
         $userId = $_POST['userId'] ?? null;
 
         if (isset($noteId) && isset($userId)) {
             if (NoteShare::remove_Share($noteId, $userId)) {
-                $this->refresh_share_ajax($noteId);
+                $this->refresh_share_service($noteId);
             } else {
                 echo json_encode(["success" => false, "error" => "Failed to remove share"]);
             }
@@ -869,14 +869,14 @@ class ControllerNotes extends Controller
         }
     }
 
-    public function change_permission_ajax(): void
+    public function change_permission_service(): void
     {
         $noteId = $_POST['noteId'] ?? null;
         $userId = $_POST['userId'] ?? null;
 
         if (isset($noteId) && isset($userId)) {
             if (NoteShare::change_Permissions($noteId, $userId)) {
-                $this->refresh_share_ajax($noteId);
+                $this->refresh_share_service($noteId);
             } else {
                 echo json_encode(["success" => false, "error" => "Failed to remove share"]);
             }
@@ -1098,7 +1098,7 @@ class ControllerNotes extends Controller
         http_response_code($status); // Code d'erreur HTTP approprié
         exit($message);
     }
-    public function getValidationRules(): void
+    public function get_validation_rules_service(): void
     {
         $minTitleLength = Configuration::get("note_title_min_length");
         $maxTitleLength = Configuration::get("note_title_max_length");
@@ -1115,7 +1115,7 @@ class ControllerNotes extends Controller
         header('Content-Type: application/json');
         echo json_encode($validationRules);
     }
-    public function checkUniqueTitle(): void
+    public function check_unique_title_service(): void
     {
         $title = $_POST['title'];
         $noteId = $_POST['noteId'];

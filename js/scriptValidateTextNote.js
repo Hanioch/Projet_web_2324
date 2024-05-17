@@ -1,7 +1,7 @@
 $(document).ready(function () {
   var minTitleLength, maxTitleLength, minContentLength, maxContentLength;
   $.ajax({
-    url: "notes/getValidationRules",
+    url: "notes/get_validation_rules_service",
     type: "GET",
     dataType: "json",
     success: function (data) {
@@ -39,7 +39,7 @@ $(document).ready(function () {
       );
     } else {
       $.ajax({
-        url: "notes/checkUniqueTitle",
+        url: "notes/check_unique_title_service",
         type: "POST",
         data: {
           title: title,

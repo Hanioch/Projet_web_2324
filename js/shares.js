@@ -27,7 +27,7 @@ function addShares(noteId, userId, permission) {
     if (document.getElementById("errorContainer").innerHTML.trim() === "") {
         $.ajax({
             type: "POST",
-            url: "notes/add_share_ajax",
+            url: "notes/add_share_service",
             data: {
                 noteId: noteId,
                 userId: userId,
@@ -52,7 +52,7 @@ function addShares(noteId, userId, permission) {
 function removeShares(noteId, userId) {
     $.ajax({
         type: "POST",
-        url: "notes/remove_share_ajax",
+        url: "notes/remove_share_service",
         data: {
             noteId: noteId,
             userId: userId,
@@ -75,7 +75,7 @@ function removeShares(noteId, userId) {
     function changePermissions(noteId, userId) {
         $.ajax({
             type: "POST",
-            url: "notes/change_permission_ajax",
+            url: "notes/change_permission_service",
             data: {
                 noteId: noteId,
                 userId: userId
