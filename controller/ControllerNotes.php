@@ -923,6 +923,7 @@ class ControllerNotes extends Controller
             $row["checked"] = $i->is_Checked();
             $row["checklist_note"] = $i->get_ChecklistNote();
             $row["id"] = $i->get_Id();
+            $row["success"] = true;
             $table[] = $row;
         }
 
@@ -944,7 +945,6 @@ class ControllerNotes extends Controller
         $row["checklist_note"] = $item->get_ChecklistNote();
         $row["id"] = $item->get_Id();
         $row["errors"] = $errors;
-
 
         echo json_encode($row);
     }
@@ -971,8 +971,6 @@ class ControllerNotes extends Controller
                 }
             }
         }
-
-
 
         echo json_encode($errors);
     }
@@ -1021,7 +1019,6 @@ class ControllerNotes extends Controller
         $errors = $note->validate();
         $row = [];
         $row["errors"] = $errors;
-
 
         echo json_encode($row);
     }
@@ -1098,6 +1095,25 @@ class ControllerNotes extends Controller
         http_response_code($status); // Code d'erreur HTTP approprié
         exit($message);
     }
+    public function get_validation_rules_checklist_note_service(): void
+    {
+        $min_title_length = Configuration::get("note_title_min_length");
+        $max_title_length = Configuration::get("note_title_max_length");
+        $item_min_length = Configuration::get("item_min_length");
+        $item_max_length = Configuration::get("item_max_length");
+
+
+        $validationRules = [
+            'minTitleLength' => $min_title_length,
+            'maxTitleLength' => $max_title_length,
+            'itemMinLength' => $item_min_length,
+            'itemMaxLength' => $item_max_length
+        ];
+
+        header('Content-Type: application/json');
+        echo json_encode($validationRules);
+    }
+
     public function get_validation_rules_service(): void
     {
         $minTitleLength = Configuration::get("note_title_min_length");
@@ -1175,7 +1191,7 @@ class ControllerNotes extends Controller
                     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         if (isset($_POST['remove_button'])) {
                             $labelName = ($_POST['remove_button']);
-                                $labelToDelete = Label::get_label_by_note_id_and_label_name($note->get_Id(), $labelName);
+                            $labelToDelete = Label::get_label_by_note_id_and_label_name($note->get_Id(), $labelName);
                             $labelToDelete->delete();
                             $labels = Label::get_labels_by_note_id($note->get_Id());
                             $labelsByUser = Label::get_labels_by_user_id($userId);
@@ -1202,7 +1218,7 @@ class ControllerNotes extends Controller
             'labels' => $labels ?? null,
             'labels_to_suggest' => $labelsToSuggest ?? null,
             'errors' => $errors,
-            'error'=> $error
+            'error' => $error
         ]);
     }
 
