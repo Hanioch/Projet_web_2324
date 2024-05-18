@@ -121,29 +121,21 @@ function handleAddKeyPress() {
 function handleTitleKeyPress() {
   $("#titleNote").keyup(function (event) {
     let newContent = $("#titleNote").val();
-
-    $.ajax({
-      url: "notes/edit_title_service",
-      method: "POST",
-      data: { note_id: noteId, title: newContent },
-    }).done(function (response) {
-      let jsonResponse = JSON.parse(response);
-      if ("title" in jsonResponse.errors) {
-        $("#save_button").prop("disabled", true).css("opacity", "0.3");
-        $("#titleNote").removeClass("is-valid");
-        $("#titleNote").addClass("is-invalid");
-        let html = '<span class="error-add-note" id="error_title_span">';
-        html += jsonResponse.errors.title;
-        html += "</span>";
-        $("#error_title_span").remove();
-        $("#title_div").append(html);
-      } else {
-        $("#save_button").prop("disabled", false).css("opacity", "1");
-        $("#titleNote").removeClass("is-invalid");
-        $("#titleNote").addClass("is-valid");
-        $("#error_title_span").remove();
-      }
-    });
+    if (newContent.length < 3 || newContent.length > 24) {
+      $("#save_button").prop("disabled", true).css("opacity", "0.3");
+      $("#titleNote").removeClass("is-valid");
+      $("#titleNote").addClass("is-invalid");
+      let html = '<span class="error-add-note" id="error_title_span">';
+      html += "Title length must be between 3 and 25";
+      html += "</span>";
+      $("#error_title_span").remove();
+      $("#title_div").append(html);
+    } else {
+      $("#save_button").prop("disabled", false).css("opacity", "1");
+      $("#titleNote").removeClass("is-invalid");
+      $("#titleNote").addClass("is-valid");
+      $("#error_title_span").remove();
+    }
   });
 }
 
