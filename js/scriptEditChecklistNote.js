@@ -1,7 +1,7 @@
 let minTitleLength, maxTitleLength, itemMinLength, itemMaxLength;
 $(() => {
   $.ajax({
-    url: "notes/get_validation_rules_checklist_note",
+    url: "notes/get_validation_rules_checklist_note_service",
     type: "GET",
     dataType: "json",
     success: (data) => {
