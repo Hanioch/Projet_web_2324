@@ -17,64 +17,103 @@ $(() => {
   }
 });
 
-// fonction pour gérer la frappe clavier dans les champs edit_item
 function handleItemKeyPress() {
   //TO DO il faut que les items se savent uniquement au moment ou on clique sur le bouton save pas à chaque fois qu'on clique sur une touche
   $('[id^="item"]').keyup(function (event) {
     let itemId = $(this)
-        .closest(".input-group")
-        .find('input[name="item_id"]')
-        .val();
+      .closest(".input-group")
+      .find('input[name="item_id"]')
+      .val();
 
     let itemElem = $(this);
     let item = itemElem.val();
+    let response = {
+      success: true,
+      id: itemId,
+    };
+    let errors = [];
 
-    $.ajax({
-      url: "notes/edit_item_service",
-      method: "POST",
-      data: { item_id: itemId, note_id: noteId, ["item" + itemId]: item },
-    }).done(function (response) {
-      let jsonResponse = JSON.parse(response);
+    if (item.length === 0) {
+      errors.push("Item cannot be empty.");
+    }
 
-      let item = displayItem(jsonResponse, itemElem);
-      handleRemoveClick();
-      handleAddClick();
-    });
+    if (hasDuplicateItem({ value: item, id: "item" + itemId })) {
+      errors.push("Item already exists.");
+    }
+
+    if (errors.length > 0) {
+      response = {
+        ...response,
+        success: false,
+        errors: {
+          ["item" + itemId]: errors,
+        },
+      };
+    }
+
+    displayItem(response, itemElem);
   });
+}
+
+function hasDuplicateItem(item) {
+  const { value, id } = item;
+  const items = $('[id^="item"]')
+    .map(function () {
+      return {
+        valueItem: $(this).val(),
+        idItem: this.id,
+      };
+    })
+    .get();
+
+  let isTrue = false;
+  let i = 0;
+
+  while (!isTrue && i < items.length) {
+    const { valueItem, idItem } = items[i];
+    console.log("check ", idItem, "et id : ", id);
+    console.log("check valueitem ", valueItem, "et val : ", value);
+    if (value === valueItem && id !== idItem) {
+      console.log("on rentre?");
+      isTrue = true;
+    }
+    i++;
+  }
+  return isTrue;
 }
 
 // fonction pour gérer la frappe clavier dans le champ new_item
 function handleAddKeyPress() {
   $("#add_item").keyup(function () {
     let content = $(this).val();
-    $.ajax({
-      url: "notes/check_new_item_service",
-      method: "POST",
-      data: { note_id: noteId, content: content },
-    }).done(function (response) {
-      let jsonResponse = JSON.parse(response);
-      if ("new_item" in jsonResponse) {
-        if ($("#add_item").val() === "") {
-          $("#new_item_error").remove();
-          $("#add_item").removeClass("is-invalid");
-          $("#add_item").removeClass("is-valid");
-          $("#add_button").prop("disabled", true);
-        } else {
-          let html = '<span class="error-add-note" id="new_item_error">';
-          html += jsonResponse.new_item;
-          html += "</span>";
-          $("#new_item_error_div").html(html);
-          $("#add_item").removeClass("is-valid");
-          $("#add_item").addClass("is-invalid");
-          $("#add_button").prop("disabled", true);
-        }
-      } else {
-        $("#new_item_error").remove();
-        $("#add_item").removeClass("is-invalid");
-        $("#add_item").addClass("is-valid");
-        $("#add_button").prop("disabled", false);
-      }
-    });
+
+    let errorMsg = "";
+
+    if (content.length === 0) {
+      $("#new_item_error").remove();
+      $("#add_item").removeClass("is-invalid");
+      $("#add_item").removeClass("is-valid");
+      $("#add_button").prop("disabled", true);
+      return;
+    }
+
+    if (hasDuplicateItem({ value: content, id: "item" })) {
+      errorMsg = "Item already exists.";
+    }
+    if (errorMsg !== "") {
+      let html = '<span class="error-add-note" id="new_item_error">';
+      html += errorMsg;
+      html += "</span>";
+      $("#new_item_error_div").html(html);
+      $("#add_item").removeClass("is-valid");
+      $("#add_item").addClass("is-invalid");
+      $("#add_button").prop("disabled", true);
+    } else {
+      $("#new_item_error").remove();
+      $("#add_item").removeClass("is-invalid");
+      $("#add_item").addClass("is-valid");
+      $("#add_button").prop("disabled", false);
+    }
   });
 }
 
@@ -153,7 +192,6 @@ function handleAddClick() {
       $("#save_button").prop("disabled", false).css("opacity", "1");
     });
   });
-
 }
 
 //fonction pour gérer le clic sur le bouton save_checklistnote
@@ -162,9 +200,9 @@ function handleSaveClick() {
     event.preventDefault();
 
     let itemId = $(this)
-        .closest(".input-group")
-        .find('input[name="item_id"]')
-        .val();
+      .closest(".input-group")
+      .find('input[name="item_id"]')
+      .val();
 
     $.ajax({
       url: "notes/toggle_checkbox_service",
@@ -184,8 +222,8 @@ function handleSaveClick() {
 }
 
 function displayItem(itemJson, itemElem) {
-  // si c'est une array il n'y a pas d'erreur, si c'est un json il y a des erreurs
-  if (Array.isArray(itemJson.errors)) {
+  // ajout d'un attribut success qui nous donne l'état de la requete.
+  if (itemJson.success) {
     $("#save_button").prop("disabled", false).css("opacity", "1");
 
     itemElem.removeClass("is-invalid");
@@ -204,7 +242,7 @@ function displayItem(itemJson, itemElem) {
           "error_text_" +
           itemJson.id +
           "' class='error-add-note pt-1'>" +
-          itemJson.errors["item" + itemJson.id] +
+          error +
           "</div>";
       }
 
@@ -251,5 +289,3 @@ function displayItems(itemsJson) {
   }
   return html;
 }
-
-
