@@ -1095,6 +1095,25 @@ class ControllerNotes extends Controller
         http_response_code($status); // Code d'erreur HTTP approprié
         exit($message);
     }
+    public function get_validation_rules_checklist_note(): void
+    {
+        $min_title_length = Configuration::get("note_title_min_length");
+        $max_title_length = Configuration::get("note_title_max_length");
+        $item_min_length = Configuration::get("item_min_length");
+        $item_max_length = Configuration::get("item_max_length");
+
+
+        $validationRules = [
+            'minTitleLength' => $min_title_length,
+            'maxTitleLength' => $max_title_length,
+            'itemMinLength' => $item_min_length,
+            'itemMaxLength' => $item_max_length
+        ];
+
+        header('Content-Type: application/json');
+        echo json_encode($validationRules);
+    }
+
     public function getValidationRules(): void
     {
         $minTitleLength = Configuration::get("note_title_min_length");

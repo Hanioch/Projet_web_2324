@@ -1,4 +1,20 @@
+let minTitleLength, maxTitleLength, itemMinLength, itemMaxLength;
 $(() => {
+  $.ajax({
+    url: "notes/get_validation_rules_checklist_note",
+    type: "GET",
+    dataType: "json",
+    success: (data) => {
+      minTitleLength = data.minTitleLength;
+      maxTitleLength = data.maxTitleLength;
+      itemMinLength = data.itemMinLength;
+      itemMaxLength = data.itemMaxLength;
+    },
+    error: (xhr, status, error) => {
+      console.error(error);
+    },
+  });
+
   handleKeyPress();
   handleClick();
   $("#add_button").prop("disabled", true);
@@ -37,6 +53,10 @@ function handleItemKeyPress() {
       errors.push("Item cannot be empty.");
     }
 
+    if (item.length < itemMinLength || item.length > itemMaxLength) {
+      errors.push("Item must be between 1 and 60 characters long.");
+    }
+
     if (hasDuplicateItem({ value: item, id: "item" + itemId })) {
       errors.push("Item already exists.");
     }
@@ -71,10 +91,7 @@ function hasDuplicateItem(item) {
 
   while (!isTrue && i < items.length) {
     const { valueItem, idItem } = items[i];
-    console.log("check ", idItem, "et id : ", id);
-    console.log("check valueitem ", valueItem, "et val : ", value);
     if (value === valueItem && id !== idItem) {
-      console.log("on rentre?");
       isTrue = true;
     }
     i++;
@@ -87,7 +104,7 @@ function handleAddKeyPress() {
   $("#add_item").keyup(function () {
     let content = $(this).val();
 
-    let errorMsg = "";
+    let errors = [];
 
     if (content.length === 0) {
       $("#new_item_error").remove();
@@ -97,12 +114,18 @@ function handleAddKeyPress() {
       return;
     }
 
-    if (hasDuplicateItem({ value: content, id: "item" })) {
-      errorMsg = "Item already exists.";
+    if (content.length > itemMaxLength) {
+      errors.push("Item must be between 1 and 60 characters long.");
     }
-    if (errorMsg !== "") {
+
+    if (hasDuplicateItem({ value: content, id: "item" })) {
+      errors.push("Item already exists.");
+    }
+    if (errors.length > 0) {
       let html = '<span class="error-add-note" id="new_item_error">';
-      html += errorMsg;
+      errors.forEach((err) => {
+        html += err;
+      });
       html += "</span>";
       $("#new_item_error_div").html(html);
       $("#add_item").removeClass("is-valid");
@@ -121,7 +144,10 @@ function handleAddKeyPress() {
 function handleTitleKeyPress() {
   $("#titleNote").keyup(function (event) {
     let newContent = $("#titleNote").val();
-    if (newContent.length < 3 || newContent.length > 24) {
+    if (
+      newContent.length < minTitleLength ||
+      newContent.length > maxTitleLength
+    ) {
       $("#save_button").prop("disabled", true).css("opacity", "0.3");
       $("#titleNote").removeClass("is-valid");
       $("#titleNote").addClass("is-invalid");
