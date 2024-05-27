@@ -161,12 +161,10 @@ class ChecklistNoteItem extends MyModel
         return $this;
     }
 
-
-    /*
-    public function set_checklist_note(int $id): ChecklistNoteItem
+    public function jsonSerialize(): mixed
     {
-        $this->checklist_note = $id;
-        return $this;
+        $vars = get_object_vars($this);
+
+        return $vars;
     }
-    */
 }

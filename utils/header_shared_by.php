@@ -1,5 +1,7 @@
 <?php
-include('./utils/head.php')
+include('./utils/head.php');
+$is_list_filter_exist = isset($_GET["param2"]);
+$list_filter_encoded = $is_list_filter_exist ? $_GET["param2"] : "";
 ?>
 
 <body class="bg-dark min-vh-100">
@@ -13,6 +15,9 @@ include('./utils/head.php')
                 } else {
                     $chevron_link = "./notes";
                 }
+
+                if ($is_list_filter_exist) $chevron_link = "./notes/search/" . $list_filter_encoded;
+
                 echo '<a class="navbar-brand" href="' . $chevron_link . '">
                         <i class="bi bi-chevron-left"></i>
                         
@@ -30,6 +35,8 @@ include('./utils/head.php')
                         } else {
                             $chevron_link = "./notes/edit_text_note/" . $note->get_id();
                         }
+                        if ($is_list_filter_exist) $chevron_link .= "/" . $list_filter_encoded;
+
                         echo '<a class="navbar-brand" href="' . $chevron_link . '">
                         <div class="d-inline-block">
                             <form action="notes/edit_labels/' . $note->get_id() . '" method="POST" class="navbar-brand">

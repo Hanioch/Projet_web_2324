@@ -4,10 +4,6 @@ require_once "tools.php";
 $title_page = Page::Search->value . " my notes";
 include("./utils/header.php");
 
-//$editor_note = $notes_shared["editor"];
-//$reader_note = $notes_shared["reader"];
-//$base_title_component = "Notes shared by " . $full_name . " as ";
-
 $personal_notes = $notes_searched['personal'];
 $shared_notes = $notes_searched['shared'];
 
@@ -36,27 +32,38 @@ if (count($list_label) > 0) {
         </noscript>
     </form>
     <hr>
+    <div class="notes_personal">
+        <?php
+        }
 
-<?php
-}
+        if (count($personal_notes) > 0) {
+            show_note($personal_notes, "Your notes : ", $title_page);
+        }
+        ?>
+    </div>
+    <div class="notes_shared">
+        <?php
+        foreach ($shared_notes as $user_shared => $ns) {
+            show_note($ns, "Notes shared by " . $user_shared . " :", $title_page);
+        }
+        ?>
+    </div>
+    <div class="notes_no">
+        <?php
+        if (count($personal_notes) === 0 && count($shared_notes) === 0) {
+        ?>
+            <h4 class="title-note">
+                No note matches.
+            </h4>
+        <?php
+        }
+        ?>
+    </div>
 
-if (count($personal_notes) > 0) {
-    show_note($personal_notes, "Your notes : ", $title_page);
-}
-
-foreach ($shared_notes as $user_shared => $ns) {
-    show_note($ns, "Notes shared by " . $user_shared . " :", $title_page);
-}
-
-if (count($personal_notes) === 0 && count($shared_notes) === 0) {
-?>
-    <h4 class="title-note">
-        No note matches.
-    </h4>
-<?php
-}
-
-?>
-</div>
+    <script>
+        var titlePage = "<?php echo $title_page; ?>";
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="js/scriptSearch.js"></script>
 <?php
 include('./utils/footer.php'); ?>

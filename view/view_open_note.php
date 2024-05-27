@@ -14,11 +14,12 @@ if (isset($header_type) && empty($error)) {
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>Do you really want to delete this note ?</p>
+                <p>Do you really want to delete this note "<?php echo htmlspecialchars($note->get_title()); ?>"and all of its dependencies ?</p>
+                <p>This process cannot be undone</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="validBtn">Yes, delete it!</button>
+                <button type="button" class="btn btn-danger" id="validBtn">Yes, delete it!</button>
             </div>
         </div>
     </div>
@@ -42,7 +43,9 @@ if (isset($header_type) && empty($error)) {
     </div>
 </div>
 <!-- fin -->
-<span id="idNote" value="<?= $note->get_id() ?>" style="display: none;"></span>
+<?php if ($note !== null) : ?>
+    <span id="idNote" value="<?= $note->get_id() ?>" style="display: none;"></span>
+<?php endif; ?>
 <?php if (isset($error) && !empty($error)) : ?>
     <div class="alert alert-danger" role="alert">
         <?= $error ?>

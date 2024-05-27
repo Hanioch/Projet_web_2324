@@ -24,7 +24,7 @@ class ControllerNotes extends Controller
         (new View("notes"))->show(["notes" => $notes, "users_shared_notes" => $users_shared_notes]);
     }
 
-    public function move_note_js(): void
+    public function move_note_service(): void
     {
         $user = $this->get_user_or_redirect();
 
@@ -51,7 +51,7 @@ class ControllerNotes extends Controller
 
         if ($is_switched_column) {
             $note_moved->set_pinned(!$is_note_moved_pinned);
-            $note_moved->persist();
+            $note_moved->persist_head();
             $is_note_moved_pinned = $note_moved->is_pinned();
         }
 
@@ -138,11 +138,11 @@ class ControllerNotes extends Controller
                 $user = $this->get_user_or_redirect();
 
                 $other_note->set_weight($user->get_heaviest_note() + 1);
-                $other_note->persist();
+                $other_note->persist_head();
                 $current_note->set_weight($weight_other);
-                $current_note->persist();
+                $current_note->persist_head();
                 $other_note->set_weight($weight_current);
-                $other_note->persist();
+                $other_note->persist_head();
             }
         }
     }
@@ -151,18 +151,18 @@ class ControllerNotes extends Controller
     {
         $current_note = Note::get_note($note_id);
         if ($current_note instanceof Note) {
-            $other_notes = $current_note->get_nearest_archived_note();
-            if ($other_notes instanceof Note) {
+            $other_note = $current_note->get_nearest_archived_note();
+            if ($other_note instanceof Note) {
                 $weight_current = $current_note->get_weight();
-                $weight_other = $other_notes->get_weight();
+                $weight_other = $other_note->get_weight();
                 $user = $this->get_user_or_redirect();
 
-                $other_notes->set_weight($user->get_heaviest_note() + 1);
-                $other_notes->persist();
+                $other_note->set_weight($user->get_heaviest_note() + 1);
+                $other_note->persist_head();
                 $current_note->set_weight($weight_other);
-                $current_note->persist();
-                $other_notes->set_weight($weight_current);
-                $other_notes->persist();
+                $current_note->persist_head();
+                $other_note->set_weight($weight_current);
+                $other_note->persist_head();
             }
         }
     }
@@ -193,8 +193,10 @@ class ControllerNotes extends Controller
                 $this->redirect("notes", "search");
         } else {
             $list_filter = isset($_GET['param1']) ? Utils::url_safe_decode($_GET['param1']) : [];
+            if ($list_filter === NULL) $list_filter = [];
+
             $user = $this->get_user_or_redirect();
-            $notes_searched["personal"] = $user->get_notes_searched($list_filter);
+            $notes_searched["personal"] = count($list_filter) === 0 ? [] : $user->get_notes_searched($list_filter);
             $users_shared_notes = $user->get_users_shared_note();
 
             $list_label = $user->get_filter_list();
@@ -217,11 +219,72 @@ class ControllerNotes extends Controller
                     $notes_searched["shared"][$u->get_full_name()] = $note_by_someone;
                 }
             }
-
             (new View("search"))->show(["notes_searched" => $notes_searched, "users_shared_notes" => $users_shared_notes, "list_label" => $new_list_label]);
         }
     }
+    public function search_service(): void
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $list_filter = [];
+            foreach ($_POST as $filter => $value) {
+                if ($value === "on") {
+                    $list_filter[] = $filter;
+                }
+            }
 
+            $data_to_update = $this->get_data_to_update($list_filter);
+            echo json_encode($data_to_update);
+        } else {
+            http_response_code(405);
+            echo json_encode(["error" => "Method Not Allowed"]);
+        }
+    }
+    public function get_labels_service(): void
+    {
+        $note_id = intval($_POST['note_id'] ?? 0);
+        if ($note_id !== 0) {
+            $labels = Label::get_labels_by_note_id($note_id);
+            echo json_encode($labels);
+        }
+    }
+    private function get_data_to_update(array $list_filter): array
+    {
+        if (count($list_filter) > 0) {
+            $list_filter_encoded = Utils::url_safe_encode($list_filter);
+        }
+        $user = $this->get_user_or_redirect();
+        $notes_searched["personal"] = $user->get_notes_searched($list_filter);
+        $users_shared_notes = $user->get_users_shared_note();
+
+        $list_label = $user->get_filter_list();
+        $new_list_label = [];
+        foreach ($list_label as $label) {
+            $checked = false;
+            foreach ($list_filter as $filter) {
+                if ($filter === $label) {
+                    $checked = true;
+                }
+            }
+            $new_list_label[$label] = $checked;
+        }
+
+        $notes_searched["shared"] = [];
+
+        foreach ($users_shared_notes as $u) {
+            $note_by_someone = $user->get_notes_with_label_shared_by($u->get_id(), $list_filter);
+            if (count($note_by_someone) > 0) {
+                $notes_searched["shared"][$u->get_full_name()] = $note_by_someone;
+            }
+        }
+        $data_to_update = [
+            "notes_searched" => $notes_searched,
+            "users_shared_notes" => $users_shared_notes,
+            "list_label" => $new_list_label,
+            "list_filter_encoded" => $list_filter_encoded ?? null,
+        ];
+
+        return $data_to_update;
+    }
     public function shared_by(): void
     {
         $user = $this->get_user_or_redirect();
@@ -625,7 +688,8 @@ class ControllerNotes extends Controller
 
     public function open_note(int $id = -1): void
     {
-        $note_id = $id !== -1 ? $id : filter_var($_GET['param1'], FILTER_VALIDATE_INT);
+        $note_id = isset($_GET['param1']) ? filter_var($_GET['param1'], FILTER_VALIDATE_INT) : false;
+        //$noteId = isset($_GET['param1']) ? ($id !== -1 ? $id : filter_var($_GET['param1'], FILTER_VALIDATE_INT)) : false;
         $user = $this->get_user_or_redirect();
         $user_id = $user->get_id();
         $error = "";
@@ -652,7 +716,7 @@ class ControllerNotes extends Controller
                 }
 
                 $can_access = ($note->get_owner()->get_id() === $user_id) || $is_shared_note;
-                if (!$can_access) {
+                if (!$can_access || !$can_edit) {
                     $error = "Accès non autorisé.";
                 } else {
                     $id_sender = $note->get_owner()->get_id();
@@ -752,7 +816,7 @@ class ControllerNotes extends Controller
             'error_add' => $error_add
         ]);
     }
-    public function refresh_share_ajax(int $note_id): void
+    public function refresh_share_service(int $note_id): void
     {
         $current_user = $this->get_user_or_redirect();
         $current_user_id = $current_user->get_id();
@@ -780,7 +844,7 @@ class ControllerNotes extends Controller
 
         echo json_encode($response_data);
     }
-    public function add_share_ajax(): void
+    public function add_share_service(): void
     {
         $note_id = $_POST['noteId'] ?? null;
         $user_id = $_POST['userId'] ?? null;
@@ -788,7 +852,7 @@ class ControllerNotes extends Controller
 
         if (isset($note_id) && isset($user_id) && isset($permission)) {
             if (NoteShare::add_share($note_id, $user_id, $permission)) {
-                $this->refresh_share_ajax($note_id);
+                $this->refresh_share_service($note_id);
             } else {
                 echo json_encode(["success" => false, "error" => "Failed to add share"]);
             }
@@ -796,14 +860,14 @@ class ControllerNotes extends Controller
             echo json_encode(["success" => false, "error" => "Missing parameters"]);
         }
     }
-    public function remove_share_ajax(): void
+    public function remove_share_service(): void
     {
         $note_id = $_POST['noteId'] ?? null;
         $user_id = $_POST['userId'] ?? null;
 
         if (isset($note_id) && isset($user_id)) {
             if (NoteShare::remove_share($note_id, $user_id)) {
-                $this->refresh_share_ajax($note_id);
+                $this->refresh_share_service($note_id);
             } else {
                 echo json_encode(["success" => false, "error" => "Failed to remove share"]);
             }
@@ -812,14 +876,14 @@ class ControllerNotes extends Controller
         }
     }
 
-    public function change_permission_ajax(): void
+    public function change_permission_service(): void
     {
         $note_id = $_POST['noteId'] ?? null;
         $user_id = $_POST['userId'] ?? null;
 
         if (isset($note_id) && isset($user_id)) {
             if (NoteShare::change_permissions($note_id, $user_id)) {
-                $this->refresh_share_ajax($note_id);
+                $this->refresh_share_service($note_id);
             } else {
                 echo json_encode(["success" => false, "error" => "Failed to remove share"]);
             }
@@ -867,6 +931,7 @@ class ControllerNotes extends Controller
             $row["checked"] = $i->is_checked();
             $row["checklist_note"] = $i->get_checklist_note();
             $row["id"] = $i->get_id();
+            $row["success"] = true;
             $table[] = $row;
         }
 
@@ -888,7 +953,6 @@ class ControllerNotes extends Controller
         $row["checklist_note"] = $item->get_checklist_note();
         $row["id"] = $item->get_id();
         $row["errors"] = $errors;
-
 
         echo json_encode($row);
     }
@@ -915,8 +979,6 @@ class ControllerNotes extends Controller
                 }
             }
         }
-
-
 
         echo json_encode($errors);
     }
@@ -965,7 +1027,6 @@ class ControllerNotes extends Controller
         $row = [];
         $row["errors"] = $errors;
 
-
         echo json_encode($row);
     }
 
@@ -990,7 +1051,7 @@ class ControllerNotes extends Controller
 
         $this->redirect("notes", "open_note/$note_id");
     }
-    public function delete()
+    public function delete(): void
     {
         $user = $this->get_user_or_redirect();
 
@@ -1072,7 +1133,26 @@ class ControllerNotes extends Controller
         http_response_code($status);
         exit($message);
     }
-    public function get_validation_rules(): void
+    public function get_validation_rules_checklist_note_service(): void
+    {
+        $min_title_length = Configuration::get("note_title_min_length");
+        $max_title_length = Configuration::get("note_title_max_length");
+        $item_min_length = Configuration::get("item_min_length");
+        $item_max_length = Configuration::get("item_max_length");
+
+
+        $validation_rules = [
+            'minTitleLength' => $min_title_length,
+            'maxTitleLength' => $max_title_length,
+            'itemMinLength' => $item_min_length,
+            'itemMaxLength' => $item_max_length
+        ];
+
+        header('Content-Type: application/json');
+        echo json_encode($validation_rules);
+    }
+
+    public function get_validation_rules_service(): void
     {
         $min_title_length = Configuration::get("note_title_min_length");
         $max_title_length = Configuration::get("note_title_max_length");
@@ -1089,7 +1169,8 @@ class ControllerNotes extends Controller
         header('Content-Type: application/json');
         echo json_encode($validation_rules);
     }
-    public function check_unique_title(): void
+
+    public function check_unique_title_service(): void
     {
         $title = $_POST['title'];
         $note_id = $_POST['note_id'];
@@ -1122,40 +1203,61 @@ class ControllerNotes extends Controller
     public function edit_labels(): void
     {
         $user = $this->get_user_or_redirect();
-        $note_id = filter_var($_GET['param1'], FILTER_VALIDATE_INT);
-        $note = ChecklistNote::get_note($note_id);
-        $labels = Label::get_labels_by_note_id($note_id);
-        $labels_by_user = Label::get_labels_by_user_id($user->get_id());
-        $labels_to_suggest = $this->get_labels_to_suggest($labels_by_user, $labels);
-        $errors = [];
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if (isset($_POST['remove_button'])) {
-                $label_name = ($_POST['remove_button']);
-                $label_to_delete = Label::get_label_by_note_id_and_label_name($note->get_id(), $label_name);
-                $label_to_delete->delete();
-                $labels = Label::get_labels_by_note_id($note->get_id());
-                $labels_by_user = Label::get_labels_by_user_id($user->get_id());
-                $labels_to_suggest = $this->get_labels_to_suggest($labels_by_user, $labels);
-                $this->redirect("notes", "edit_labels", $note_id);
-            } else if (isset($_POST['add_button']) && (trim(($_POST['new_label']) > 0) || ($_POST['new_label']) === "")) {
-                $label_name = Label::fix_label_format($_POST['new_label']);
-                $errors = Label::validate_label($label_name, $note_id);
+        $note_id = isset($_GET['param1']) ? filter_var($_GET['param1'], FILTER_VALIDATE_INT) : false;
 
-                if (empty($errors['label'])) {
-                    $new_label = new Label($note_id, $label_name);
-                    $new_label->persist();
-                    $this->redirect("notes", "edit_labels", $note_id);
+        $errors = [];
+        $error = "";
+        if ($note_id === false) {
+            $error = "Identifiant de note invalide.";
+        } else {
+            $note = Note::get_note($note_id);
+            $user_id = $user->get_id();
+            $labels = Label::get_labels_by_note_id($note_id);
+            $labels_by_user = Label::get_labels_by_user_id($user_id);
+            $labels_to_suggest = $this->get_labels_to_suggest($labels_by_user, $labels);
+            if (!($note instanceof Note)) {
+                $error = "Note introuvable.";
+            } else {
+                $is_shared_note = NoteShare::is_note_shared_with_user($note_id, $user_id);
+                $can_edit = true;
+                if ($is_shared_note) {
+                    $can_edit = NoteShare::can_edit($note_id, $user_id);
+                }
+                $can_access = ($note->get_owner()->get_id() === $user_id) || $is_shared_note;
+                if (!$can_access || !$can_edit) {
+                    $error = "Accès non autorisé.";
+                } else {
+                    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                        if (isset($_POST['remove_button'])) {
+                            $label_name = ($_POST['remove_button']);
+                            $label_to_delete = Label::get_label_by_note_id_and_label_name($note->get_id(), $label_name);
+                            $label_to_delete->delete();
+                            $labels = Label::get_labels_by_note_id($note->get_id());
+                            $labels_by_user = Label::get_labels_by_user_id($user_id);
+                            $labels_to_suggest = $this->get_labels_to_suggest($labels_by_user, $labels);
+                            $this->redirect("notes", "edit_labels", $note_id);
+                        } else if (isset($_POST['add_button']) && (trim(($_POST['new_label']) > 0) || ($_POST['new_label']) === "")) {
+                            $label_name = Label::fix_label_format($_POST['new_label']);
+                            $errors = Label::validate_label($label_name, $note_id);
+
+                            if (empty($errors['label'])) {
+                                $new_label = new Label($note_id, $label_name);
+                                $new_label->persist();
+                                $this->redirect("notes", "edit_labels", $note_id);
+                            }
+                        }
+                    }
                 }
             }
         }
-
         (new View("edit_labels"))->show([
-            'note' => $note,
+            'note' => $note ?? null,
             'user' => $user,
             'note_id' => $note_id,
-            'labels' => $labels,
-            'labels_to_suggest' => $labels_to_suggest,
-            'errors' => $errors
+            'labels' => $labels ?? null,
+            'labels_to_suggest' => $labels_to_suggest ?? null,
+            'errors' => $errors,
+            'error' => $error
         ]);
     }
 

@@ -4,11 +4,12 @@ $is_list_filter_exist = isset($_GET["param2"]);
 $list_filter_encoded = $is_list_filter_exist ? $_GET["param2"] : "";
 
 $back_url = "./notes";
-if ($is_list_filter_exist) $back_url .= "/search/" . $list_filter_encoded;
 
 if (isset($shared_note_id) && $shared_note_id !== NULL) {
     $back_url = "./notes/shared_by/" . $shared_note_id;
 }
+
+if ($is_list_filter_exist) $back_url = "./notes/search/" . $list_filter_encoded;
 
 function show_back_button($back_url)
 {

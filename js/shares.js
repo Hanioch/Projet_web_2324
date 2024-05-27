@@ -27,7 +27,7 @@ function addShares(noteId, userId, permission) {
     if (document.getElementById("errorContainer").innerHTML.trim() === "") {
         $.ajax({
             type: "POST",
-            url: "notes/add_share_ajax",
+            url: "notes/add_share_service",
             data: {
                 noteId: noteId,
                 userId: userId,
@@ -52,7 +52,7 @@ function addShares(noteId, userId, permission) {
 function removeShares(noteId, userId) {
     $.ajax({
         type: "POST",
-        url: "notes/remove_share_ajax",
+        url: "notes/remove_share_service",
         data: {
             noteId: noteId,
             userId: userId,
@@ -75,7 +75,7 @@ function removeShares(noteId, userId) {
     function changePermissions(noteId, userId) {
         $.ajax({
             type: "POST",
-            url: "notes/change_permission_ajax",
+            url: "notes/change_permission_service",
             data: {
                 noteId: noteId,
                 userId: userId
@@ -131,16 +131,18 @@ function removeShares(noteId, userId) {
 
         if (Object.keys(usersToShareWith).length > 0) {
             var noteId = usersToShareWith[Object.keys(usersToShareWith)[0]].note_id;
+            let sortedUsers = Object.entries(usersToShareWith).sort((a, b) => a[1].full_name.localeCompare(b[1].full_name));
+
             var selectHtml = `
-               <form action="./notes/shares/${noteId}" method="post">
-                    <div class="input-group mb-3">
-                        <select class="form-select bg-dark text-white border-secondary" name="user" id="user">
-                            <option disabled selected>-User-</option>
-            `;
-            Object.entries(usersToShareWith).forEach(function([userId, userDetails]) {
+            <form action="./notes/shares/${noteId}" method="post">
+                <div class="input-group mb-3">
+                    <select class="form-select bg-dark text-white border-secondary" name="user" id="user">
+                        <option disabled selected>-User-</option>
+        `;
+
+            sortedUsers.forEach(function([userId, userDetails]) {
                 selectHtml += `<option value="${userId}">${userDetails.full_name}</option>`;
             });
-
 
             selectHtml += `
                         </select>

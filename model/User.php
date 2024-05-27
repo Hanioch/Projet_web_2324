@@ -12,7 +12,7 @@ enum Role: string
     case ADMIN = "admin";
 }
 
-class User extends MyModel
+class User extends MyModel implements JsonSerializable
 {
     private array $config;
     public function __construct(private string $mail, private string $hashed_password, private string $full_name, private Role $role, private ?int $id = NULL)
@@ -601,5 +601,12 @@ class User extends MyModel
         }
 
         return $errors;
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        $vars = get_object_vars($this);
+
+        return $vars;
     }
 }

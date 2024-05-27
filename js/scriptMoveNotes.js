@@ -32,7 +32,7 @@ $(function () {
 
 const sendIdMovable = (idNoteMoved, idReplacedNote, switchedColumn) => {
   $.post(
-    "notes/move_note_js",
+    "notes/move_note_service",
     {
       idNoteMoved,
       idReplacedNote,
