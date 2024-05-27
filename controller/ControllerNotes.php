@@ -629,11 +629,12 @@ class ControllerNotes extends Controller
         $user = $this->get_user_or_redirect();
         $user_id = $user->get_id();
         $error = "";
+        $note = Note::get_note($note_id);
 
         if ($note_id === false) {
             $error = "Identifiant de note invalide.";
         } else {
-            $is_checklist_note = Note::is_checklist_note($note_id);
+            $is_checklist_note = $note->is_checklist_note();
             $note = null;
             if($is_checklist_note) {
                 $note = ChecklistNote::get_note($note_id);
@@ -672,12 +673,12 @@ class ControllerNotes extends Controller
         (new View("open_note"))->show([
             'error' => $error,
             'note' => $note ?? null,
-            'headerType' => $header_type ?? null,
-            'canEdit' => $can_edit ?? false,
+            'header_type' => $header_type ?? null,
+            'can_edit' => $can_edit ?? false,
             'text' => $text ?? null,
             'id_sender' => $id_sender ?? null,
-            'checklistItems' => $checklist_items ?? null,
-            'isChecklistNote' => $is_checklist_note ?? false
+            'checklist_items' => $checklist_items ?? null,
+            'is_checklist_note' => $is_checklist_note ?? false
         ]);
     }
     public function shares(): void
@@ -742,13 +743,13 @@ class ControllerNotes extends Controller
         }
 
         (new View("shares"))->show([
-            'usersToShareWith' => $users_to_share_with ?? null,
-            'existingShares' => $existing_shares ?? null,
-            'noteId' => $note_id,
+            'users_to_share_with' => $users_to_share_with ?? null,
+            'existing_shares' => $existing_shares ?? null,
+            'note_id' => $note_id,
             'note' => $note ?? null,
-            'currentUser' => $current_user ?? null,
+            'current_user' => $current_user ?? null,
             'error' => $error,
-            'errorAdd' => $error_add
+            'error_add' => $error_add
         ]);
     }
     public function refresh_share_ajax(int $note_id): void
@@ -1031,8 +1032,8 @@ class ControllerNotes extends Controller
         (new View("confirm_delete"))->show([
             "error" => $error,
             "note" => $note,
-            "canAccess" => $can_access,
-            "headerType" => $header_type
+            "can_access" => $can_access,
+            "header_type" => $header_type
         ]);
     }
 

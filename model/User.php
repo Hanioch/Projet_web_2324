@@ -222,8 +222,8 @@ class User extends MyModel
     private function get_text_note_or_checklist_note(array $row): Note
     {
         $owner = User::get_user_by_id($row['owner']);
-
-        if (ChecklistNote::is_checklist_note($row['checklist_id'])) {
+        $note = Note::get_note($row['id']);
+        if ($note instanceof Note && $note->is_checklist_note()) {
             return  new ChecklistNote($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['id'], $row['created_at'], $row['edited_at']);
         } else {
             return  new TextNote($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['text_content'], $row['id'], $row['created_at'], $row['edited_at']);

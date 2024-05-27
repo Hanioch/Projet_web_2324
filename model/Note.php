@@ -217,18 +217,22 @@ abstract class Note extends MyModel
 
     public static function get_note(int $id): Note| false
     {
-        $query = self::execute("select * from notes where id= :id", ["id" => $id]);
+        $query = self::execute("select * from notes n JOIN text_notes t ON t.id = n.id where n.id= :id", ["id" => $id]);
         if ($query->rowCount() == 0) {
-            return false;
+            $query = self::execute("select * from notes n JOIN checklist_notes c ON c.id = n.id where n.id= :id", ["id" => $id]);
+            if ($query->rowCount() == 0) {
+                return false;
+            } else {
+                $row = $query->fetch();
+                $owner = User::get_user_by_id($row['owner']);
+                return new ChecklistNote($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['id'], $row['created_at'], $row['edited_at']);
+            }
         } else {
             $row = $query->fetch();
             $owner = User::get_user_by_id($row['owner']);
-            $query = self::execute("select * from text_notes where id = :id", ["id" => $row['id']]);
-            if ($query->rowCount() == 0) {
-                return new ChecklistNote($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['id'], $row['created_at'], $row['edited_at']);
-            } else {
-                return new TextNote($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['id'], $row['created_at'], $row['edited_at']);
-            }
+            //$query = self::execute("select * from text_notes where id = :id", ["id" => $row['id']]);
+
+            return new TextNote($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['content'], $row['id'], $row['created_at'], $row['edited_at']);
         }
     }
 
