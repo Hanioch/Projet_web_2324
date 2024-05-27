@@ -10,63 +10,63 @@ class ChecklistNote extends Note
         $this->fetch_list_item();
     }
 
-    public function get_Title(): string
+    public function get_title(): string
     {
         return $this->title;
     }
 
-    public function set_Title(string $title): void
+    public function set_title(string $title): void
     {
         $this->title = $title;
     }
 
-    public function get_Owner(): User
+    public function get_owner(): User
     {
         return $this->owner;
     }
 
-    public function set_Owner(User $owner): void
+    public function set_owner(User $owner): void
     {
         $this->owner = $owner;
     }
 
 
-    public function is_Archived(): bool
+    public function is_archived(): bool
     {
         return $this->archived;
     }
 
-    public function set_Archived(bool $archived): void
+    public function set_archived(bool $archived): void
     {
         $this->archived = $archived;
     }
 
-    public function get_Weight(): int
+    public function get_weight(): int
     {
         return $this->weight;
     }
 
-    public function set_Weight(int $weight): void
+    public function set_weight(int $weight): void
     {
         $this->weight = $weight;
     }
 
-    public function get_Created_At(): ?string
+    public function get_created_at(): ?string
     {
         return $this->created_at;
     }
 
-    public function set_Created_At(?string $created_at): void
+    public function set_created_at(?string $created_at): void
     {
         $this->created_at = $created_at;
     }
 
-    public function get_Edited_At(): ?string
+    public function get_edited_at(): ?string
     {
         return $this->edited_at;
     }
 
-    public function set_Edited_At(?string $edited_at): void
+    public function set_edited_at(?string $edited_at): void
     {
         $this->edited_at = $edited_at;
     }
@@ -79,26 +79,26 @@ class ChecklistNote extends Note
 
         $items = [];
         foreach ($data as $row) {
-            $items[] = new ChecklistNoteItems($row['content'], $row['checked'], $row['checklist_note'], $row['id']);
+            $items[] = new ChecklistNoteItem($row['content'], $row['checked'], $row['checklist_note'], $row['id']);
         }
 
         $this->set_list_item($items);
     }
 
-    public static function is_checklist_note(int | null $id_to_check): bool
+    /*public static function is_checklist_note(int | null $id_to_check): bool
     {
         if ($id_to_check == NULL) {
             return false;
         } else {
             return true;
         }
-    }
+    }*/
 
     public function set_list_item(array $list)
     {
         $this->list_item = $list;
     }
-    public function get_List_Item()
+    public function get_list_item()
     {
         return $this->list_item;
     }
@@ -153,7 +153,7 @@ class ChecklistNote extends Note
 
         $items = [];
         foreach ($data as $row) {
-            $items[] = new ChecklistNoteItems($row['content'], $row['checked'], $row['checklist_note'], $row['id']);
+            $items[] = new ChecklistNoteItem($row['content'], $row['checked'], $row['checklist_note'], $row['id']);
         }
 
         return $items;

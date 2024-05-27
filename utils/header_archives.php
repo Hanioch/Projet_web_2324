@@ -15,8 +15,8 @@ include('./utils/head.php')
             </nav>
             <nav class="navbar navbar-dark ">
                 <div class="">
-                    <form action="notes/confirm_delete/<?= $note->get_Id() ?>" method="POST" class="navbar-brand">
-                        <input type="hidden" name="note_id" value="<?= $note->get_Id() ?>">
+                    <form action="notes/confirm_delete/<?= $note->get_id() ?>" method="POST" class="navbar-brand">
+                        <input type="hidden" name="note_id" value="<?= $note->get_id() ?>">
                         <button id="button_trash" type="submit" class="btn-icon" style="background: none; border: none; color: inherit; ">
                             <i class="bi bi-trash text-danger"></i>
                         </button>
@@ -24,7 +24,7 @@ include('./utils/head.php')
                 </div>
                 <div class="">
                     <form action="notes/set_Archive" method="POST" class="navbar-brand">
-                        <input type="hidden" name="note_id" value="<?= $note->get_Id() ?>">
+                        <input type="hidden" name="note_id" value="<?= $note->get_id() ?>">
                         <button type="submit" class="btn-icon" style="background: none; border: none; color: inherit; ">
                             <i class="bi bi-box-arrow-up"></i>
                         </button>

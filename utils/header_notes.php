@@ -21,7 +21,7 @@ $list_filter_encoded = $is_list_filter_exist ? $_GET["param2"] : "";
             <nav class="navbar navbar-dark ">
                 <div class="">
                     <div class="navbar-brand">
-                        <a href="./Notes/shares/<?php echo $note->get_Id(); ?>">
+                        <a href="./Notes/shares/<?php echo $note->get_id(); ?>">
                             <button class="btn-icon" style="background: none; border: none; color: white; ">
                                 <i class="bi bi-share"></i>
                             </button>
@@ -30,10 +30,10 @@ $list_filter_encoded = $is_list_filter_exist ? $_GET["param2"] : "";
                 </div>
                 <div class="">
                     <?php
-                    $pinIcon = $note->is_Pinned() ? "bi-pin-fill" : "bi-pin";
+                    $pinIcon = $note->is_pinned() ? "bi-pin-fill" : "bi-pin";
                     ?>
                     <form action="notes/toggle_Pin" method="POST" class="navbar-brand">
-                        <input type="hidden" name="note_id" value="<?= $note->get_Id() ?>">
+                        <input type="hidden" name="note_id" value="<?= $note->get_id() ?>">
                         <button type="submit" class="btn-icon" style="background: none; border: none; color: inherit; ">
                             <i class="bi <?= $pinIcon ?>"></i>
                         </button>
@@ -41,15 +41,15 @@ $list_filter_encoded = $is_list_filter_exist ? $_GET["param2"] : "";
                 </div>
                 <div class="">
                     <form action="notes/set_Archive" method="POST" class="navbar-brand">
-                        <input type="hidden" name="note_id" value="<?= $note->get_Id() ?>">
+                        <input type="hidden" name="note_id" value="<?= $note->get_id() ?>">
                         <button type="submit" class="btn-icon" style="background: none; border: none; color: inherit; ">
                             <i class="bi bi-arrow-down-square"></i>
                         </button>
                     </form>
                 </div>
                 <div class="">
-                    <form action="notes/edit_labels/<?= $note->get_Id() ?>" method="POST" class="navbar-brand">
-                        <input type="hidden" name="note_id" value="<?= $note->get_Id() ?>">
+                    <form action="notes/edit_labels/<?= $note->get_id() ?>" method="POST" class="navbar-brand">
+                        <input type="hidden" name="note_id" value="<?= $note->get_id() ?>">
                         <button type="submit" class="btn-icon" style="background: none; border: none; color: inherit; ">
                             <i class="bi bi-tag"></i>
                         </button>

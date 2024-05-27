@@ -214,7 +214,12 @@ abstract class Note extends MyModel
         } else {
             $row = $query->fetch();
             $owner = User::get_user_by_id($row['owner']);
-            return new Note($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['id'], $row['created_at'], $row['edited_at']);
+            $query = self::execute("select * from text_notes where id = :id", ["id" => $row['id']]);
+            if ($query->rowCount() == 0) {
+                return new ChecklistNote($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['id'], $row['created_at'], $row['edited_at']);
+            } else {
+                return new TextNote($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['id'], $row['created_at'], $row['edited_at']);
+            }
         }
     }
 

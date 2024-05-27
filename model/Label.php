@@ -5,7 +5,7 @@ require_once "model/User.php";
 require_once "model/Note.php";
 
 class Label extends MyModel {
-    public function __construct(private ?int $noteId, private string $labelName, private ?int $id = NULL) {}
+    public function __construct(private ?int $note_id, private string $label_name, private ?int $id = NULL) {}
 
     public function get_id(): ?int
     {
@@ -19,27 +19,27 @@ class Label extends MyModel {
 
     public function get_note_id(): int
     {
-        return $this->noteId;
+        return $this->note_id;
     }
     public function get_label_name(): string
     {
-        return $this->labelName;
+        return $this->label_name;
     }
-    public static function add_label($noteId, $labelName) {
+    public static function add_label($note_id, $label_name) {
         return self::execute('INSERT INTO note_labels (note, label) VALUES (:note_id, :label_name)', [
-            'note_id' => $noteId,
-            'label_name' => $labelName,
+            'note_id' => $note_id,
+            'label_name' => $label_name,
         ]);
     }
-    public static function remove_label($noteId, $labelName) {
+    public static function remove_label($note_id, $label_name) {
         return self::execute('DELETE FROM note_labels WHERE note = :note_id AND label = :label_name', [
-            'note_id' => $noteId,
-            'label_name' => $labelName
+            'note_id' => $note_id,
+            'label_name' => $label_name
         ]);
     }
 
-    public static function get_labels_by_note_id($noteId) {
-        $query = self::execute("SELECT * FROM note_labels WHERE note = :note_id", ['note_id' => $noteId]);
+    public static function get_labels_by_note_id($note_id) {
+        $query = self::execute("SELECT * FROM note_labels WHERE note = :note_id", ['note_id' => $note_id]);
         $data = $query->fetchAll();
         $labels = [];
         foreach ($data as $row) {
@@ -47,8 +47,8 @@ class Label extends MyModel {
         }
         return $labels;
     }
-    public static function get_label_by_note_id_and_label_name($noteId, $labelName) {
-        $query = self::execute("SELECT * FROM note_labels WHERE note = :note_id AND label = :label_name", ['note_id' => $noteId, 'label_name' => $labelName]);
+    public static function get_label_by_note_id_and_label_name($note_id, $label_name) {
+        $query = self::execute("SELECT * FROM note_labels WHERE note = :note_id AND label = :label_name", ['note_id' => $note_id, 'label_name' => $label_name]);
         $row = $query->fetch();
 
         return new Label($row['note'], $row['label']);
@@ -64,11 +64,11 @@ class Label extends MyModel {
         }
         return $labels;
     }*/
-    public static function get_labels_by_user_id($userId) {
+    public static function get_labels_by_user_id($user_id) {
         $query = self::execute("SELECT DISTINCT l.label FROM note_labels l
                             INNER JOIN notes n ON l.note = n.id
                             WHERE n.owner = :user_id",
-            ['user_id' => $userId]);
+            ['user_id' => $user_id]);
         $data = $query->fetchAll();
         $labels = [];
         foreach ($data as $row) {
@@ -76,8 +76,8 @@ class Label extends MyModel {
         }
         return $labels;
     }
-    public static function is_unique_by_note(string $label, $noteId) {
-        $labels = self::get_labels_by_note_id($noteId);
+    public static function is_unique_by_note(string $label, $note_id) {
+        $labels = self::get_labels_by_note_id($note_id);
         /** @var Label $label */
         foreach ($labels as $l) {
             if(strtoupper($l->get_label_name()) === strtoupper($label)) {
@@ -90,7 +90,7 @@ class Label extends MyModel {
     public function delete(): Label|false
     {
         try {
-            self::execute("DELETE FROM note_labels WHERE note = :note AND label = :label", ["note" => $this->get_note_id(), "label" => $this->labelName]);
+            self::execute("DELETE FROM note_labels WHERE note = :note AND label = :label", ["note" => $this->get_note_id(), "label" => $this->label_name]);
             return $this;
         } catch (\Throwable $th) {
             return false;
@@ -98,7 +98,7 @@ class Label extends MyModel {
     }
 
 
-    public static function validate_label(string $label, $noteId): array
+    public static function validate_label(string $label, $note_id): array
     {
         $errors = [
             "label" => []
@@ -113,7 +113,7 @@ class Label extends MyModel {
         if (preg_match("/\s/", $label)) {
             $errors["label"][] = "Label name cannot contain any space.";
         }
-        if(!(self::is_unique_by_note($label, $noteId))) {
+        if(!(self::is_unique_by_note($label, $note_id))) {
             $errors["label"][] = "A note cannot contain the same label twice.";
         }
         return $errors;
@@ -122,7 +122,7 @@ class Label extends MyModel {
     {
         self::execute(
             "INSERT INTO note_labels (note, label) VALUES (:note, :label)",
-            ["note" => $this->noteId, "label" => $this->labelName]
+            ["note" => $this->note_id, "label" => $this->label_name]
         );
     }
 

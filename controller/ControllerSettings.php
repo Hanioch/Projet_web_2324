@@ -37,17 +37,17 @@ class ControllerSettings extends Controller
             "full_name" => [],
             "mail" => []
         ];
-        $changesMade = false;
+        $changes_made = false;
         $success = (isset($_GET['param1']) && $_GET['param1'] == "ok") ? "Votre profil a été mis à jour avec succès." : '';
 
         if (isset($_POST['full_name'])) {
             $full_name = trim($_POST['full_name']);
-            if($full_name != $user->get_Full_Name()){
+            if($full_name != $user->get_full_name()){
                 $errors = array_merge($errors, User::validate_full_name($full_name));
                 if ( empty( $errors['full_name']) ){
-                    $user->set_Full_Name($full_name);
+                    $user->set_full_name($full_name);
                     $user->persist();
-                    $changesMade = true;
+                    $changes_made = true;
                 }
             }
 
@@ -55,17 +55,17 @@ class ControllerSettings extends Controller
 
         if (isset($_POST['mail'])) {
             $mail = trim($_POST['mail']);
-            if($mail != $user->get_Mail()){
+            if($mail != $user->get_mail()){
                 $errors = array_merge($errors, User::validate_mail($mail));
                 if (empty($errors['mail'])) {
-                    $user->set_Mail($mail);
+                    $user->set_mail($mail);
                     $user->persist();
-                    $changesMade = true;
+                    $changes_made = true;
                 }
             }
         }
 
-        if ($changesMade && empty($errors["full_name"]) && empty($errors["mail"])) {
+        if ($changes_made && empty($errors["full_name"]) && empty($errors["mail"])) {
             $this->redirect("Settings", "edit_profile", "ok");
         }
 
@@ -96,7 +96,7 @@ class ControllerSettings extends Controller
             }
 
             if (empty($errors["old_password"]) && empty($errors["password"]) && empty($errors["password_confirm"])) {
-                $user->set_Hashed_Password(Tools::my_hash($password));
+                $user->set_hashed_password(Tools::my_hash($password));
                 $user->persist();
                 $success = "Password updated successfully.";
             }
