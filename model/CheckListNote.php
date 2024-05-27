@@ -10,68 +10,6 @@ class ChecklistNote extends Note
         $this->fetch_list_item();
     }
 
-    public function get_title(): string
-    {
-        return $this->title;
-    }
-
-    public function set_title(string $title): void
-    {
-        $this->title = $title;
-    }
-
-    public function get_owner(): User
-    {
-        return $this->owner;
-    }
-
-    public function set_owner(User $owner): void
-    {
-        $this->owner = $owner;
-    }
-
-
-    public function is_archived(): bool
-    {
-        return $this->archived;
-    }
-
-    public function set_archived(bool $archived): void
-    {
-        $this->archived = $archived;
-    }
-
-    public function get_weight(): int
-    {
-        return $this->weight;
-    }
-
-    public function set_weight(int $weight): void
-    {
-        $this->weight = $weight;
-    }
-
-    public function get_created_at(): ?string
-    {
-        return $this->created_at;
-    }
-
-    public function set_created_at(?string $created_at): void
-    {
-        $this->created_at = $created_at;
-    }
-
-    public function get_edited_at(): ?string
-    {
-        return $this->edited_at;
-    }
-
-    public function set_edited_at(?string $edited_at): void
-    {
-        $this->edited_at = $edited_at;
-    }
-
-
     public function fetch_list_item()
     {
         $query = self::execute("SELECT cni.*, n.title, n.owner, n.pinned, n.archived, n.weight, n.created_at, n.edited_at FROM checklist_note_items cni JOIN notes n ON n.id = cni.checklist_note WHERE checklist_note = :checklist_note ORDER BY cni.checked ASC, cni.id ASC", ["checklist_note" => $this->id]);
@@ -84,15 +22,6 @@ class ChecklistNote extends Note
 
         $this->set_list_item($items);
     }
-
-    /*public static function is_checklist_note(int | null $id_to_check): bool
-    {
-        if ($id_to_check == NULL) {
-            return false;
-        } else {
-            return true;
-        }
-    }*/
 
     public function set_list_item(array $list)
     {

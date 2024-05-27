@@ -365,6 +365,4 @@ abstract class Note extends MyModel
     {
         return Model::lastInsertId();
     }
-
-
 }
