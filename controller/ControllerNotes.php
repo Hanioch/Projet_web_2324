@@ -901,7 +901,7 @@ class ControllerNotes extends Controller
 
         $new_weight = $user->get_heaviest_note($note->is_pinned()) + 1;
 
-        $this->move_all_note_between($note, $new_weight);
+        $this->move_all_notes_between($note, $new_weight);
 
         $this->redirect("notes", "open_note/$note_id");
     }

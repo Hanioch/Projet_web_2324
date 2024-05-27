@@ -5,7 +5,7 @@ require_once "model/User.php";
 require_once "model/Note.php";
 
 
-class Note extends MyModel implements JsonSerializable
+abstract class Note extends MyModel implements JsonSerializable
 {
     public function __construct(private string $title, private User $owner, private  bool $pinned, private bool $archived, private int $weight, private ?int $id = NULL, private ?string $created_at = NULL, private ?string $edited_at = NULL)
     {
@@ -106,7 +106,7 @@ class Note extends MyModel implements JsonSerializable
         if ($query->rowCount() == 0) {
             return new ChecklistNote($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['id'], $row['created_at'], $row['edited_at']);
         } else {
-            return new TextNote($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['id'], $row['created_at'], $row['edited_at']);
+            return new TextNote($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'],null, $row['id'], $row['created_at'], $row['edited_at']);
         }
     }
 
