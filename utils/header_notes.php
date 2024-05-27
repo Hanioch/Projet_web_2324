@@ -10,10 +10,10 @@ $list_filter_encoded = $is_list_filter_exist ? $_GET["param2"] : "";
 
             <nav class="navbar navbar-dark">
                 <?php
-                $chevronLink = "./notes";
-                if ($is_list_filter_exist) $chevronLink .= "/search/" . $list_filter_encoded;
+                $chevron_link = "./notes";
+                if ($is_list_filter_exist) $chevron_link .= "/search/" . $list_filter_encoded;
 
-                echo '<a class="navbar-brand" href="' . $chevronLink . ' ">
+                echo '<a class="navbar-brand" href="' . $chevron_link . ' ">
                         <i class="bi bi-chevron-left"></i>
                     </a>';
                 ?>
@@ -30,12 +30,12 @@ $list_filter_encoded = $is_list_filter_exist ? $_GET["param2"] : "";
                 </div>
                 <div class="">
                     <?php
-                    $pinIcon = $note->is_pinned() ? "bi-pin-fill" : "bi-pin";
+                    $pin_icon = $note->is_pinned() ? "bi-pin-fill" : "bi-pin";
                     ?>
                     <form action="notes/toggle_Pin" method="POST" class="navbar-brand">
                         <input type="hidden" name="note_id" value="<?= $note->get_id() ?>">
                         <button type="submit" class="btn-icon" style="background: none; border: none; color: inherit; ">
-                            <i class="bi <?= $pinIcon ?>"></i>
+                            <i class="bi <?= $pin_icon ?>"></i>
                         </button>
                     </form>
                 </div>
@@ -57,14 +57,14 @@ $list_filter_encoded = $is_list_filter_exist ? $_GET["param2"] : "";
                 </div>
                 <div class="">
                     <?php
-                    if ($isChecklistNote) {
-                        $chevronLink = "./notes/edit_checklist_note/" . $note->get_Id();
+                    if ($is_checklist_note) {
+                        $chevron_link = "./notes/edit_checklist_note/" . $note->get_id();
                     } else {
-                        $chevronLink = "./notes/edit_text_note/" . $note->get_Id();
+                        $chevron_link = "./notes/edit_text_note/" . $note->get_id();
                     }
 
-                    if ($is_list_filter_exist) $chevronLink .= "/" . $list_filter_encoded;
-                    echo '<a class="navbar-brand" href="' . $chevronLink . '">
+                    if ($is_list_filter_exist) $chevron_link .= "/" . $list_filter_encoded;
+                    echo '<a class="navbar-brand" href="' . $chevron_link . '">
                        <i class="bi bi-pencil"></i>
                     </a>';
                     ?>

@@ -6,7 +6,7 @@ include("./utils/header_settings.php");
     <form class="text-white" action="Settings/edit_profile" method="post">
         <div class="mb-3">
             <label for="full_name" class="form-label">Edit your name</label>
-            <input type="text" name="full_name" class="form-control<?php if (isset($errors) && count($errors["full_name"]) > 0): ?> is-invalid<?php endif; ?>" id="full_name" value="<?= $user->get_Full_Name() ?>">
+            <input type="text" name="full_name" class="form-control<?php if (isset($errors) && count($errors["full_name"]) > 0): ?> is-invalid<?php endif; ?>" id="full_name" value="<?= $user->get_full_name() ?>">
             <?php if (isset($errors) && count($errors["full_name"]) > 0): ?>
                 <div class="alert alert-danger" role="alert">
                     <ul class="list-unstyled">
@@ -20,7 +20,7 @@ include("./utils/header_settings.php");
 
         <div class="mb-3">
             <label for="mail" class="form-label">Edit your Email</label>
-            <input type="email" name="mail" class="form-control<?php if (isset($errors) && count($errors["mail"]) > 0): ?> is-invalid<?php endif; ?>" id="mail" value="<?= $user->get_Mail() ?>">
+            <input type="email" name="mail" class="form-control<?php if (isset($errors) && count($errors["mail"]) > 0): ?> is-invalid<?php endif; ?>" id="mail" value="<?= $user->get_mail() ?>">
             <?php if (isset($errors) && count($errors["mail"]) > 0): ?>
                 <div class="alert alert-danger" role="alert">
                     <ul class="list-unstyled">

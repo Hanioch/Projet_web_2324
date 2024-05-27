@@ -6,11 +6,11 @@ include("./utils/header_edit_labels.php");
 ?>
 
 <div class="card-body">
-    <span id="idNote" value="<?= $note->get_Id() ?>" style="display: none;"></span>
+    <span id="idNote" value="<?= $note->get_id() ?>" style="display: none;"></span>
 
     <div class="p-3 text-white ">
 
-        <form id="<?= $id_form ?>" action="notes/edit_labels/<?= $note->get_Id() ?>" method="post" class="mb-3">
+        <form id="<?= $id_form ?>" action="notes/edit_labels/<?= $note->get_id() ?>" method="post" class="mb-3">
             <div class="">
                 <label class="form-label mb-0 fs-5">Labels : </label>
                 <ul class="list-unstyled" id="list_labels">
@@ -33,7 +33,7 @@ include("./utils/header_edit_labels.php");
             </div>
         </form>
         <label for="add_label" class="form-label">Add a new label : </label>
-        <form action="notes/edit_labels/<?= $note->get_Id() ?>" method="post" class="input-group">
+        <form action="notes/edit_labels/<?= $note->get_id() ?>" method="post" class="input-group">
             <input <?php if (!empty($errors['label'])) {
                         echo 'value="' . $_POST['new_label'] . '" class="form-control bg-secondary text-white bg-opacity-25 border-secondary is-invalid"';
                     } else {
@@ -66,7 +66,7 @@ include("./utils/header_edit_labels.php");
 <script>
     const pageName = "editLabels";
     const urlToRedirect = "<?= $back_url ?>"
-    const noteId = <?= $note->get_Id() ?>
+    const noteId = <?= $note->get_id() ?>
 </script>
 <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
 <script src="js/scriptEditLabels.js"></script>

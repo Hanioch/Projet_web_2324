@@ -9,11 +9,11 @@ include('./utils/head.php')
             <nav class="navbar navbar-dark">
                 <?php
                 if (isset($id_sender)) {
-                    $chevronLink = "./notes/shared_by/$id_sender";
+                    $chevron_link = "./notes/shared_by/$id_sender";
                 } else {
-                    $chevronLink = "./notes";
+                    $chevron_link = "./notes";
                 }
-                echo '<a class="navbar-brand" href="' . $chevronLink . '">
+                echo '<a class="navbar-brand" href="' . $chevron_link . '">
                         <i class="bi bi-chevron-left"></i>
                         
                     </a>';
@@ -22,18 +22,18 @@ include('./utils/head.php')
             </nav>
             <nav class="navbar navbar-dark ">
                 <div class="">
-                    <?php if ($canEdit) : ?>
+                    <?php if ($can_edit) : ?>
                         <?php
 
-                        if ($isChecklistNote) {
-                            $chevronLink = "./notes/edit_checklist_note/" . $note->get_Id();
+                        if ($is_checklist_note) {
+                            $chevron_link = "./notes/edit_checklist_note/" . $note->get_id();
                         } else {
-                            $chevronLink = "./notes/edit_text_note/" . $note->get_Id();
+                            $chevron_link = "./notes/edit_text_note/" . $note->get_id();
                         }
-                        echo '<a class="navbar-brand" href="' . $chevronLink . '">
+                        echo '<a class="navbar-brand" href="' . $chevron_link . '">
                         <div class="d-inline-block">
-                            <form action="notes/edit_labels/' . $note->get_Id() . '" method="POST" class="navbar-brand">
-                                <input type="hidden" name="note_id" value="' . $note->get_Id() . '">
+                            <form action="notes/edit_labels/' . $note->get_id() . '" method="POST" class="navbar-brand">
+                                <input type="hidden" name="note_id" value="' . $note->get_id() . '">
                                 <button type="submit" class="btn-icon" style="background: none; border: none; color: inherit; ">
                                     <i class="bi bi-tag"></i>
                                 </button>

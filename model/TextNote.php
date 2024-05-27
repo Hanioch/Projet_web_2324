@@ -8,12 +8,12 @@ class TextNote extends Note
         parent::__construct($title, $owner, $pinned, $archived, $weight, $id, $created_at, $edited_at);
     }
 
-    public function get_Content(): ?string
+    public function get_content(): ?string
     {
         return $this->content;
     }
 
-    public function set_Content(?string $content): void
+    public function set_content(?string $content): void
     {
         $this->content = $content;
     }
@@ -36,8 +36,8 @@ class TextNote extends Note
         $note_content_min_length = Configuration::get("note_min_length");
         $note_content_max_length = Configuration::get("note_max_length");
 
-        if ($this->get_Content() !== "" && $this->get_Content() !== NULL) {
-            $content_length = mb_strlen($this->get_Content());
+        if ($this->get_content() !== "" && $this->get_content() !== NULL) {
+            $content_length = mb_strlen($this->get_content());
             if ($content_length < $note_content_min_length || $content_length > $note_content_max_length) {
                 $errors['content'] = "Content length must be between {$note_content_min_length} and {$note_content_max_length} characters.";
             }
@@ -66,15 +66,15 @@ class TextNote extends Note
                     'INSERT INTO text_notes (id,content) VALUES
                  (:id,:content)',
                     [
-                        'id' => $note->get_Id(),
-                        'content' => $this->get_Content(),
+                        'id' => $note->get_id(),
+                        'content' => $this->get_content(),
                     ]
                 );
                 return $this;
             } else {
                 self::execute('UPDATE text_notes SET  content = :content WHERE id = :id', [
-                    'content' => $this->get_Content(),
-                    'id' => $this->get_Id()
+                    'content' => $this->get_content(),
+                    'id' => $this->get_id()
                 ]);
                 parent::modify_note_in_DB();
                 return $this;

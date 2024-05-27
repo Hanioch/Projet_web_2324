@@ -1,6 +1,6 @@
 <?php
-if (isset($headerType) && empty($error)) {
-    include("utils/header_{$headerType}.php");
+if (isset($header_type) && empty($error)) {
+    include("utils/header_{$header_type}.php");
 } else {
     include("utils/header_error.php");
 }
@@ -42,37 +42,37 @@ if (isset($headerType) && empty($error)) {
     </div>
 </div>
 <!-- fin -->
-<span id="idNote" value="<?= $note->get_Id() ?>" style="display: none;"></span>
+<span id="idNote" value="<?= $note->get_id() ?>" style="display: none;"></span>
 <?php if (isset($error) && !empty($error)) : ?>
     <div class="alert alert-danger" role="alert">
         <?= $error ?>
     </div>
 <?php else : ?>
     <div class="card-header text-white mb-2 fst-italic fs-6">
-        <span style="font-size: 0.8em;">Created <?= Note::time_elapsed_string($note->get_Created_At()) ?> . </span>
-        <?php if ($note->get_Edited_At() !== null) : ?>
-            <span style="font-size: 0.8em;">Edited <?= Note::time_elapsed_string($note->get_Edited_At()) ?>.</span>
+        <span style="font-size: 0.8em;">Created <?= Note::time_elapsed_string($note->get_created_at()) ?> . </span>
+        <?php if ($note->get_edited_at() !== null) : ?>
+            <span style="font-size: 0.8em;">Edited <?= Note::time_elapsed_string($note->get_edited_at()) ?>.</span>
         <?php endif; ?>
     </div>
 
     <div class="mb-3 text-white">
         <label for="noteTitle" class="form-label">Title</label>
-        <input type="text" id="noteTitle" class="form-control border-0 bg-secondary text-white bg-opacity-25" value="<?= $note->get_Title() ?>" disabled>
+        <input type="text" id="noteTitle" class="form-control border-0 bg-secondary text-white bg-opacity-25" value="<?= $note->get_title() ?>" disabled>
     </div>
     <div class="card-body text-white" id="itemsDiv">
-        <?php if ($isChecklistNote) : ?>
+        <?php if ($is_checklist_note) : ?>
             <label class="form-label">Items</label>
-            <?php foreach ($checklistItems as $item) : ?>
+            <?php foreach ($checklist_items as $item) : ?>
                 <form action="notes/toggle_Checkbox" method="POST">
                     <div class="input-group mb-3">
                         <div class="input-group-text bg-primary ">
-                            <button class="btn btn-submit" <?= $canEdit ? '' : 'disabled' ?>>
-                                <input class="form-check-input border opacity-100" id="checkbox_<?= $item->get_Id() ?>" type="checkbox" name="checked" value="1" <?= $item->is_Checked() ? 'checked' : '' ?> aria-label="Checkbox for following text input" disabled>
+                            <button class="btn btn-submit" <?= $can_edit ? '' : 'disabled' ?>>
+                                <input class="form-check-input border opacity-100" id="checkbox_<?= $item->get_id() ?>" type="checkbox" name="checked" value="1" <?= $item->is_checked() ? 'checked' : '' ?> aria-label="Checkbox for following text input" disabled>
                             </button>
                         </div>
-                        <input type="text" class="form-control bg-secondary text-white bg-opacity-25 border-0 <?= $item->is_Checked() ? 'text-decoration-line-through' : '' ?>" value="<?= $item->get_Content() ?>" aria-label="Text input with checkbox" disabled>
-                        <input type="hidden" name="item_id" value="<?= $item->get_Id() ?>">
-                        <input type="hidden" name="note_id" value="<?= $note->get_Id() ?>">
+                        <input type="text" class="form-control bg-secondary text-white bg-opacity-25 border-0 <?= $item->is_checked() ? 'text-decoration-line-through' : '' ?>" value="<?= $item->get_content() ?>" aria-label="Text input with checkbox" disabled>
+                        <input type="hidden" name="item_id" value="<?= $item->get_id() ?>">
+                        <input type="hidden" name="note_id" value="<?= $note->get_id() ?>">
                     </div>
                 </form>
             <?php endforeach; ?>
@@ -80,7 +80,7 @@ if (isset($headerType) && empty($error)) {
 <?php else : ?>
     <div class="mb-3 ">
         <label for="noteText" class="form-label">Text</label>
-        <textarea id="noteText" class="form-control border-0 bg-secondary text-white bg-opacity-25" style="height: calc(50vh - 20px);" disabled><?= $text->get_Content() ?></textarea>
+        <textarea id="noteText" class="form-control border-0 bg-secondary text-white bg-opacity-25" style="height: calc(50vh - 20px);" disabled><?= $text->get_content() ?></textarea>
     </div>
     </div>
 <?php endif; ?>

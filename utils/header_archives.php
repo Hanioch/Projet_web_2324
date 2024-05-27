@@ -7,8 +7,8 @@ include('./utils/head.php')
         <header class="header-note">
             <nav class="navbar navbar-dark">
                 <?php
-                $chevronLink = "./notes/archives";
-                echo '<a class="navbar-brand" href="' . $chevronLink . '">
+                $chevron_link = "./notes/archives";
+                echo '<a class="navbar-brand" href="' . $chevron_link . '">
                         <i class="bi bi-chevron-left"></i>
                     </a>';
                 ?>

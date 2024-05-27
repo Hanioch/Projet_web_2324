@@ -19,48 +19,48 @@ class User extends MyModel
     {
     }
     // Getters
-    public function get_Mail(): string
+    public function get_mail(): string
     {
         return $this->mail;
     }
 
-    public function get_Hashed_Password(): string
+    public function get_hashed_password(): string
     {
         return $this->hashed_password;
     }
 
-    public function get_Full_Name(): string
+    public function get_full_name(): string
     {
         return $this->full_name;
     }
 
-    public function get_Role(): Role
+    public function get_role(): Role
     {
         return $this->role;
     }
 
-    public function get_Id(): ?int
+    public function get_id(): ?int
     {
         return $this->id;
     }
 
     // Setters
-    public function set_Mail(string $mail): void
+    public function set_mail(string $mail): void
     {
         $this->mail = $mail;
     }
 
-    public function set_Hashed_Password(string $hashed_password): void
+    public function set_hashed_password(string $hashed_password): void
     {
         $this->hashed_password = $hashed_password;
     }
 
-    public function set_Full_Name(string $full_name): void
+    public function set_full_name(string $full_name): void
     {
         $this->full_name = $full_name;
     }
 
-    public function set_Role(Role $role): void
+    public function set_role(Role $role): void
     {
         $this->role = $role;
     }
@@ -397,15 +397,14 @@ class User extends MyModel
         if (empty($list_filter)) {
             return [];
         } else {
-            // Convertir la liste de filtres en une chaîne de caractères pour la clause IN
             $filters_string = implode(',', array_map(function ($i) use ($list_filter) {
                 return ":filter$i";
             }, range(0, count($list_filter) - 1)));
-            // Ajouter les paramètres pour les filtres
+
             foreach ($list_filter as $index => $filter) {
                 $params[":filter$index"] = $filter;
             }
-            // Ajouter la condition pour les filtres
+
             $labels_condition = 'AND n.id IN (SELECT note FROM note_labels WHERE label IN (' . $filters_string . ')
                               GROUP BY note HAVING COUNT(DISTINCT label) = ' . count($list_filter) . ')';
 
@@ -445,21 +444,19 @@ class User extends MyModel
 
     public function get_notes_searched($list_filter): array
     {
-        //PAS FAN du tout SI on peut tout chnger on change tout
         $params = ["owner" => $this->id];
 
         if (empty($list_filter)) {
             return [];
         } else {
-            // Convertir la liste de filtres en une chaîne de caractères pour la clause IN
             $filters_string = implode(',', array_map(function ($i) use ($list_filter) {
                 return ":filter$i";
             }, range(0, count($list_filter) - 1)));
-            // Ajouter les paramètres pour les filtres
+
             foreach ($list_filter as $index => $filter) {
                 $params[":filter$index"] = $filter;
             }
-            // Ajouter la condition pour les filtres
+
             $labels_condition = 'AND n.id IN (SELECT note FROM note_labels WHERE label IN (' . $filters_string . ')
                               GROUP BY note HAVING COUNT(DISTINCT label) = ' . count($list_filter) . ')';
 
@@ -482,7 +479,6 @@ class User extends MyModel
             $search_notes = [];
 
             foreach ($data as $row) {
-                // Vérifier si la note contient tous les labels filtrés
                 if (empty($list_filter) || count(array_intersect($list_filter, explode(',', $row['labels']))) == count($list_filter)) {
                     $note = $this->get_text_note_or_checklist_note($row);
                     $search_notes[] = $note;
@@ -494,17 +490,6 @@ class User extends MyModel
     }
     public function get_filter_list(): array
     {
-        //pas sur du where
-        /*$query = self::execute(
-            "SELECT
-            DISTINCT nl.label
-            FROM notes n
-            LEFT JOIN note_labels nl ON n.id = nl.note
-            LEFT JOIN note_shares ns ON n.id = ns.note
-            WHERE n.owner = :owner OR ns.user!= :owner ;",
-            ["owner" => $this->id]
-        );*/
-
         $query = self::execute(
             "SELECT DISTINCT
              nl.label
@@ -529,7 +514,6 @@ class User extends MyModel
 
     public function get_heaviest_note($pinned = NULL, $archived = NULL): int
     {
-
         $query = "";
         if ($archived !== NULL) {
             $query = self::execute("
@@ -561,8 +545,6 @@ class User extends MyModel
             return $row['weight'];
         }
     }
-
-
 
     public function get_note_by_id(int $id): Note | false
 
@@ -614,7 +596,7 @@ class User extends MyModel
         $errors = [
             "old_password" => []
         ];
-        if (!(Tools::my_hash($old_password) === $user->get_Hashed_Password())) {
+        if (!(Tools::my_hash($old_password) === $user->get_hashed_password())) {
             $errors['old_password'][] = "Incorrect old password.";
         }
 

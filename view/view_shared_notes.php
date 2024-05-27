@@ -1,8 +1,8 @@
 <?php
 require_once "tools.php";
 //adapter avec un getter
-$full_name =  $sender->get_Full_Name();
-$id_send= $sender->get_Id();
+$full_name =  $sender->get_full_name();
+$id_send= $sender->get_id();
 $title_page = Page::Shared_by->value . " " . $full_name;
 include("./utils/header.php");
 
