@@ -400,7 +400,7 @@ class ControllerNotes extends Controller
 
     private function validate_unique_item(ChecklistNote $checklist_note, string $content): bool
     {
-        $existing_items = $checklist_note->get_items();
+        $existing_items = $checklist_note->get_list_item();
         foreach ($existing_items as $item) {
             if ($item->get_content() === $content && $item->get_content() !== '') {
                 return false;
@@ -418,7 +418,7 @@ class ControllerNotes extends Controller
         $user = $this->get_user_or_redirect();
         $user_id = $user->get_id();
         $note = ChecklistNote::get_note($note_id);
-        $items = $note->get_items();
+        $items = $note->get_list_item();
 
         //On verifie les erreurs. 
         if (!($note instanceof Note)) {
@@ -457,7 +457,7 @@ class ControllerNotes extends Controller
             } else if (isset($_POST['add_button'])) {
                 $errors = $this->add_item($checklist_note, $errors);
                 if (empty($errors)) {
-                    $items = $checklist_note->get_items();
+                    $items = $checklist_note->get_list_item();
                     $errors = array_merge($errors, $this->edit_title($note, $errors));
 
                     $is_list_filter_exist = isset($_GET["param2"]);
@@ -471,7 +471,7 @@ class ControllerNotes extends Controller
             } else if (isset($_POST['remove_button'])) {
                 $item = ChecklistNoteItem::get_checklist_note_item_by_id($_POST['remove_button']);
                 $item->delete();
-                $items = $checklist_note->get_items();
+                $items = $checklist_note->get_list_item();
                 $errors = $this->edit_title($note, $errors);
 
                 $is_list_filter_exist = isset($_GET["param2"]);
@@ -519,7 +519,7 @@ class ControllerNotes extends Controller
 
     public function add_item(ChecklistNote $note, array $errors): array
     {
-        $items = $note->get_items();
+        $items = $note->get_list_item();
         $string_items = [];
         foreach ($items as $i) {
             $string_items[] = $i->get_content();
@@ -552,9 +552,9 @@ class ControllerNotes extends Controller
     public function edit_items(Note $note, array $errors): array
     {
         $checklist_note = new ChecklistNote($note->get_title(), $note->get_owner(), $note->is_pinned(), $note->is_archived(), $note->get_weight(), $note->get_id());
-        $current_items = $checklist_note->get_items();
+        $current_items = $checklist_note->get_list_item();
         $new_note = clone $checklist_note;
-        $new_items = $new_note->get_items();
+        $new_items = $new_note->get_list_item();
         $string_new_items = [];
         /** @var  ChecklistNoteItem $i*/
         foreach ($new_items as $i) {
@@ -721,7 +721,9 @@ class ControllerNotes extends Controller
                 } else {
                     $id_sender = $note->get_owner()->get_id();
                     if ($is_checklist_note) {
-                        $checklist_items = $note->get_items();
+                        $note->fetch_list_item();
+                        $checklist_items = $note->get_list_item();
+
                     } else {
                         $text = TextNote::get_text_note($note_id);
                     }
@@ -922,7 +924,7 @@ class ControllerNotes extends Controller
         $cln = ChecklistNote::get_note($note_id);
         $item = ChecklistNoteItem::get_checklist_note_item_by_id($item_id);
         $item->toggle_checkbox();
-        $items = $cln->get_items();
+        $items = $cln->get_list_item();
         $table = [];
         /** @var CheckListNoteItem $i */
         foreach ($items as $i) {
@@ -965,7 +967,7 @@ class ControllerNotes extends Controller
         $new_item_id = $new_item->get_id();
         $note = ChecklistNote::get_by_id($note_id);
         $errors = [];
-        $items = $note->get_items();
+        $items = $note->get_list_item();
 
         if (!empty($test = $new_item->validate())) {
             $errors['new_item'] = $test[0];
@@ -1000,7 +1002,7 @@ class ControllerNotes extends Controller
         $checklist_note = new ChecklistNote($note->get_title(), $note->get_owner(), $note->is_pinned(), $note->is_archived(), $note->get_weight(), $note->get_id());
         $errors = [];
         $this->add_item($checklist_note, $errors);
-        $items = $note->get_items();
+        $items = $note->get_list_item();
         $table = [];
         /** @var CheckListNoteItem $i */
         foreach ($items as $i) {
