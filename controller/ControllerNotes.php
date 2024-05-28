@@ -716,7 +716,7 @@ class ControllerNotes extends Controller
                 }
 
                 $can_access = ($note->get_owner()->get_id() === $user_id) || $is_shared_note;
-                if (!$can_access || !$can_edit) {
+                if (!$can_access) {
                     $error = "Accès non autorisé.";
                 } else {
                     $id_sender = $note->get_owner()->get_id();
