@@ -924,6 +924,7 @@ class ControllerNotes extends Controller
         $cln = ChecklistNote::get_note($note_id);
         $item = ChecklistNoteItem::get_checklist_note_item_by_id($item_id);
         $item->toggle_checkbox();
+        $cln->fetch_list_item();
         $items = $cln->get_list_item();
         $table = [];
         /** @var CheckListNoteItem $i */
@@ -967,6 +968,7 @@ class ControllerNotes extends Controller
         $new_item_id = $new_item->get_id();
         $note = ChecklistNote::get_by_id($note_id);
         $errors = [];
+        $note->fetch_list_item();
         $items = $note->get_list_item();
 
         if (!empty($test = $new_item->validate())) {
@@ -1002,6 +1004,7 @@ class ControllerNotes extends Controller
         $checklist_note = new ChecklistNote($note->get_title(), $note->get_owner(), $note->is_pinned(), $note->is_archived(), $note->get_weight(), $note->get_id());
         $errors = [];
         $this->add_item($checklist_note, $errors);
+        $note->fetch_list_item();
         $items = $note->get_list_item();
         $table = [];
         /** @var CheckListNoteItem $i */
