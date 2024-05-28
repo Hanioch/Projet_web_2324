@@ -24,7 +24,7 @@ $(document).ready(function () {
 
   function validateTitle() {
     var title = $("#titleNote").val().trim();
-    var noteId = $("#noteId").length ? $("#noteId").data("note-id") : -1;
+    var note_id = $("#noteId").length ? $("#noteId").data("note-id") : -1;
     if (title.length === 0) {
       $("#titleNote");
       $("#title_error").text("");
@@ -43,7 +43,7 @@ $(document).ready(function () {
         type: "POST",
         data: {
           title: title,
-          noteId: noteId,
+          note_id: note_id,
         },
         dataType: "json",
         success: function (response) {
