@@ -1164,8 +1164,8 @@ class ControllerNotes extends Controller
         $validation_rules = [
             'min_title_length' => $min_title_length,
             'max_title_length' => $max_title_length,
-            'minContentLength' => $min_content_length,
-            'maxContentLength' => $max_content_length
+            'min_content_length' => $min_content_length,
+            'max_content_length' => $max_content_length
         ];
 
         header('Content-Type: application/json');
