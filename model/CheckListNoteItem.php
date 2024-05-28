@@ -2,7 +2,7 @@
 
 require_once "model/MyModel.php";
 
-class ChecklistNoteItem extends MyModel
+class ChecklistNoteItem extends MyModel implements JsonSerializable
 {
     public function __construct(private string $content = "", private bool $checked = false, private ?int $checklist_note = NULL, private ?int $id = NULL)
     {

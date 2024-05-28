@@ -2,7 +2,7 @@
 
 require_once "model/MyModel.php";
 require_once "model/CheckListNote.php";
-require_once "model/CheckListNoteItems.php";
+require_once "model/CheckListNoteItem.php";
 require_once "model/TextNote.php";
 
 

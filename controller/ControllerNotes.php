@@ -355,7 +355,7 @@ class ControllerNotes extends Controller
             for ($i = 1; $i <= 5; $i++) {
                 $item_content = trim($_POST['item' . $i] ?? '');
                 if (!empty($item_content)) {
-                    $test = new ChecklistNoteItems($item_content, false);
+                    $test = new ChecklistNoteItem($item_content, false);
                     if (!empty($test->validate())) {
                         $errors['item' . $i] = ($test->validate())[0];
                     }
@@ -379,7 +379,7 @@ class ControllerNotes extends Controller
                 $note = new ChecklistNote($title, $user, false, false, $weight);
                 if ($note->persist()) {
                     foreach ($items_input as $content => $indexes) {
-                        $checklist_item = new ChecklistNoteItems($content, false);
+                        $checklist_item = new ChecklistNoteItem($content, false);
                         $checklist_item->set_checklist_note($note->get_id());
                         $checklist_item->persist();
                     }

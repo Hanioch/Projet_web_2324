@@ -7,7 +7,6 @@ $(document).ready(function() {
                 filters[name] = 'on';
             }
         });
-
         try {
             let response = await $.ajax({
                 type: 'POST',
@@ -21,9 +20,11 @@ $(document).ready(function() {
             $('.notes_shared').html('');
 
             let personal_notes = response.notes_searched['personal'];
+
             if (personal_notes.length > 0) {
                 await show_notes(personal_notes, "Your notes :", titlePage, response.list_filter_encoded, ".notes_personal");
             }
+            console.log("1")
 
             let shared_notes = response.notes_searched['shared'];
             if (!isEmptyObject(shared_notes)) {
@@ -120,6 +121,8 @@ function show_notes(arrNotes, title, titlePage, param, sectionClass, append = fa
                         let contentSub = note.content.length > maxLg ? note.content.substring(0, maxLg) + "..." : note.content;
                         html += '<p class="card-text mb-0">' + contentSub + '</p>';
                     } else {
+                        console.log("item", note);
+
                         let items = note.list_item;
                         if (items && items.length > 0) {
                             let listItemShowable = items.length > 3 ? items.slice(0, 3) : items;
