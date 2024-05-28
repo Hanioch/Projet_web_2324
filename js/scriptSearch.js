@@ -121,7 +121,6 @@ function show_notes(arrNotes, title, titlePage, param, sectionClass, append = fa
                         let contentSub = note.content.length > maxLg ? note.content.substring(0, maxLg) + "..." : note.content;
                         html += '<p class="card-text mb-0">' + contentSub + '</p>';
                     } else {
-                        console.log("item", note);
 
                         let items = note.list_item;
                         if (items && items.length > 0) {
@@ -152,7 +151,7 @@ function show_notes(arrNotes, title, titlePage, param, sectionClass, append = fa
                         html += '</button>';
                         html += '</form>';
                         labels.forEach(function(label) {
-                            html += ' <span class="badge rounded-pill bg-secondary opacity-50">' + label.labelName + '</span>';
+                            html += ' <span class="badge rounded-pill bg-secondary opacity-50">' + label.label_name + '</span>';
                         });
                     }
                     html += '</div>';
