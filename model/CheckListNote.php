@@ -59,11 +59,13 @@ class ChecklistNote extends Note implements JsonSerializable
         $errors = $this->validate();
         if (empty($errors)) {
             if ($this->id == NULL) {
-                $note = parent::add_note_in_DB();
+                parent::add_note_in_DB();
+                $id = self::lastInsertId();
+                $this->set_id($id);
                 self::execute(
                     'INSERT INTO checklist_notes (id) VALUES
                 (:id)',
-                    ['id' => $note->get_Id()]
+                    ['id' => $id]
                 );
                 return $this;
             } else {

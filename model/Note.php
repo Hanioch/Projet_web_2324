@@ -72,6 +72,11 @@ abstract class Note extends MyModel implements JsonSerializable
         return $this->id;
     }
 
+    protected function set_id($id):void
+    {
+        $this->id = $id;
+    }
+
     public function get_weight(): int
     {
         return $this->weight;
@@ -176,9 +181,9 @@ abstract class Note extends MyModel implements JsonSerializable
 
         return $result['count'] === 0;
     }
-    public static function is_unique_title_ajax(string $title, int $owner, int $noteId): bool
+    public static function is_unique_title_ajax(string $title, int $owner, int $note_id): bool
     {
-        if ($noteId === -1) {
+        if ($note_id === -1) {
 
             $query = self::execute("SELECT COUNT(*) AS count FROM notes WHERE title = :title AND owner = :owner ", [
                 'title' => $title,
@@ -188,7 +193,7 @@ abstract class Note extends MyModel implements JsonSerializable
             $query = self::execute("SELECT COUNT(*) AS count FROM notes WHERE title = :title AND owner = :owner AND id != :id", [
                 'title' => $title,
                 'owner' => $owner,
-                'id' => $noteId,
+                'id' => $note_id,
             ]);
         }
         $result = $query->fetch();
@@ -282,7 +287,7 @@ abstract class Note extends MyModel implements JsonSerializable
             return $errors;
         }
     }
-    protected function add_note_in_DB(): Note
+    protected function add_note_in_DB(): void
     {
         self::execute(
             'INSERT INTO notes (title, owner, created_at, edited_at, pinned, archived, weight) VALUES
@@ -295,12 +300,15 @@ abstract class Note extends MyModel implements JsonSerializable
                 'weight' => $this->weight
             ]
         );
-
+        /*
         $note = self::get_note(self::lastInsertId());
+
         $this->id = $note->get_id();
         $this->created_at = $note->get_created_at();
         $this->edited_at = $note->get_edited_at();
         return $this;
+                */
+
     }
     protected function modify_head_in_DB(): Note
     {

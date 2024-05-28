@@ -45,6 +45,10 @@ class TextNote extends Note implements JsonSerializable
 
         return $errors;
     }
+  /*  public function get_id(): ?int
+    {
+        return $this->id;
+    }*/
     public function delete(User $initiator): Note|false
     {
         if ($this->owner == $initiator) {
@@ -61,12 +65,15 @@ class TextNote extends Note implements JsonSerializable
         if (empty($errors)) {
 
             if ($this->id == NULL) {
-                $note = parent::add_note_in_DB();
+                parent::add_note_in_DB();
+                $id = self::lastInsertId();
+                $this->set_id($id);
+
                 self::execute(
                     'INSERT INTO text_notes (id,content) VALUES
                  (:id,:content)',
                     [
-                        'id' => $note->get_id(),
+                        'id' => $id,
                         'content' => $this->get_content(),
                     ]
                 );
