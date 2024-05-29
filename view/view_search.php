@@ -20,7 +20,7 @@ if (count($list_label) > 0) {
             foreach ($list_label as $label => $checked) { ?>
                 <li>
                     <input type="checkbox" <?= $checked ? "checked" : "" ?> id="<?= $label ?>Label" name="<?= $label ?>">
-                    <label for="<?= $label ?>" style="color: #ddd;"><?= $label ?></label>
+                    <label for="<?= $label ?>Label" style="color: #ddd;"><?= $label ?></label>
                 </li>
             <?php }
 
