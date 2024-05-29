@@ -70,7 +70,7 @@ function handleAddClick() {
 
 // fonction pour gérer la frappe clavier dans le champ new_label
 function handleKeyPress() {
-    $("#add_label").keyup(function () {
+    $("#add_label").off('keyup').on('keyup', function () {
         let content = $(this).val();
         $.ajax({
             url: "notes/check_new_label_service",
@@ -102,32 +102,6 @@ function handleKeyPress() {
                 $("#add_label").removeClass("is-invalid");
                 $("#error_div").html("");
             }
-
-
-
-
-
-            /*if ("new_item" in jsonResponse) {
-                if ($("#add_item").val() === "") {
-                    $("#new_item_error").remove();
-                    $("#add_item").removeClass("is-invalid");
-                    $("#add_item").removeClass("is-valid");
-                    $("#add_button").prop("disabled", true);
-                } else {
-                    let html = '<span class="error-add-note" id="new_item_error">';
-                    html += jsonResponse.new_item;
-                    html += "</span>";
-                    $("#new_item_error_div").html(html);
-                    $("#add_item").removeClass("is-valid");
-                    $("#add_item").addClass("is-invalid");
-                    $("#add_button").prop("disabled", true);
-                }
-            } else {
-                $("#new_item_error").remove();
-                $("#add_item").removeClass("is-invalid");
-                $("#add_item").addClass("is-valid");
-                $("#add_button").prop("disabled", false);
-            }*/
         });
     });
 }
