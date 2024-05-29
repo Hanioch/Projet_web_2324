@@ -2,7 +2,7 @@
 $id_form = "form_add_checklist_note";
 $title_page = "add_checklist_note";
 $something_to_save = false;
-include("./utils/header_add_note.php");
+include("utils/header_add_note.php");
 
 ?>
 

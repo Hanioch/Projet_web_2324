@@ -1,6 +1,6 @@
 <?php
 $title_page = "Edit Profil";
-include("./utils/header_settings.php");
+include("utils/header_settings.php");
 ?>
 <div class="row p-3">
     <form class="text-white" action="Settings/edit_profile" method="post">

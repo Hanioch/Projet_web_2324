@@ -2,7 +2,7 @@
 require_once "tools.php";
 
 $title_page = Page::Notes->value;
-include("./utils/header.php");
+include("utils/header.php");
 
 $pinned_notes = $notes['pinned'];
 $other_notes = $notes['other'];

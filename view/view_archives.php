@@ -2,7 +2,7 @@
 require_once "tools.php";
 
 $title_page = Page::Archives->value;
-include("./utils/header.php");
+include("utils/header.php");
 
 if (count($notes_archives) > 0) {
     show_note($notes_archives, "Archives", $title_page);
