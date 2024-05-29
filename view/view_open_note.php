@@ -29,7 +29,6 @@ if (isset($header_type) && empty($error)) {
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="modalSuccessDeleteLabel">deleted</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <p>This note has been deleted</p>
@@ -69,7 +68,7 @@ if (isset($header_type) && empty($error)) {
                 <form action="notes/toggle_Checkbox" method="POST">
                     <div class="input-group mb-3">
                         <div class="input-group-text bg-primary ">
-                            <button  class="btn btn-submit check-item" <?= $can_edit ? '' : 'disabled' ?>>
+                            <button class="btn btn-submit check-item" <?= $can_edit ? '' : 'disabled' ?>>
                                 <input class="form-check-input border opacity-100" id="checkbox_<?= $item->get_id() ?>" type="checkbox" name="checked" value="1" <?= $item->is_checked() ? 'checked' : '' ?> aria-label="Checkbox for following text input" disabled>
                             </button>
                         </div>

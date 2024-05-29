@@ -692,12 +692,14 @@ class ControllerNotes extends Controller
         $error = "";
         $note = Note::get_note($note_id);
 
+        if ($note === false) $this->redirect("notes");
+
         if ($note_id === false) {
             $error = "Identifiant de note invalide.";
         } else {
             $is_checklist_note = $note->is_checklist_note();
             $note = null;
-            if($is_checklist_note) {
+            if ($is_checklist_note) {
                 $note = ChecklistNote::get_note($note_id);
             } else {
                 $note = TextNote::get_note($note_id);
@@ -720,7 +722,6 @@ class ControllerNotes extends Controller
                     if ($is_checklist_note) {
                         $note->fetch_list_item();
                         $checklist_items = $note->get_list_item();
-
                     } else {
                         $text = TextNote::get_text_note($note_id);
                     }
@@ -1291,7 +1292,7 @@ class ControllerNotes extends Controller
         $new_label_name = Label::fix_label_format($_POST['new_label']);
         $label = new Label($note_id, $new_label_name);
         $errors = Label::validate_label($new_label_name, $note_id);
-        if(empty($errors["label"])) {
+        if (empty($errors["label"])) {
             $label->persist();
         }
 
