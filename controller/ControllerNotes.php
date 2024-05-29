@@ -297,7 +297,7 @@ class ControllerNotes extends Controller
                 (new View("error"))->show(["error" => "Page doesn't exist."]);
             }
         } else {
-            echo "Les paramètres ne sont pas définis.";
+            echo "Parameters are not defined.";
             print_r($_GET);
         }
     }
@@ -1109,25 +1109,25 @@ class ControllerNotes extends Controller
         $error = "";
 
         if ($note_id === false) {
-            $this->error_delete(400, "Identifiant de note invalide.");
+            $this->error_delete(400, "Cannot find Note ID.");
         } else {
             $note = Note::get_note($note_id);
             if (!($note instanceof Note)) {
-                $this->error_delete(400, "Note introuvable");
+                $this->error_delete(400, "Cannot find Note.");
             } else {
                 $can_access = ($note->get_owner()->get_id() === $user_id);
                 if (!$can_access) {
-                    $this->error_delete(400, "Accès non autorisé.");
+                    $this->error_delete(400, "Unauthorized access.");
                 } elseif (!$note->is_archived()) {
-                    $this->error_delete(400, "Note non archivée.");
+                    $this->error_delete(400, "Note is not archived.");
                 }
             }
         }
 
         $this->delete($note);
         $success = $note->delete_all($user);
-        if (!$success) $this->error_delete(500, "erreur lors de la suppression");
-        else echo "la note à bien été supprimée";
+        if (!$success) $this->error_delete(500, "Error while deleting Note.");
+        else echo "Note has been deleted successfully.";
     }
 
     private function error_delete(int $status, string $message)
@@ -1210,7 +1210,7 @@ class ControllerNotes extends Controller
         $errors = [];
         $error = "";
         if ($note_id === false) {
-            $error = "Identifiant de note invalide.";
+            $error = "Note ID invalid.";
         } else {
             $note = Note::get_note($note_id);
             $user_id = $user->get_id();
@@ -1218,7 +1218,7 @@ class ControllerNotes extends Controller
             $labels_by_user = Label::get_labels_by_user_id($user_id);
             $labels_to_suggest = $this->get_labels_to_suggest($labels_by_user, $labels);
             if (!($note instanceof Note)) {
-                $error = "Note introuvable.";
+                $error = "Cannot find Note.";
             } else {
                 $is_shared_note = NoteShare::is_note_shared_with_user($note_id, $user_id);
                 $can_edit = true;
@@ -1227,7 +1227,7 @@ class ControllerNotes extends Controller
                 }
                 $can_access = ($note->get_owner()->get_id() === $user_id) || $is_shared_note;
                 if (!$can_access || !$can_edit) {
-                    $error = "Accès non autorisé.";
+                    $error = "Unauthorized access.";
                 } else {
                     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         if (isset($_POST['remove_button'])) {
