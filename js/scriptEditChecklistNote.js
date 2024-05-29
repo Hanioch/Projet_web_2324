@@ -56,7 +56,10 @@ function handleItemKeyPress() {
       errors.push("Item must be between 1 and 60 characters long.");
     }
 
-    if (hasDuplicateItem({ value: item, id: "item" + itemId })) {
+    if (
+      hasDuplicateItem({ value: item, id: "item" + itemId }) &&
+      item.length > 0
+    ) {
       errors.push("Item already exists.");
     }
 
