@@ -23,7 +23,6 @@ if (count($list_label) > 0) {
                     <label for="<?= $label ?>" style="color: #ddd;"><?= $label ?></label>
                 </li>
             <?php }
-            //recuperer les element deja selectionné et la liste des differents label existant 
 
             ?>
         </ul>
@@ -32,12 +31,11 @@ if (count($list_label) > 0) {
         </noscript>
     </form>
     <hr>
-          <?php
-        }
+<?php } ?>
+    <div class="notes_personal">
+        <?php
         if (count($personal_notes) > 0) {
-            echo '<div class="notes_personal">';
             show_note($personal_notes, "Your notes : ", $title_page);
-            echo'  </div>';
         }
         ?>
     <div class="notes_shared">
