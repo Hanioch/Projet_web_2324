@@ -24,7 +24,7 @@ if (isset($header_type) && empty($error)) {
                         <form action="./notes/open_note/<?= $note->get_id()?>" method="POST" style="display: inline;">
                             <button type="submit" class="btn btn-primary">Cancel</button>
                         </form>
-                        <form action="notes/delete" method="POST" style="display: inline;">
+                        <form action="./notes/delete" method="POST" style="display: inline;">
                             <input type="hidden" name="note_id" value="<?= $note->get_id() ?>">
                             <button type="submit" class="btn btn-danger">Delete</button>
                         </form>

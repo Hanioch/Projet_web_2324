@@ -1099,7 +1099,7 @@ class ControllerNotes extends Controller
 
     public function delete_using_js(): void
     {
-        $note_id = filter_var($_POST['idNote'], FILTER_VALIDATE_INT);
+        $note_id = filter_var($_POST['note_id'], FILTER_VALIDATE_INT);
         $user = $this->get_user_or_redirect();
         $user_id = $user->get_id();
         $note = null;

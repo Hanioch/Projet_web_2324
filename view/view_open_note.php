@@ -44,7 +44,7 @@ if (isset($header_type) && empty($error)) {
 </div>
 <!-- fin -->
 <?php if ($note !== null) : ?>
-    <span id="idNote" style="display: none;"></span>
+    <span id="note_id" value="<?= $note->get_id() ?>" style="display: none;"></span>
 <?php endif; ?>
 <?php if (isset($error) && !empty($error)) : ?>
     <div class="alert alert-danger" role="alert">
@@ -75,7 +75,7 @@ if (isset($header_type) && empty($error)) {
                         </div>
                         <input type="text" class="form-control bg-secondary text-white bg-opacity-25 border-0 <?= $item->is_checked() ? 'text-decoration-line-through' : '' ?>" value="<?= $item->get_content() ?>" aria-label="Text input with checkbox" disabled>
                         <input type="hidden" name="item_id" value="<?= $item->get_id() ?>">
-                        <input type="hidden" name="note_id" value="<?= $note->get_id() ?>">
+                        <input type="hidden" id="note_id" name="note_id" value="<?= $note->get_id() ?>">
                     </div>
                 </form>
             <?php endforeach; ?>
