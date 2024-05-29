@@ -2,9 +2,12 @@
 function show_note(array $arr_notes, string $title, string $title_page): void
 {
 ?>
-    <h4 id="<?=$title?>" class="title-note"><?= $title ?></h4>
+    <h4 id="<?= $title ?>" class="title-note"><?= $title ?></h4>
     <?php
     $is_param_exist = isset($_GET["param1"]);
+    if (str_contains($title_page, Page::Shared_by->value)) {
+        $is_param_exist = false;
+    }
     $param = $is_param_exist ? $_GET["param1"] : "";
 
     $num_list = $title === "Pinned" ? 1 : 2;
