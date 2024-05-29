@@ -1056,11 +1056,9 @@ class ControllerNotes extends Controller
     public function delete(): void
     {
         $user = $this->get_user_or_redirect();
-
         if (isset($_POST['note_id'])) {
             $note_id = $_POST['note_id'];
             $note = Note::get_note($note_id);
-
             if ($note && $note->delete_all($user)) {
                 $this->redirect("notes", "archives");
             } else {
@@ -1075,7 +1073,6 @@ class ControllerNotes extends Controller
         $user_id = $user->get_id();
         $note = null;
         $error = "";
-
         if ($note_id === false) {
             $error = "Identifiant de note invalide.";
         } else {
