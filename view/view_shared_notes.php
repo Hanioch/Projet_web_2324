@@ -4,7 +4,7 @@ require_once "tools.php";
 $full_name =  $sender->get_full_name();
 $id_send= $sender->get_id();
 $title_page = Page::Shared_by->value . " " . $full_name;
-include("./utils/header.php");
+include("utils/header.php");
 
 $editor_note = $notes_shared["editor"];
 $reader_note = $notes_shared["reader"];
