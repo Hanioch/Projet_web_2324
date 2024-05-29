@@ -10,8 +10,8 @@ $(function () {
         prevParent = ui.item.parent()[0].id;
       },
       update: (event, ui) => {
-        itemMoved = ui.item[0]; // Récupère l'élément déplacé
-        let replacedItem = ui.item.prev(); // Récupère l'élément qu'il a remplacé
+        itemMoved = ui.item[0];
+        let replacedItem = ui.item.prev();
         idReplacedItem = replacedItem[0] ? replacedItem[0].id : 0;
       },
       stop: (event, ui) => {
@@ -40,31 +40,29 @@ const sendIdMovable = (idNoteMoved, idReplacedNote, switchedColumn) => {
     },
     (res) => {
       console.log(res);
-      checkDivAreEmpty()
+      checkDivAreEmpty();
     }
   );
 };
 
 const checkDivAreEmpty = () => {
-    const pinned =document.getElementById("sortable1")
-    const other = document.getElementById("sortable2");
-    const pinnedChild = pinned ? pinned.childElementCount : false
-    const otherChild = other ? other.childElementCount : false;
+  const pinned = document.getElementById("sortable1");
+  const other = document.getElementById("sortable2");
+  const pinnedChild = pinned ? pinned.childElementCount : false;
+  const otherChild = other ? other.childElementCount : false;
 
-    if (pinned && pinnedChild=== 0 ) {
-        const parent = pinned.parentNode
-        const title = document.getElementById("Pinned")
-        parent.removeChild(pinned)
-        parent.removeChild(title)
-    }
+  if (pinned && pinnedChild === 0) {
+    const parent = pinned.parentNode;
+    const title = document.getElementById("Pinned");
+    parent.removeChild(pinned);
+    parent.removeChild(title);
+  }
 
-    if (other && otherChild===0){
-        const parent = other.parentNode
-        const title = document.getElementById("Others")
+  if (other && otherChild === 0) {
+    const parent = other.parentNode;
+    const title = document.getElementById("Others");
 
-        parent.removeChild(other)
-        parent.removeChild(title)
-    }
-
-
-}
+    parent.removeChild(other);
+    parent.removeChild(title);
+  }
+};

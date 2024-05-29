@@ -692,7 +692,7 @@ class ControllerNotes extends Controller
         $error = "";
         $note = Note::get_note($note_id);
 
-        if ($note === false) $this->redirect("notes");
+        if ($note === false) $this->redirect("notes", "archives");
 
         if ($note_id === false) {
             $error = "Identifiant de note invalide.";
