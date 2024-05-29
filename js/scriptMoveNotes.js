@@ -40,6 +40,31 @@ const sendIdMovable = (idNoteMoved, idReplacedNote, switchedColumn) => {
     },
     (res) => {
       console.log(res);
+      checkDivAreEmpty()
     }
   );
 };
+
+const checkDivAreEmpty = () => {
+    const pinned =document.getElementById("sortable1")
+    const other = document.getElementById("sortable2");
+    const pinnedChild = pinned ? pinned.childElementCount : false
+    const otherChild = other ? other.childElementCount : false;
+
+    if (pinned && pinnedChild=== 0 ) {
+        const parent = pinned.parentNode
+        const title = document.getElementById("Pinned")
+        parent.removeChild(pinned)
+        parent.removeChild(title)
+    }
+
+    if (other && otherChild===0){
+        const parent = other.parentNode
+        const title = document.getElementById("Others")
+
+        parent.removeChild(other)
+        parent.removeChild(title)
+    }
+
+
+}

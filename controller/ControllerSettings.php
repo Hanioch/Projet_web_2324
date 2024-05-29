@@ -38,7 +38,7 @@ class ControllerSettings extends Controller
             "mail" => []
         ];
         $changes_made = false;
-        $success = (isset($_GET['param1']) && $_GET['param1'] == "ok") ? "Votre profil a été mis à jour avec succès." : '';
+        $success = (isset($_GET['param1']) && $_GET['param1'] == "ok") ? "Your profile has been updated successfully." : '';
 
         if (isset($_POST['full_name'])) {
             $full_name = trim($_POST['full_name']);

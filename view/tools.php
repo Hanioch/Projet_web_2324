@@ -2,7 +2,7 @@
 function show_note(array $arr_notes, string $title, string $title_page): void
 {
 ?>
-    <h4 class="title-note"><?= $title ?></h4>
+    <h4 id="<?=$title?>" class="title-note"><?= $title ?></h4>
     <?php
     $is_param_exist = isset($_GET["param1"]);
     $param = $is_param_exist ? $_GET["param1"] : "";
