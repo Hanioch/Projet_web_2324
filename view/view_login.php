@@ -7,7 +7,7 @@ include("utils/header_login.php");
                     <hr>
                     <div class="form-group">
                         <label class="hide" for="mail"></label>
-                        <input type="email" class="form-control <?php if (count($errors["mail"]) > 0): ?>is-invalid<?php endif; ?>" id="mail" name="mail" placeholder="Enter email">
+                        <input type="email" class="form-control <?php if (count($errors["mail"]) > 0): ?>is-invalid<?php endif; ?>" id="mail" name="mail" placeholder="Enter email" value="<?= $mail ?>">
                         <?php if (count($errors["mail"]) > 0): ?>
                             <div class="text-start invalid-feedback">
                                 <ul class="list-unstyled">
