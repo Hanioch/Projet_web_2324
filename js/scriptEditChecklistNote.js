@@ -34,7 +34,6 @@ $(() => {
 });
 
 function handleItemKeyPress() {
-  //TO DO il faut que les items se savent uniquement au moment ou on clique sur le bouton save pas à chaque fois qu'on clique sur une touche
   $('[id^="item"]').keyup(function (event) {
     let itemId = $(this)
       .closest(".input-group")
@@ -91,7 +90,7 @@ function hasDuplicateItem(item) {
 
   while (!isTrue && i < items.length) {
     const { valueItem, idItem } = items[i];
-    if (value === valueItem && id !== idItem) {
+    if (value.toUpperCase() === valueItem.toUpperCase() && id !== idItem) {
       isTrue = true;
     }
     i++;
