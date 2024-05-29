@@ -94,4 +94,4 @@ if (isset($header_type) && empty($error)) {
 <script src="js/scriptCheckUncheck.js"></script>
 <script src="js/scriptModal.js"></script>
 
-<?php include('./utils/footer.php'); ?>
+<?php include('utils/footer.php'); ?>

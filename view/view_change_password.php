@@ -61,4 +61,4 @@ include("utils/header_settings.php");
     </div>
 </div>
 <?php
-include('./utils/footer.php'); ?>
+include('utils/footer.php'); ?>

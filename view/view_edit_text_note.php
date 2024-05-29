@@ -83,4 +83,4 @@ include("utils/header_add_note.php");
 <script src="js/scriptModalEdit.js"></script>
 <script src="js/scriptValidateTextNote.js"></script>
 
-<?php include('./utils/footer.php'); ?>
+<?php include('utils/footer.php'); ?>

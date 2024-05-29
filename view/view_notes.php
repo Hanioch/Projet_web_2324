@@ -30,4 +30,4 @@ if (count($pinned_notes) == 0 && count($other_notes) == 0) {
 <script src="js/jquery-ui-touch-punch-master/jquery.ui.touch-punch.min.js"></script>
 <script src="js/scriptMoveNotes.js"></script>
 <?php
-include('./utils/footer.php'); ?>
+include('utils/footer.php'); ?>

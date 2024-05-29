@@ -24,7 +24,6 @@ $(document).ready(function() {
             if (personal_notes.length > 0) {
                 await show_notes(personal_notes, "Your notes :", titlePage, response.list_filter_encoded, ".notes_personal");
             }
-            console.log("1")
 
             let shared_notes = response.notes_searched['shared'];
             if (!isEmptyObject(shared_notes)) {

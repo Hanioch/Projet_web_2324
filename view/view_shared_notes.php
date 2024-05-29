@@ -20,4 +20,4 @@ if (count($reader_note) > 0) {
 ?>
 </div>
 <?php
-include('./utils/footer.php'); ?>
+include('utils/footer.php'); ?>

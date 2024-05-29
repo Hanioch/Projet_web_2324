@@ -14,4 +14,4 @@ if (count($notes_archives) > 0) {
 ?>
 </div>
 <?php
-include('./utils/footer.php'); ?>
+include('utils/footer.php'); ?>

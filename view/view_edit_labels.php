@@ -76,4 +76,4 @@ include("utils/header_edit_labels.php");
 <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
 <script src="js/scriptEditLabels.js"></script>
 
-<?php include('./utils/footer.php'); ?>
+<?php include('utils/footer.php'); ?>

@@ -44,4 +44,4 @@ include("utils/header_add_note.php");
     </div>
 </div>
 </div>
-<?php include('./utils/footer.php'); ?>
+<?php include('utils/footer.php'); ?>

@@ -41,5 +41,5 @@ include("utils/header_login.php");
             </div>
         </div>
 <?php
-include('./utils/footer.php');
+include('utils/footer.php');
 ?>

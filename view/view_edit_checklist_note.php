@@ -119,4 +119,4 @@ include("utils/header_add_note.php");
 <script src="js/scriptEditChecklistNote.js"></script>
 <script src="js/scriptModalEdit.js"></script>
 
-<?php include('./utils/footer.php'); ?>
+<?php include('utils/footer.php'); ?>

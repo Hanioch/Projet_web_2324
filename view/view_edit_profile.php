@@ -42,4 +42,4 @@ include("utils/header_settings.php");
     </form>
 </div>
 </div>
-<?php include('./utils/footer.php'); ?>
+<?php include('utils/footer.php'); ?>
