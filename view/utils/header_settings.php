@@ -1,5 +1,5 @@
 <?php
-include('./utils/head.php')
+include('head.php')
 ?>
 
 <body class="bg-dark min-vh-100">
@@ -9,11 +9,11 @@ include('./utils/head.php')
         <nav class="navbar navbar-dark">
             <?php
             if ($title_page === "Shares") {
-                $chevronLink = "./notes/open_note/" . $noteId;
+                $chevron_link = "./notes/open_note/" . $note_id;
             } else {
-                $chevronLink = ($title_page === "Settings") ? "./notes" : "./settings";
+                $chevron_link = ($title_page === "Settings") ? "./notes" : "./settings";
             }
-            echo '<a class="navbar-brand" href="' . $chevronLink . '">
+            echo '<a class="navbar-brand" href="' . $chevron_link . '">
                         <i class="bi bi-chevron-left"></i>
                     </a>';
             ?>

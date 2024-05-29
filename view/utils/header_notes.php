@@ -1,5 +1,5 @@
 <?php
-include('./utils/head.php');
+include('head.php');
 $is_list_filter_exist = isset($_GET["param2"]);
 $list_filter_encoded = $is_list_filter_exist ? $_GET["param2"] : "";
 ?>
@@ -10,46 +10,46 @@ $list_filter_encoded = $is_list_filter_exist ? $_GET["param2"] : "";
 
             <nav class="navbar navbar-dark">
                 <?php
-                $chevronLink = "./notes";
-                if ($is_list_filter_exist) $chevronLink .= "/search/" . $list_filter_encoded;
-
-                echo '<a class="navbar-brand" href="' . $chevronLink . ' ">
-                        <i class="bi bi-chevron-left"></i>
-                    </a>';
+                $chevron_link = "./notes";
+                if ($is_list_filter_exist) $chevron_link .= "/search/" . $list_filter_encoded;
                 ?>
+                <form action="<?= $chevron_link ?>" method="GET" class="navbar-brand" style="margin: 0;">
+                    <button type="submit" class="btn-icon" style="background: none; border: none; color: inherit;">
+                        <i class="bi bi-chevron-left"></i>
+                    </button>
+                </form>
             </nav>
             <nav class="navbar navbar-dark ">
                 <div class="">
-                    <div class="navbar-brand">
-                        <a href="./Notes/shares/<?php echo $note->get_Id(); ?>">
-                            <button class="btn-icon" style="background: none; border: none; color: white; ">
+                        <form action="notes/shares" method="POST" class="navbar-brand">
+                            <input type="hidden" name="note_id" value="<?= $note->get_id() ?>">
+                            <button type="submit" class="btn-icon" style="background: none; border: none; color: inherit; ">
                                 <i class="bi bi-share"></i>
                             </button>
-                        </a>
-                    </div>
+                        </form>
                 </div>
                 <div class="">
                     <?php
-                    $pinIcon = $note->is_Pinned() ? "bi-pin-fill" : "bi-pin";
+                    $pin_icon = $note->is_pinned() ? "bi-pin-fill" : "bi-pin";
                     ?>
                     <form action="notes/toggle_Pin" method="POST" class="navbar-brand">
-                        <input type="hidden" name="note_id" value="<?= $note->get_Id() ?>">
+                        <input type="hidden" name="note_id" value="<?= $note->get_id() ?>">
                         <button type="submit" class="btn-icon" style="background: none; border: none; color: inherit; ">
-                            <i class="bi <?= $pinIcon ?>"></i>
+                            <i class="bi <?= $pin_icon ?>"></i>
                         </button>
                     </form>
                 </div>
                 <div class="">
                     <form action="notes/set_Archive" method="POST" class="navbar-brand">
-                        <input type="hidden" name="note_id" value="<?= $note->get_Id() ?>">
+                        <input type="hidden" name="note_id" value="<?= $note->get_id() ?>">
                         <button type="submit" class="btn-icon" style="background: none; border: none; color: inherit; ">
                             <i class="bi bi-arrow-down-square"></i>
                         </button>
                     </form>
                 </div>
                 <div class="">
-                    <form action="notes/edit_labels/<?= $note->get_Id() ?>" method="POST" class="navbar-brand">
-                        <input type="hidden" name="note_id" value="<?= $note->get_Id() ?>">
+                    <form action="notes/edit_labels/<?= $note->get_id() ?>" method="POST" class="navbar-brand">
+                        <input type="hidden" name="note_id" value="<?= $note->get_id() ?>">
                         <button type="submit" class="btn-icon" style="background: none; border: none; color: inherit; ">
                             <i class="bi bi-tag"></i>
                         </button>
@@ -57,14 +57,14 @@ $list_filter_encoded = $is_list_filter_exist ? $_GET["param2"] : "";
                 </div>
                 <div class="">
                     <?php
-                    if ($isChecklistNote) {
-                        $chevronLink = "./notes/edit_checklist_note/" . $note->get_Id();
+                    if ($is_checklist_note) {
+                        $chevron_link = "./notes/edit_checklist_note/" . $note->get_id();
                     } else {
-                        $chevronLink = "./notes/edit_text_note/" . $note->get_Id();
+                        $chevron_link = "./notes/edit_text_note/" . $note->get_id();
                     }
 
-                    if ($is_list_filter_exist) $chevronLink .= "/" . $list_filter_encoded;
-                    echo '<a class="navbar-brand" href="' . $chevronLink . '">
+                    if ($is_list_filter_exist) $chevron_link .= "/" . $list_filter_encoded;
+                    echo '<a class="navbar-brand" href="' . $chevron_link . '">
                        <i class="bi bi-pencil"></i>
                     </a>';
                     ?>

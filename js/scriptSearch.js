@@ -7,7 +7,6 @@ $(document).ready(function() {
                 filters[name] = 'on';
             }
         });
-
         try {
             let response = await $.ajax({
                 type: 'POST',
@@ -21,15 +20,16 @@ $(document).ready(function() {
             $('.notes_shared').html('');
 
             let personal_notes = response.notes_searched['personal'];
+
             if (personal_notes.length > 0) {
                 await show_notes(personal_notes, "Your notes :", titlePage, response.list_filter_encoded, ".notes_personal");
             }
 
             let shared_notes = response.notes_searched['shared'];
             if (!isEmptyObject(shared_notes)) {
-                let sortedSharedNotes = sortSharedNotes(shared_notes);
-                for (const user_shared in sortedSharedNotes) {
-                    let notes_shared_by_user = sortedSharedNotes[user_shared];
+                //let sortedSharedNotes = sortSharedNotes(shared_notes);
+                for (const user_shared in shared_notes) {
+                    let notes_shared_by_user = shared_notes[user_shared];
                     await show_notes(notes_shared_by_user, "Notes shared by " + user_shared + " :", titlePage, response.list_filter_encoded, ".notes_shared", true);
                 }
             }
@@ -65,10 +65,10 @@ function isEmptyObject(obj) {
     return true;
 }
 
-function sortSharedNotes(shared_notes) {
+/*function sortSharedNotes(shared_notes) {
     if (typeof shared_notes === 'object' && shared_notes !== null) {
         let userNames = Object.keys(shared_notes);
-        userNames.sort();
+        userNames.toUpperCase().sort();
         let sortedSharedNotes = {};
         userNames.forEach(userName => {
             sortedSharedNotes[userName] = shared_notes[userName];
@@ -77,7 +77,7 @@ function sortSharedNotes(shared_notes) {
     } else {
         return {};
     }
-}
+}*/
 
 function show_notes(arrNotes, title, titlePage, param, sectionClass, append = false) {
     return new Promise((resolve, reject) => {
@@ -120,6 +120,7 @@ function show_notes(arrNotes, title, titlePage, param, sectionClass, append = fa
                         let contentSub = note.content.length > maxLg ? note.content.substring(0, maxLg) + "..." : note.content;
                         html += '<p class="card-text mb-0">' + contentSub + '</p>';
                     } else {
+
                         let items = note.list_item;
                         if (items && items.length > 0) {
                             let listItemShowable = items.length > 3 ? items.slice(0, 3) : items;
@@ -149,7 +150,7 @@ function show_notes(arrNotes, title, titlePage, param, sectionClass, append = fa
                         html += '</button>';
                         html += '</form>';
                         labels.forEach(function(label) {
-                            html += ' <span class="badge rounded-pill bg-secondary opacity-50">' + label.labelName + '</span>';
+                            html += ' <span class="badge rounded-pill bg-secondary opacity-50">' + label.label_name + '</span>';
                         });
                     }
                     html += '</div>';

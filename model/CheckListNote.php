@@ -10,95 +10,24 @@ class ChecklistNote extends Note implements JsonSerializable
         $this->fetch_list_item();
     }
 
-    public function get_Title(): string
-    {
-        return $this->title;
-    }
-
-    public function set_Title(string $title): void
-    {
-        $this->title = $title;
-    }
-
-    public function get_Owner(): User
-    {
-        return $this->owner;
-    }
-
-    public function set_Owner(User $owner): void
-    {
-        $this->owner = $owner;
-    }
-
-
-    public function is_Archived(): bool
-    {
-        return $this->archived;
-    }
-
-    public function set_Archived(bool $archived): void
-    {
-        $this->archived = $archived;
-    }
-
-    public function get_Weight(): int
-    {
-        return $this->weight;
-    }
-
-    public function set_Weight(int $weight): void
-    {
-        $this->weight = $weight;
-    }
-
-    public function get_Created_At(): ?string
-    {
-        return $this->created_at;
-    }
-
-    public function set_Created_At(?string $created_at): void
-    {
-        $this->created_at = $created_at;
-    }
-
-    public function get_Edited_At(): ?string
-    {
-        return $this->edited_at;
-    }
-
-    public function set_Edited_At(?string $edited_at): void
-    {
-        $this->edited_at = $edited_at;
-    }
-
-
     public function fetch_list_item()
     {
-        $query = self::execute("SELECT cni.*, n.title, n.owner, n.pinned, n.archived, n.weight, n.created_at, n.edited_at FROM checklist_note_items cni JOIN notes n ON n.id = cni.checklist_note WHERE checklist_note = :checklist_note ORDER BY cni.checked ASC, cni.content ASC", ["checklist_note" => $this->id]);
+        $query = self::execute("SELECT cni.*, n.title, n.owner, n.pinned, n.archived, n.weight, n.created_at, n.edited_at FROM checklist_note_items cni JOIN notes n ON n.id = cni.checklist_note WHERE checklist_note = :checklist_note ORDER BY cni.checked ASC, cni.id ASC", ["checklist_note" => $this->id]);
         $data = $query->fetchAll();
 
         $items = [];
         foreach ($data as $row) {
-            $items[] = new ChecklistNoteItems($row['content'], $row['checked'], $row['checklist_note'], $row['id']);
+            $items[] = new ChecklistNoteItem($row['content'], $row['checked'], $row['checklist_note'], $row['id']);
         }
 
         $this->set_list_item($items);
-    }
-
-    public static function is_checklist_note(int | null $id_to_check): bool
-    {
-        if ($id_to_check == NULL) {
-            return false;
-        } else {
-            return true;
-        }
     }
 
     public function set_list_item(array $list)
     {
         $this->list_item = $list;
     }
-    public function get_List_Item()
+    public function get_list_item()
     {
         return $this->list_item;
     }
@@ -130,11 +59,13 @@ class ChecklistNote extends Note implements JsonSerializable
         $errors = $this->validate();
         if (empty($errors)) {
             if ($this->id == NULL) {
-                $note = parent::add_note_in_DB();
+                parent::add_note_in_DB();
+                $id = self::lastInsertId();
+                $this->set_id($id);
                 self::execute(
                     'INSERT INTO checklist_notes (id) VALUES
                 (:id)',
-                    ['id' => $note->get_Id()]
+                    ['id' => $id]
                 );
                 return $this;
             } else {
@@ -146,14 +77,14 @@ class ChecklistNote extends Note implements JsonSerializable
         return $errors;
     }
 
-    public function get_Items(): array
+    public function get_items(): array
     {
-        $query = self::execute("SELECT * FROM checklist_note_items WHERE checklist_note = :checklist_note ORDER BY id", ["checklist_note" => $this->id]);
+        $query = self::execute("SELECT * FROM checklist_note_items WHERE checklist_note = :checklist_note ORDER BY id ", ["checklist_note" => $this->id]);
         $data = $query->fetchAll();
 
         $items = [];
         foreach ($data as $row) {
-            $items[] = new ChecklistNoteItems($row['content'], $row['checked'], $row['checklist_note'], $row['id']);
+            $items[] = new ChecklistNoteItem($row['content'], $row['checked'], $row['checklist_note'], $row['id']);
         }
 
         return $items;

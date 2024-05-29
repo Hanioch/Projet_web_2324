@@ -1,5 +1,5 @@
 <?php
-include('./utils/head.php')
+include('head.php')
 ?>
 
 <body class="bg-dark min-vh-100">
@@ -35,8 +35,8 @@ include('./utils/head.php')
                     );
 
                     foreach ($users_shared_notes as $u) {
-                        $name = $u->get_Full_Name();
-                        $id_sender = $u->get_Id();
+                        $name = $u->get_full_name();
+                        $id_sender = $u->get_id();
                         $nav_list[] = array(
                             "title" => "Shared by " . $name,
                             "url" => $base_url . "shared_by/" . $id_sender

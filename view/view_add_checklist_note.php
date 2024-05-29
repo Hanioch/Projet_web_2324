@@ -2,7 +2,7 @@
 $id_form = "form_add_checklist_note";
 $title_page = "add_checklist_note";
 $something_to_save = false;
-include("./utils/header_add_note.php");
+include("utils/header_add_note.php");
 
 ?>
 
@@ -43,5 +43,5 @@ include("./utils/header_add_note.php");
         </form>
     </div>
 </div>
-
-<?php include('./utils/footer.php'); ?>
+</div>
+<?php include('utils/footer.php'); ?>

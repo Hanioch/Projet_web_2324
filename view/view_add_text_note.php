@@ -2,7 +2,7 @@
 $id_form = "form_add_text_note";
 $title_page = "add_text_note";
 $something_to_save = false;
-include("./utils/header_add_note.php");
+include("utils/header_add_note.php");
 ?>
     <div class="card bg-dark text-white border-0">
         <div class="card-header">
@@ -48,4 +48,4 @@ include("./utils/header_add_note.php");
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="js/scriptValidateTextNote.js"></script>
-<?php include('./utils/footer.php'); ?>
+<?php include('utils/footer.php'); ?>
