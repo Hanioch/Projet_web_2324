@@ -69,7 +69,7 @@ if (isset($header_type) && empty($error)) {
                 <form action="notes/toggle_Checkbox" method="POST">
                     <div class="input-group mb-3">
                         <div class="input-group-text bg-primary ">
-                            <button class="btn btn-submit" <?= $can_edit ? '' : 'disabled' ?>>
+                            <button  class="btn btn-submit check-item" <?= $can_edit ? '' : 'disabled' ?>>
                                 <input class="form-check-input border opacity-100" id="checkbox_<?= $item->get_id() ?>" type="checkbox" name="checked" value="1" <?= $item->is_checked() ? 'checked' : '' ?> aria-label="Checkbox for following text input" disabled>
                             </button>
                         </div>

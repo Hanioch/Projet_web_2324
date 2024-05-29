@@ -120,11 +120,8 @@ class ControllerNotes extends Controller
             } elseif ($action === 'decrement') {
                 $this->modif_weight(false, $note_id);
             }
-
-            $this->note_list();
-        } else {
-            $this->note_list();
         }
+        $this->redirect("notes");
     }
 
     private function modif_weight(bool $is_more, int $note_id)

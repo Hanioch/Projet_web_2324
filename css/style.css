@@ -274,3 +274,7 @@ a {
     }
     
 }
+.check-item:disabled {
+    border-color: transparent;
+}
+
