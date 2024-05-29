@@ -28,9 +28,9 @@ $(document).ready(function() {
 
             let shared_notes = response.notes_searched['shared'];
             if (!isEmptyObject(shared_notes)) {
-                let sortedSharedNotes = sortSharedNotes(shared_notes);
-                for (const user_shared in sortedSharedNotes) {
-                    let notes_shared_by_user = sortedSharedNotes[user_shared];
+                //let sortedSharedNotes = sortSharedNotes(shared_notes);
+                for (const user_shared in shared_notes) {
+                    let notes_shared_by_user = shared_notes[user_shared];
                     await show_notes(notes_shared_by_user, "Notes shared by " + user_shared + " :", titlePage, response.list_filter_encoded, ".notes_shared", true);
                 }
             }
@@ -66,7 +66,7 @@ function isEmptyObject(obj) {
     return true;
 }
 
-function sortSharedNotes(shared_notes) {
+/*function sortSharedNotes(shared_notes) {
     if (typeof shared_notes === 'object' && shared_notes !== null) {
         let userNames = Object.keys(shared_notes);
         userNames.toUpperCase().sort();
@@ -78,7 +78,7 @@ function sortSharedNotes(shared_notes) {
     } else {
         return {};
     }
-}
+}*/
 
 function show_notes(arrNotes, title, titlePage, param, sectionClass, append = false) {
     return new Promise((resolve, reject) => {
