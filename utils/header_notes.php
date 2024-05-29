@@ -12,21 +12,21 @@ $list_filter_encoded = $is_list_filter_exist ? $_GET["param2"] : "";
                 <?php
                 $chevron_link = "./notes";
                 if ($is_list_filter_exist) $chevron_link .= "/search/" . $list_filter_encoded;
-
-                echo '<a class="navbar-brand" href="' . $chevron_link . ' ">
-                        <i class="bi bi-chevron-left"></i>
-                    </a>';
                 ?>
+                <form action="<?= $chevron_link ?>" method="GET" class="navbar-brand" style="margin: 0;">
+                    <button type="submit" class="btn-icon" style="background: none; border: none; color: inherit;">
+                        <i class="bi bi-chevron-left"></i>
+                    </button>
+                </form>
             </nav>
             <nav class="navbar navbar-dark ">
                 <div class="">
-                    <div class="navbar-brand">
-                        <a href="./Notes/shares/<?php echo $note->get_id(); ?>">
-                            <button class="btn-icon" style="background: none; border: none; color: white; ">
+                        <form action="notes/shares" method="POST" class="navbar-brand">
+                            <input type="hidden" name="note_id" value="<?= $note->get_id() ?>">
+                            <button type="submit" class="btn-icon" style="background: none; border: none; color: inherit; ">
                                 <i class="bi bi-share"></i>
                             </button>
-                        </a>
-                    </div>
+                        </form>
                 </div>
                 <div class="">
                     <?php

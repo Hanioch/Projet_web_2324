@@ -28,7 +28,7 @@ if (isset($header_type) && empty($error)) {
     <div class="modal-dialog modal-fullscreen-sm">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="fullScreenModalLabel">deleted</h5>
+                <h5 class="modal-title" id="modalSuccessDeleteLabel">deleted</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -44,7 +44,7 @@ if (isset($header_type) && empty($error)) {
 </div>
 <!-- fin -->
 <?php if ($note !== null) : ?>
-    <span id="idNote" value="<?= $note->get_id() ?>" style="display: none;"></span>
+    <span id="idNote" style="display: none;"></span>
 <?php endif; ?>
 <?php if (isset($error) && !empty($error)) : ?>
     <div class="alert alert-danger" role="alert">

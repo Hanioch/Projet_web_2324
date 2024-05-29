@@ -43,5 +43,5 @@ include("./utils/header_add_note.php");
         </form>
     </div>
 </div>
-
+</div>
 <?php include('./utils/footer.php'); ?>

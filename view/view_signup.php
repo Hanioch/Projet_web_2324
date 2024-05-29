@@ -78,7 +78,7 @@ include("./utils/header_login.php");
                 <button type="submit" class="btn btn-primary col-12">Sign Up</button>
             </div>
             <div class="mb-3">
-                <a href="main/login" type="button" class="btn btn-outline-danger col-12">Cancel</a>
+                <a href="main/login" class="btn btn-outline-danger col-12">Cancel</a>
             </div>
         </form>
     </div>

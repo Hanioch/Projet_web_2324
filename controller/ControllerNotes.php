@@ -749,7 +749,7 @@ class ControllerNotes extends Controller
     }
     public function shares(): void
     {
-        $note_id = filter_var($_GET['param1'], FILTER_VALIDATE_INT);
+        $note_id = $_POST['note_id'] ?? null;
         $current_user = $this->get_user_or_redirect();
         $current_user_id = $current_user->get_id();
         $error = "";

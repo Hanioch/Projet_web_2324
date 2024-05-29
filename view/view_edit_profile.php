@@ -41,4 +41,5 @@ include("./utils/header_settings.php");
         <button class="btn btn-success" type="submit">Submit Changes</button>
     </form>
 </div>
+</div>
 <?php include('./utils/footer.php'); ?>

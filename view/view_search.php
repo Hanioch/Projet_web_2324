@@ -32,15 +32,14 @@ if (count($list_label) > 0) {
         </noscript>
     </form>
     <hr>
-    <div class="notes_personal">
-        <?php
+          <?php
         }
-
         if (count($personal_notes) > 0) {
+            echo '<div class="notes_personal">';
             show_note($personal_notes, "Your notes : ", $title_page);
+            echo'  </div>';
         }
         ?>
-    </div>
     <div class="notes_shared">
         <?php
         foreach ($shared_notes as $user_shared => $ns) {
@@ -59,7 +58,7 @@ if (count($list_label) > 0) {
         }
         ?>
     </div>
-
+</div>
     <script>
         var titlePage = "<?php echo $title_page; ?>";
     </script>
