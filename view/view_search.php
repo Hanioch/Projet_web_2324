@@ -2,7 +2,7 @@
 require_once "tools.php";
 
 $title_page = Page::Search->value . " my notes";
-include("./utils/header.php");
+include("utils/header.php");
 
 $personal_notes = $notes_searched['personal'];
 $shared_notes = $notes_searched['shared'];

@@ -163,7 +163,7 @@ function removeShares(noteId, userId) {
         } else {
             var addMaxHtml = `
         <div class="alert alert-info" role="alert">
-            All users have been shared with this note. There are no more users to share.
+            This note has been shared with all users. There are no more users to share this note with.
         </div>
     `;
             $('#addContainer').append(addMaxHtml);

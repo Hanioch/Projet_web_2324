@@ -1,5 +1,5 @@
 <?php
-include('./utils/head.php');
+include('head.php');
 $is_list_filter_exist = isset($_GET["param2"]);
 $list_filter_encoded = $is_list_filter_exist ? $_GET["param2"] : "";
 ?>

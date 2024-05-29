@@ -1,7 +1,7 @@
 <?php
 
 $id_form = "form_edit_labels";
-include("./utils/header_edit_labels.php");
+include("utils/header_edit_labels.php");
 
 ?>
 <?php if (isset($error) && !empty($error)) : ?>

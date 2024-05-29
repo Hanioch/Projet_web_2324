@@ -1,6 +1,6 @@
 <?php
 $title_page = "Change Password";
-include("./utils/header_settings.php");
+include("utils/header_settings.php");
 ?>
     <div class="row p-3 h-100 justify-content-center ">
         <form class=" text-white" action="Settings/change_password" method="post">

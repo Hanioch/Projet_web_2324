@@ -120,11 +120,8 @@ class ControllerNotes extends Controller
             } elseif ($action === 'decrement') {
                 $this->modif_weight(false, $note_id);
             }
-
-            $this->note_list();
-        } else {
-            $this->note_list();
         }
+        $this->redirect("notes");
     }
 
     private function modif_weight(bool $is_more, int $note_id)
@@ -657,7 +654,7 @@ class ControllerNotes extends Controller
                 $title = trim($_POST['title']);
                 $content = isset($_POST['text']) ? $_POST['text'] : "";
                 if ($title == $note->get_title() && $content == $note->get_content()) {
-                    $errors['title'] = "aucune modification apportée";
+                    $errors['title'] = "No modification to save.";
                 } else {
                     $note->set_title($title);
                     $note->set_content($content);

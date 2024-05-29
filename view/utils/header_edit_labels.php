@@ -1,5 +1,5 @@
 <?php
-include('./utils/head.php');
+include('head.php');
 
 $back_url = "./notes/open_note/" . $note_id;
 

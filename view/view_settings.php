@@ -1,6 +1,6 @@
 <?php
 $title_page = "Settings";
-include("./utils/header_settings.php");
+include("utils/header_settings.php");
 ?>
     <div class="row p-1">
         <div class="row-col-md-6">

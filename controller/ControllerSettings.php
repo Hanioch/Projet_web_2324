@@ -38,7 +38,7 @@ class ControllerSettings extends Controller
             "mail" => []
         ];
         $changes_made = false;
-        $success = (isset($_GET['param1']) && $_GET['param1'] == "ok") ? "Votre profil a été mis à jour avec succès." : '';
+        $success = (isset($_GET['param1']) && $_GET['param1'] == "ok") ? "Your profile has been updated successfully." : '';
 
         if (isset($_POST['full_name'])) {
             $full_name = trim($_POST['full_name']);
@@ -82,7 +82,7 @@ class ControllerSettings extends Controller
             "password_confirm" => []
         ];
 
-        $success = (isset($_GET['param1']) && $_GET['param1'] == "ok") ? "Votre mot de passe a été mis à jour avec succès." : '';
+        $success = (isset($_GET['param1']) && $_GET['param1'] == "ok") ? "Password has been updated successfully." : '';
         if (isset($_POST['old_password']) && isset($_POST['password']) && isset($_POST['password_confirm'])) {
             $old_password = $_POST['old_password'];
             $password = $_POST['password'];
@@ -92,7 +92,7 @@ class ControllerSettings extends Controller
             $errors = array_merge($errors, User::validate_password($password));
             $errors = array_merge($errors, User::validate_password_confirmation($password,$password_confirm));
             if ($old_password === $password) {
-                $errors['password'][] = "Le nouveau mot de passe ne peut pas être identique à l'ancien mot de passe.";
+                $errors['password'][] = "New password cannot be identical to the old password";
             }
 
             if (empty($errors["old_password"]) && empty($errors["password"]) && empty($errors["password_confirm"])) {

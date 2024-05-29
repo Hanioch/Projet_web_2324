@@ -1,5 +1,5 @@
 <?php
-include('./utils/head.php')
+include('head.php')
 ?>
 
 <body class="bg-dark min-vh-100">

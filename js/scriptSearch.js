@@ -69,7 +69,7 @@ function isEmptyObject(obj) {
 function sortSharedNotes(shared_notes) {
     if (typeof shared_notes === 'object' && shared_notes !== null) {
         let userNames = Object.keys(shared_notes);
-        userNames.sort();
+        userNames.toUpperCase().sort();
         let sortedSharedNotes = {};
         userNames.forEach(userName => {
             sortedSharedNotes[userName] = shared_notes[userName];

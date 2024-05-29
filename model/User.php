@@ -318,7 +318,8 @@ class User extends MyModel implements JsonSerializable
         FROM users u
         INNER JOIN notes n ON u.id = n.owner
         INNER JOIN note_shares ns ON n.id = ns.note
-        WHERE ns.user = :owner;
+        WHERE ns.user = :owner
+        ORDER BY u.full_name;
         
          ", ["owner" => $this->id]);
 
