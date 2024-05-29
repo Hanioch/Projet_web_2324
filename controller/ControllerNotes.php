@@ -1290,7 +1290,10 @@ class ControllerNotes extends Controller
         $note_id = $_POST['note_id'];
         $new_label_name = Label::fix_label_format($_POST['new_label']);
         $label = new Label($note_id, $new_label_name);
-        $label->persist();
+        $errors = Label::validate_label($new_label_name, $note_id);
+        if(empty($errors["label"])) {
+            $label->persist();
+        }
 
         $labels_to_display = Label::get_labels_by_note_id($note_id);
         $labels_by_user = Label::get_labels_by_user_id($user->get_id());
