@@ -245,24 +245,19 @@ function displayItem(itemJson, itemElem) {
 
     itemElem.removeClass("is-invalid");
     itemElem.addClass("is-valid");
+
     $("#error_text_" + itemJson.id).remove();
   } else {
     $("#save_button").prop("disabled", true).css("opacity", "0.3");
     if (itemJson.errors.hasOwnProperty("item" + itemJson.id)) {
       itemElem.removeClass("is-valid");
       itemElem.addClass("is-invalid");
-      let html = "";
+      let html = "<div id='" + "error_text_" + itemJson.id + "'>";
 
       for (let error of itemJson.errors["item" + itemJson.id]) {
-        html +=
-          "<div id='" +
-          "error_text_" +
-          itemJson.id +
-          "' class='error-add-note pt-1'>" +
-          error +
-          "</div>";
+        html += "<div class='error-add-note pt-1'>" + error + "</div>";
       }
-
+      html += "</div>";
       $("#error_text_" + itemJson.id).remove();
       $("#list_items_" + itemJson.id).append(html);
     }
