@@ -1290,7 +1290,8 @@ class ControllerNotes extends Controller
         $note_id = $_POST['note_id'];
         $new_label_name = Label::fix_label_format($_POST['new_label']);
         $label = new Label($note_id, $new_label_name);
-        if(Label::validate_label($new_label_name)) {
+        $errors = Label::validate_label($new_label_name, $note_id);
+        if(empty($errors["label"])) {
             $label->persist();
         }
 
