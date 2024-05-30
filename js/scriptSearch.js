@@ -65,20 +65,6 @@ function isEmptyObject(obj) {
     return true;
 }
 
-/*function sortSharedNotes(shared_notes) {
-    if (typeof shared_notes === 'object' && shared_notes !== null) {
-        let userNames = Object.keys(shared_notes);
-        userNames.toUpperCase().sort();
-        let sortedSharedNotes = {};
-        userNames.forEach(userName => {
-            sortedSharedNotes[userName] = shared_notes[userName];
-        });
-        return sortedSharedNotes;
-    } else {
-        return {};
-    }
-}*/
-
 function show_notes(arrNotes, title, titlePage, param, sectionClass, append = false) {
     return new Promise((resolve, reject) => {
         let html = '';

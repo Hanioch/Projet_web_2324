@@ -203,8 +203,7 @@ function handleAddClick() {
       let itemList = displayItems(jsonResponse);
 
       $("#list_items_ul").html(itemList);
-      //remettre le handle click ne fonctionne pas ?? le premier remove après un add fait
-      //toujours un refresh de la page
+
       handleRemoveClick();
 
       $("#add_item").val("");
@@ -242,7 +241,7 @@ function handleSaveClick() {
 }
 
 function displayItem(itemJson, itemElem) {
-  // ajout d'un attribut success qui nous donne l'état de la requete.
+  // ajout d'un attribut success qui nous donne l'état de la requete
   if (itemJson.success) {
     $("#save_button").prop("disabled", false).css("opacity", "1");
 
@@ -288,8 +287,7 @@ function displayItems(itemsJson) {
       '" class="item-editable form-control bg-secondary text-white bg-opacity-25 border-secondary" id="item' +
       i.id +
       '" >';
-    // attribut supprimé à l'input au-dessus
-    // value="<?php echo isset($_POST['item' . $item->get_Id()]) ? htmlspecialchars($_POST['item' . $item->get_Id()]) : ''; ?>"
+
     html +=
       '<button name="remove_button" value="' +
       i.id +

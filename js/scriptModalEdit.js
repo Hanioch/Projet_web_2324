@@ -35,8 +35,6 @@ const checkIsNoteModified = () => {
     return true;
   }
 
-  //si on arrive ici on est d'office dans une checklistNote
-  // donc on regarde si il y a une modification dans les items
   return isItemsUpdated();
 };
 
