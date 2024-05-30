@@ -4,8 +4,8 @@ button.attr("data-bs-toggle", "modal");
 button.attr("data-bs-target", "#fullScreenModal");
 
 const validBtn = $("#validBtn");
-const idNote = $("#idNote").attr("value");
-
+const note_id = $("#note_id").attr("value");
+console.log(note_id)
 const modalConfirmDelete = new bootstrap.Modal($("#fullScreenModal"), {
   backdrop: true,
   focus: true,
@@ -18,7 +18,7 @@ const modalSuccessDelete = new bootstrap.Modal($("#modalSuccessDelete"), {
 });
 
 const validDelete = () => {
-  $.post("notes/delete_using_js", { idNote })
+  $.post("notes/delete_using_js", { note_id })
     .done((res) => {
       modalConfirmDelete.hide();
       modalSuccessDelete.show();

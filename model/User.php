@@ -2,7 +2,7 @@
 
 require_once "model/MyModel.php";
 require_once "model/CheckListNote.php";
-require_once "model/CheckListNoteItems.php";
+require_once "model/CheckListNoteItem.php";
 require_once "model/TextNote.php";
 
 
@@ -12,55 +12,55 @@ enum Role: string
     case ADMIN = "admin";
 }
 
-class User extends MyModel
+class User extends MyModel implements JsonSerializable
 {
     private array $config;
     public function __construct(private string $mail, private string $hashed_password, private string $full_name, private Role $role, private ?int $id = NULL)
     {
     }
     // Getters
-    public function get_Mail(): string
+    public function get_mail(): string
     {
         return $this->mail;
     }
 
-    public function get_Hashed_Password(): string
+    public function get_hashed_password(): string
     {
         return $this->hashed_password;
     }
 
-    public function get_Full_Name(): string
+    public function get_full_name(): string
     {
         return $this->full_name;
     }
 
-    public function get_Role(): Role
+    public function get_role(): Role
     {
         return $this->role;
     }
 
-    public function get_Id(): ?int
+    public function get_id(): ?int
     {
         return $this->id;
     }
 
     // Setters
-    public function set_Mail(string $mail): void
+    public function set_mail(string $mail): void
     {
         $this->mail = $mail;
     }
 
-    public function set_Hashed_Password(string $hashed_password): void
+    public function set_hashed_password(string $hashed_password): void
     {
         $this->hashed_password = $hashed_password;
     }
 
-    public function set_Full_Name(string $full_name): void
+    public function set_full_name(string $full_name): void
     {
         $this->full_name = $full_name;
     }
 
-    public function set_Role(Role $role): void
+    public function set_role(Role $role): void
     {
         $this->role = $role;
     }
@@ -119,12 +119,14 @@ class User extends MyModel
         $errors = [
             "password" => []
         ];
-        $config = parse_ini_file('C:\PRWB2324\projects\prwb_2324_a04\config\dev.ini', true);
-        $password_min_length = $config['Rules']['password_min_length'];
-        if (strlen($password) === 0) {
+
+        $password_min_length = Configuration::get("password_min_length");
+
+
+        if (mb_strlen($password) === 0) {
             $errors["password"][] = "Password is required.";
         }
-        if (strlen($password) < $password_min_length) {
+        if (mb_strlen($password) < $password_min_length) {
             $errors["password"][] = "Password must be at least 8 characters long";
         }
         if (!((preg_match("/[A-Z]/", $password)) && preg_match("/\d/", $password) && preg_match("/['\";:,.\/?!\\-]/", $password))) {
@@ -138,12 +140,12 @@ class User extends MyModel
         $errors = [
             "full_name" => []
         ];
-        $config = parse_ini_file('C:\PRWB2324\projects\prwb_2324_a04\config\dev.ini', true);
-        $fullname_min_length = $config['Rules']['fullname_min_length'];
-        if (!strlen($full_name) > 0) {
+
+        $fullname_min_length = Configuration::get("fullname_min_length");
+
+        if (!mb_strlen($full_name) > 0) {
             $errors["full_name"][] = "Name is required.";
-        }
-        if (strlen($full_name) < $fullname_min_length) {
+        } else if (mb_strlen($full_name) < $fullname_min_length) {
             $errors["full_name"][] = "Name must be at least 3 characters long";
         }
         return $errors;
@@ -154,7 +156,7 @@ class User extends MyModel
         $errors = [
             "password_confirm" => []
         ];
-        if (!strlen($password_confirm) > 0) {
+        if (!mb_strlen($password_confirm) > 0) {
             $errors["password_confirm"][] = "Password confirmation is required.";
         }
         if ($password != $password_confirm) {
@@ -173,7 +175,7 @@ class User extends MyModel
             $errors["mail"][] = "This user already exists.";
         } else {
 
-            if (!strlen($mail) > 0) {
+            if (!mb_strlen($mail) > 0) {
                 $errors["mail"][] = "Mail is required.";
             }
             if (!(preg_match($regex, $mail))) {
@@ -220,8 +222,8 @@ class User extends MyModel
     private function get_text_note_or_checklist_note(array $row): Note
     {
         $owner = User::get_user_by_id($row['owner']);
-
-        if (ChecklistNote::is_checklist_note($row['checklist_id'])) {
+        $note = Note::get_note($row['id']);
+        if ($note instanceof Note && $note->is_checklist_note()) {
             return  new ChecklistNote($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['id'], $row['created_at'], $row['edited_at']);
         } else {
             return  new TextNote($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['text_content'], $row['id'], $row['created_at'], $row['edited_at']);
@@ -316,7 +318,8 @@ class User extends MyModel
         FROM users u
         INNER JOIN notes n ON u.id = n.owner
         INNER JOIN note_shares ns ON n.id = ns.note
-        WHERE ns.user = :owner;
+        WHERE ns.user = :owner
+        ORDER BY u.full_name;
         
          ", ["owner" => $this->id]);
 
@@ -374,8 +377,10 @@ class User extends MyModel
         $shared_notes = [];
         $shared_notes["editor"] = [];
         $shared_notes["reader"] = [];
+
         foreach ($data as $row) {
             $note = $this->get_text_note_or_checklist_note($row);
+
             if ($row["editor"] === 1) {
                 $shared_notes["editor"][] = $note;
             } else {
@@ -383,12 +388,133 @@ class User extends MyModel
             }
         }
 
+
         return $shared_notes;
+    }
+    public function get_notes_with_label_shared_by($sender_id, $list_filter): array
+    {
+        $params = ["owner" => $this->id, "sender" => $sender_id];
+
+        if (empty($list_filter)) {
+            return [];
+        } else {
+            $filters_string = implode(',', array_map(function ($i) use ($list_filter) {
+                return ":filter$i";
+            }, range(0, count($list_filter) - 1)));
+
+            foreach ($list_filter as $index => $filter) {
+                $params[":filter$index"] = $filter;
+            }
+
+            $labels_condition = 'AND n.id IN (SELECT note FROM note_labels WHERE label IN (' . $filters_string . ')
+                              GROUP BY note HAVING COUNT(DISTINCT label) = ' . count($list_filter) . ')';
+
+            $query = self::execute(
+                "SELECT
+        n.*,
+        tn.content AS text_content,
+        cn.id AS checklist_id,
+        ns.editor,
+        GROUP_CONCAT(cni.id) AS checklist_items,
+        GROUP_CONCAT(nl.label) AS labels
+        FROM notes n
+        LEFT JOIN text_notes tn ON n.id = tn.id
+        LEFT JOIN checklist_notes cn ON n.id = cn.id
+        LEFT JOIN checklist_note_items cni ON cn.id = cni.checklist_note
+        LEFT JOIN note_shares ns ON n.id = ns.note
+        LEFT JOIN note_labels nl ON n.id = nl.note
+        WHERE ns.user = :owner AND n.owner = :sender $labels_condition
+        GROUP BY n.id, n.title, n.owner, n.created_at, n.edited_at, n.pinned, n.archived, n.weight,tn.content,cn.id,ns.editor
+        ORDER BY weight DESC;",
+                $params
+            );
+
+            $data = $query->fetchAll();
+            $shared_notes = [];
+
+            foreach ($data as $row) {
+                if (empty($list_filter) || count(array_intersect($list_filter, explode(',', $row['labels']))) == count($list_filter)) {
+                    $note = $this->get_text_note_or_checklist_note($row);
+                    $shared_notes[] = $note;
+                }
+            }
+
+            return $shared_notes;
+        }
+    }
+
+    public function get_notes_searched($list_filter): array
+    {
+        $params = ["owner" => $this->id];
+
+        if (empty($list_filter)) {
+            return [];
+        } else {
+            $filters_string = implode(',', array_map(function ($i) use ($list_filter) {
+                return ":filter$i";
+            }, range(0, count($list_filter) - 1)));
+
+            foreach ($list_filter as $index => $filter) {
+                $params[":filter$index"] = $filter;
+            }
+
+            $labels_condition = 'AND n.id IN (SELECT note FROM note_labels WHERE label IN (' . $filters_string . ')
+                              GROUP BY note HAVING COUNT(DISTINCT label) = ' . count($list_filter) . ')';
+
+            $query = self::execute("SELECT
+            n.*,
+            tn.content AS text_content,
+            cn.id AS checklist_id,
+            GROUP_CONCAT(cni.id) AS checklist_items,
+            GROUP_CONCAT(nl.label) AS labels
+            FROM notes n
+            LEFT JOIN text_notes tn ON n.id = tn.id
+            LEFT JOIN checklist_notes cn ON n.id = cn.id
+            LEFT JOIN checklist_note_items cni ON cn.id = cni.checklist_note
+            LEFT JOIN note_labels nl ON n.id = nl.note
+            WHERE n.owner = :owner $labels_condition
+            GROUP BY n.id, n.title, n.owner, n.created_at, n.edited_at, n.pinned, n.archived, n.weight, tn.content, cn.id
+            ORDER BY weight DESC;", $params);
+
+            $data = $query->fetchAll();
+            $search_notes = [];
+
+            foreach ($data as $row) {
+                if (empty($list_filter) || count(array_intersect($list_filter, explode(',', $row['labels']))) == count($list_filter)) {
+                    $note = $this->get_text_note_or_checklist_note($row);
+                    $search_notes[] = $note;
+                }
+            }
+        }
+
+        return $search_notes;
+    }
+    public function get_filter_list(): array
+    {
+        $query = self::execute(
+            "SELECT DISTINCT
+             nl.label
+            FROM note_labels nl 
+            LEFT JOIN notes n ON n.id = nl.note
+            LEFT JOIN note_shares ns ON ns.note = n.id
+            WHERE n.owner = :owner OR ns.user = :owner 
+            ORDER BY LOWER(nl.label) ASC;",
+            ["owner" => $this->id]
+        );
+
+        $data = $query->fetchAll();
+        $filter_list = [];
+        foreach ($data as $row) {
+            if ($row["label"]) {
+                $filter_list[] = $row["label"];
+            }
+        }
+
+        return $filter_list;
     }
 
     public function get_heaviest_note($pinned = NULL, $archived = NULL): int
     {
-
         $query = "";
         if ($archived !== NULL) {
             $query = self::execute("
@@ -420,8 +546,6 @@ class User extends MyModel
             return $row['weight'];
         }
     }
-
-
 
     public function get_note_by_id(int $id): Note | false
 
@@ -473,10 +597,17 @@ class User extends MyModel
         $errors = [
             "old_password" => []
         ];
-        if (!(Tools::my_hash($old_password) === $user->get_Hashed_Password())) {
+        if (!(Tools::my_hash($old_password) === $user->get_hashed_password())) {
             $errors['old_password'][] = "Incorrect old password.";
         }
 
         return $errors;
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        $vars = get_object_vars($this);
+
+        return $vars;
     }
 }

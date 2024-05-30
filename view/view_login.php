@@ -1,5 +1,5 @@
 <?php
-include("./utils/header_login.php");
+include("utils/header_login.php");
 ?>
             <div class="row p-3 h-100 justify-content-center align-items-center">
                 <form class="p-3 border rounded-4 text-white text-center" action="main/login" method="post">
@@ -7,7 +7,7 @@ include("./utils/header_login.php");
                     <hr>
                     <div class="form-group">
                         <label class="hide" for="mail"></label>
-                        <input type="email" class="form-control <?php if (count($errors["mail"]) > 0): ?>is-invalid<?php endif; ?>" id="mail" name="mail" placeholder="Enter email">
+                        <input type="email" class="form-control <?php if (count($errors["mail"]) > 0): ?>is-invalid<?php endif; ?>" id="mail" name="mail" placeholder="Enter email" value="<?= $mail ?>">
                         <?php if (count($errors["mail"]) > 0): ?>
                             <div class="text-start invalid-feedback">
                                 <ul class="list-unstyled">
@@ -41,5 +41,5 @@ include("./utils/header_login.php");
             </div>
         </div>
 <?php
-include('./utils/footer.php');
+include('utils/footer.php');
 ?>

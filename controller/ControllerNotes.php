@@ -1,9 +1,11 @@
 <?php
 
 require_once 'model/User.php';
+require_once 'model/Label.php';
+require_once "model/NoteShare.php";
 require_once 'framework/View.php';
 require_once 'framework/Controller.php';
-require_once "model/NoteShare.php";
+require_once "framework/Utils.php";
 class ControllerNotes extends Controller
 {
 
@@ -17,22 +19,24 @@ class ControllerNotes extends Controller
         $user = $this->get_user_or_redirect();
         $notes = $user->get_notes();
         $users_shared_notes = $user->get_users_shared_note();
+
+
         (new View("notes"))->show(["notes" => $notes, "users_shared_notes" => $users_shared_notes]);
     }
 
-    public function move_note_js(): void
+    public function move_note_service(): void
     {
         $user = $this->get_user_or_redirect();
 
         if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-            echo " erreur: methode non valide ";
+            echo "Error : invalid method.";
             return;
         }
 
         if (!(isset($_POST["idNoteMoved"])
             && isset($_POST["idReplacedNote"])
             && isset($_POST["switchedColumn"]))) {
-            echo "erreur: attributs non valide";
+            echo "Error : invalid arguments.";
             return;
         }
         //si noteMoved > alors on prend tout ce qui est plus petit jusqua replacedNote
@@ -43,12 +47,12 @@ class ControllerNotes extends Controller
 
         $note_moved = $user->get_note_by_id($id_note_moved);
         $replaced_note = NULL;
-        $is_note_moved_pinned = $note_moved->is_Pinned();
+        $is_note_moved_pinned = $note_moved->is_pinned();
 
         if ($is_switched_column) {
-            $note_moved->set_Pinned(!$is_note_moved_pinned);
-            $note_moved->persist();
-            $is_note_moved_pinned = $note_moved->is_Pinned();
+            $note_moved->set_pinned(!$is_note_moved_pinned);
+            $note_moved->persist_head();
+            $is_note_moved_pinned = $note_moved->is_pinned();
         }
 
         $weight_replaced_note = "";
@@ -58,17 +62,17 @@ class ControllerNotes extends Controller
             $weight_replaced_note = $user->get_heaviest_note($is_note_moved_pinned) + 1;
         } else {
             $replaced_note = $user->get_note_by_id($id_replaced_note);
-            $weight_replaced_note = $replaced_note->get_Weight();
+            $weight_replaced_note = $replaced_note->get_weight();
         }
 
-        $this->move_all_note_between($note_moved, $weight_replaced_note);
+        $this->move_all_notes_between($note_moved, $weight_replaced_note);
     }
 
-    public function move_all_note_between(Note $note_moved, int $weight_replaced_note)
+    public function move_all_notes_between(Note $note_moved, int $weight_replaced_note)
     {
         $user = $this->get_user_or_redirect();
-        $weight_moved_note =  $note_moved->get_Weight();
-        $is_note_moved_pinned = $note_moved->is_Pinned();
+        $weight_moved_note =  $note_moved->get_weight();
+        $is_note_moved_pinned = $note_moved->is_pinned();
 
         $notes_to_move = $user->get_notes_with_weight_between(
             $weight_moved_note,
@@ -86,10 +90,10 @@ class ControllerNotes extends Controller
             $this->modif_weight($first_is_biggest, $note["id"]);
         }
     }
-    public function move_all_archived_note_between(Note $note_moved, int $weight_replaced_note)
+    public function move_all_archived_notes_between(Note $note_moved, int $weight_replaced_note)
     {
         $user = $this->get_user_or_redirect();
-        $weight_moved_note =  $note_moved->get_Weight();
+        $weight_moved_note =  $note_moved->get_weight();
 
         $notes_to_move = $user->get_notes_archived_with_weight_between(
             $weight_moved_note,
@@ -107,38 +111,35 @@ class ControllerNotes extends Controller
 
     public function move_note(): void
     {
-        if (isset($_GET['param1']) && isset($_GET['param2'])) {
-            $note_id = $_GET['param1'];
-            $action = $_GET['param2'];
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $note_id = $_POST['id'];
+            $action = $_POST['action'];
 
             if ($action === 'increment') {
                 $this->modif_weight(true, $note_id);
             } elseif ($action === 'decrement') {
                 $this->modif_weight(false, $note_id);
             }
-
-            $this->note_list();
-        } else {
-            $this->note_list();
         }
+        $this->redirect("notes");
     }
 
     private function modif_weight(bool $is_more, int $note_id)
     {
         $current_note = Note::get_note($note_id);
         if ($current_note instanceof Note) {
-            $other_notes = $current_note->get_nearest_note($is_more);
-            if ($other_notes instanceof Note) {
-                $weight_current = $current_note->get_Weight();
-                $weight_other = $other_notes->get_Weight();
+            $other_note = $current_note->get_nearest_note($is_more);
+            if ($other_note instanceof Note) {
+                $weight_current = $current_note->get_weight();
+                $weight_other = $other_note->get_weight();
                 $user = $this->get_user_or_redirect();
 
-                $other_notes->set_Weight($user->get_heaviest_note() + 1);
-                $other_notes->persist();
-                $current_note->set_Weight($weight_other);
-                $current_note->persist();
-                $other_notes->set_Weight($weight_current);
-                $other_notes->persist();
+                $other_note->set_weight($user->get_heaviest_note() + 1);
+                $other_note->persist_head();
+                $current_note->set_weight($weight_other);
+                $current_note->persist_head();
+                $other_note->set_weight($weight_current);
+                $other_note->persist_head();
             }
         }
     }
@@ -147,18 +148,18 @@ class ControllerNotes extends Controller
     {
         $current_note = Note::get_note($note_id);
         if ($current_note instanceof Note) {
-            $other_notes = $current_note->get_nearest_archived_note();
-            if ($other_notes instanceof Note) {
-                $weight_current = $current_note->get_Weight();
-                $weight_other = $other_notes->get_Weight();
+            $other_note = $current_note->get_nearest_archived_note();
+            if ($other_note instanceof Note) {
+                $weight_current = $current_note->get_weight();
+                $weight_other = $other_note->get_weight();
                 $user = $this->get_user_or_redirect();
 
-                $other_notes->set_Weight($user->get_heaviest_note() + 1);
-                $other_notes->persist();
-                $current_note->set_Weight($weight_other);
-                $current_note->persist();
-                $other_notes->set_Weight($weight_current);
-                $other_notes->persist();
+                $other_note->set_weight($user->get_heaviest_note() + 1);
+                $other_note->persist_head();
+                $current_note->set_weight($weight_other);
+                $current_note->persist_head();
+                $other_note->set_weight($weight_current);
+                $other_note->persist_head();
             }
         }
     }
@@ -171,6 +172,116 @@ class ControllerNotes extends Controller
         (new View("archives"))->show(["notes_archives" => $notes_archives, "users_shared_notes" => $users_shared_notes]);
     }
 
+    public function search(): void
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $list_filter = [];
+
+            foreach ($_POST as $filter => $value) {
+                if ($value === "on") {
+                    $list_filter[] = $filter;
+                }
+            }
+
+            if (count($list_filter) > 0) {
+                $list_filter_encoded = Utils::url_safe_encode($list_filter);
+                $this->redirect("notes", "search", $list_filter_encoded);
+            } else
+                $this->redirect("notes", "search");
+        } else {
+            $list_filter = isset($_GET['param1']) ? Utils::url_safe_decode($_GET['param1']) : [];
+            if ($list_filter === NULL) $list_filter = [];
+
+            $user = $this->get_user_or_redirect();
+            $notes_searched["personal"] = count($list_filter) === 0 ? [] : $user->get_notes_searched($list_filter);
+            $users_shared_notes = $user->get_users_shared_note();
+
+            $list_label = $user->get_filter_list();
+            $new_list_label = [];
+            foreach ($list_label as $label) {
+                $checked = false;
+                foreach ($list_filter as $filter) {
+                    if ($filter === $label) {
+                        $checked = true;
+                    }
+                }
+                $new_list_label[$label] = $checked;
+            }
+
+            $notes_searched["shared"] = [];
+
+            foreach ($users_shared_notes as $u) {
+                $note_by_someone = $user->get_notes_with_label_shared_by($u->get_id(), $list_filter);
+                if (count($note_by_someone) > 0) {
+                    $notes_searched["shared"][$u->get_full_name()] = $note_by_someone;
+                }
+            }
+            (new View("search"))->show(["notes_searched" => $notes_searched, "users_shared_notes" => $users_shared_notes, "list_label" => $new_list_label]);
+        }
+    }
+    public function search_service(): void
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $list_filter = [];
+            foreach ($_POST as $filter => $value) {
+                if ($value === "on") {
+                    $list_filter[] = $filter;
+                }
+            }
+
+            $data_to_update = $this->get_data_to_update($list_filter);
+            echo json_encode($data_to_update);
+        } else {
+            http_response_code(405);
+            echo json_encode(["error" => "Method Not Allowed"]);
+        }
+    }
+    public function get_labels_service(): void
+    {
+        $note_id = intval($_POST['note_id'] ?? 0);
+        if ($note_id !== 0) {
+            $labels = Label::get_labels_by_note_id($note_id);
+            echo json_encode($labels);
+        }
+    }
+    private function get_data_to_update(array $list_filter): array
+    {
+        if (count($list_filter) > 0) {
+            $list_filter_encoded = Utils::url_safe_encode($list_filter);
+        }
+        $user = $this->get_user_or_redirect();
+        $notes_searched["personal"] = $user->get_notes_searched($list_filter);
+        $users_shared_notes = $user->get_users_shared_note();
+
+        $list_label = $user->get_filter_list();
+        $new_list_label = [];
+        foreach ($list_label as $label) {
+            $checked = false;
+            foreach ($list_filter as $filter) {
+                if ($filter === $label) {
+                    $checked = true;
+                }
+            }
+            $new_list_label[$label] = $checked;
+        }
+
+        $notes_searched["shared"] = [];
+
+        foreach ($users_shared_notes as $u) {
+            $note_by_someone = $user->get_notes_with_label_shared_by($u->get_id(), $list_filter);
+            if (count($note_by_someone) > 0) {
+                $notes_searched["shared"][$u->get_full_name()] = $note_by_someone;
+            }
+        }
+        $data_to_update = [
+            "notes_searched" => $notes_searched,
+            "users_shared_notes" => $users_shared_notes,
+            "list_label" => $new_list_label,
+            "list_filter_encoded" => $list_filter_encoded ?? null,
+        ];
+
+        return $data_to_update;
+    }
     public function shared_by(): void
     {
         $user = $this->get_user_or_redirect();
@@ -186,7 +297,7 @@ class ControllerNotes extends Controller
                 (new View("error"))->show(["error" => "Page doesn't exist."]);
             }
         } else {
-            echo "Les paramètres ne sont pas définis.";
+            echo "Parameters are not defined.";
             print_r($_GET);
         }
     }
@@ -214,7 +325,7 @@ class ControllerNotes extends Controller
                 (new View("add_text_note"))->show(["result" => $result, "default_title" => $default_title, "default_text" => $default_text, 'errors' => $errors]);
             } else {
                 $result["success"] = "The note has been added successfully.";
-                $this->redirect("notes", "open_note", $note->get_Id());
+                $this->redirect("notes", "open_note", $note->get_id());
             }
         } else {
             (new View("add_text_note"))->show(["result" => $result, "default_title" => $default_title, "default_text" => $default_text]);
@@ -237,18 +348,22 @@ class ControllerNotes extends Controller
             if (!empty($valid = $note->validate())) {
                 $errors['title'] = $valid;
             }
-            $itemsInput = [];
+            $items_input = [];
             for ($i = 1; $i <= 5; $i++) {
-                $itemContent = trim($_POST['item' . $i] ?? '');
-                if (!empty($itemContent)) {
-                    if (!array_key_exists($itemContent, $itemsInput)) {
-                        $itemsInput[$itemContent] = [];
+                $item_content = trim($_POST['item' . $i] ?? '');
+                if (!empty($item_content)) {
+                    $test = new ChecklistNoteItem($item_content, false);
+                    if (!empty($test->validate())) {
+                        $errors['item' . $i] = ($test->validate())[0];
                     }
-                    $itemsInput[$itemContent][] = $i;
+                    if (!array_key_exists($item_content, $items_input)) {
+                        $items_input[$item_content] = [];
+                    }
+                    $items_input[$item_content][] = $i;
                 }
             }
 
-            foreach ($itemsInput as $content => $indexes) {
+            foreach ($items_input as $content => $indexes) {
                 if (count($indexes) > 1) {
                     foreach ($indexes as $index) {
                         $errors['item' . $index] = "Item '$content' is duplicated.";
@@ -260,12 +375,12 @@ class ControllerNotes extends Controller
                 $weight = $user->get_heaviest_note() + 1;
                 $note = new ChecklistNote($title, $user, false, false, $weight);
                 if ($note->persist()) {
-                    foreach ($itemsInput as $content => $indexes) {
-                        $checklistItem = new ChecklistNoteItems($content, false);
-                        $checklistItem->set_checklist_note($note->get_Id());
-                        $checklistItem->persist();
+                    foreach ($items_input as $content => $indexes) {
+                        $checklist_item = new ChecklistNoteItem($content, false);
+                        $checklist_item->set_checklist_note($note->get_id());
+                        $checklist_item->persist();
                     }
-                    $this->redirect("notes", "open_note", $note->get_Id());
+                    $this->redirect("notes", "open_note", $note->get_id());
                 } else {
                     $errors['note'] = "Error while creating checklist note.";
                 }
@@ -280,11 +395,11 @@ class ControllerNotes extends Controller
         ]);
     }
 
-    private function validateUniqueItem(ChecklistNote $checklistNote, string $content): bool
+    private function validate_unique_item(ChecklistNote $checklist_note, string $content): bool
     {
-        $existingItems = $checklistNote->get_Items();
-        foreach ($existingItems as $item) {
-            if ($item->get_Content() === $content && $item->get_Content() !== '') {
+        $existing_items = $checklist_note->get_list_item();
+        foreach ($existing_items as $item) {
+            if ($item->get_content() === $content && $item->get_content() !== '') {
                 return false;
             }
         }
@@ -298,9 +413,9 @@ class ControllerNotes extends Controller
         $shared_note_id = NULL;
         $note_id = $is_javascript_request ? intval($_POST["noteId"]) : $_GET['param1'];
         $user = $this->get_user_or_redirect();
-        $user_id = $user->get_Id();
+        $user_id = $user->get_id();
         $note = ChecklistNote::get_note($note_id);
-        $items = ChecklistNoteItems::get_items_by_checklist_note_id($note_id);
+        $items = $note->get_list_item();
 
         //On verifie les erreurs. 
         if (!($note instanceof Note)) {
@@ -310,49 +425,71 @@ class ControllerNotes extends Controller
         }
 
         foreach ($items as $item) {
-            if (!($item instanceof ChecklistNoteItems)) {
+            if (!($item instanceof ChecklistNoteItem)) {
                 // un item n'existe pas.
                 (new View("error"))->show(["error" => "Page doesn't exist."]);
                 return;
             }
         }
 
-        $is_shared_note = NoteShare::is_Note_Shared_With_User($note_id, $user_id);
-        $can_edit = $is_shared_note ? NoteShare::can_Edit($note_id, $user_id)  : true;
+        $is_shared_note = NoteShare::is_note_shared_with_user($note_id, $user_id);
+        $can_edit = $is_shared_note ? NoteShare::can_edit($note_id, $user_id)  : true;
 
         if ($is_shared_note) {
-            $shared_note_id = $note->get_Owner()->get_Id();
+            $shared_note_id = $note->get_owner()->get_id();
         }
 
-        $canAccess = ($note->get_Owner()->get_Id() === $user_id) || ($is_shared_note && $can_edit);
-        if (!$canAccess) {
+        $can_access = ($note->get_owner()->get_id() === $user_id) || ($is_shared_note && $can_edit);
+        if (!$can_access) {
             (new View("error"))->show(["error" => "Page doesn't exist."]);
             return;
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-            $checklist_note = new ChecklistNote($note->get_Title(), $note->get_Owner(), $note->is_Pinned(), $note->is_Archived(), $note->get_Weight(), $note->get_Id());
+            $checklist_note = new ChecklistNote($note->get_title(), $note->get_owner(), $note->is_pinned(), $note->is_archived(), $note->get_weight(), $note->get_id());
             if (isset($_POST['save_button'])) {
                 $errors = $this->edit_title($note, $errors);
                 $errors = array_merge($errors, $this->edit_items($note, $errors));
             } else if (isset($_POST['add_button'])) {
                 $errors = $this->add_item($checklist_note, $errors);
                 if (empty($errors)) {
-                    $items = ChecklistNoteItems::get_items_by_checklist_note_id($note_id);
+                    $items = $checklist_note->get_list_item();
                     $errors = array_merge($errors, $this->edit_title($note, $errors));
-                    $this->redirect("notes", "edit_checklist_note", $note->get_Id());
+
+                    $is_list_filter_exist = isset($_GET["param2"]);
+                    $list_filter_encoded = $is_list_filter_exist ? $_GET["param2"] : "";
+
+                    if ($is_list_filter_exist)
+                        $this->redirect("notes", "edit_checklist_note", $note->get_id(), $list_filter_encoded);
+                    else
+                        $this->redirect("notes", "edit_checklist_note", $note->get_id());
                 }
             } else if (isset($_POST['remove_button'])) {
-                $item = ChecklistNoteItems::get_checklist_note_item_by_id($_POST['remove_button']);
+                $item = ChecklistNoteItem::get_checklist_note_item_by_id($_POST['remove_button']);
                 $item->delete();
-                $items = ChecklistNoteItems::get_items_by_checklist_note_id($note_id);
+                $items = $checklist_note->get_list_item();
                 $errors = $this->edit_title($note, $errors);
-                $this->redirect("notes", "edit_checklist_note", $note->get_Id());
+
+                $is_list_filter_exist = isset($_GET["param2"]);
+                $list_filter_encoded = $is_list_filter_exist ? $_GET["param2"] : "";
+
+                if ($is_list_filter_exist)
+                    $this->redirect("notes", "edit_checklist_note", $note->get_id(), $list_filter_encoded);
+                else
+                    $this->redirect("notes", "edit_checklist_note", $note->get_id());
             }
             $note = ChecklistNote::get_note($note_id);
+
             if (empty($errors) && isset($_POST['save_button'])) {
-                $this->redirect("notes", "open_note", $note->get_Id());
+
+                $is_list_filter_exist = isset($_GET["param2"]);
+                $list_filter_encoded = $is_list_filter_exist ? $_GET["param2"] : "";
+
+                if ($is_list_filter_exist)
+                    $this->redirect("notes", "open_note", $note->get_id(), $list_filter_encoded);
+                else
+                    $this->redirect("notes", "open_note", $note->get_id());
             }
         }
 
@@ -368,8 +505,9 @@ class ControllerNotes extends Controller
     {
         if (isset($_POST['title'])) {
             $title = trim($_POST['title']);
-            $note->set_Title($title);
-            if (!($test = $note->persist()) instanceof Note) {
+            $note->set_title($title);
+            $note_copy = $note;
+            if (!($test = $note_copy->persist()) instanceof Note) {
                 $errors = $test;
             }
         }
@@ -378,7 +516,7 @@ class ControllerNotes extends Controller
 
     public function add_item(ChecklistNote $note, array $errors): array
     {
-        $items = $note->get_Items();
+        $items = $note->get_list_item();
         $string_items = [];
         foreach ($items as $i) {
             $string_items[] = $i->get_content();
@@ -389,8 +527,11 @@ class ControllerNotes extends Controller
                 $errors['new_item'] = "Item cannot be empty.";
             } else {
                 $item = trim($_POST['new_item']);
+                $new_item = new ChecklistNoteItem($item, false, $note->get_id());
+                if (!empty($test = $new_item->validate())) {
+                    $errors['new_item'] = $test[0];
+                }
                 if (!($this->item_exists($string_items, $item))) {
-                    $new_item = new ChecklistNoteItems($item, false, $note->get_Id());
                     $new_item->persist();
                 } else {
                     $errors['new_item'] = "Item already exists.";
@@ -407,24 +548,26 @@ class ControllerNotes extends Controller
 
     public function edit_items(Note $note, array $errors): array
     {
-        $checklist_note = new ChecklistNote($note->get_Title(), $note->get_Owner(), $note->is_Pinned(), $note->is_Archived(), $note->get_Weight(), $note->get_Id());
-        $currentItems = $checklist_note->get_Items();
-        $newNote = clone $checklist_note;
-        $newItems = $newNote->get_Items();
-        $stringNewItems = [];
-
-        /** @var $i ChecklistNoteItems*/
-        foreach ($newItems as $i) {
-            $id = $i->get_Id();
+        $checklist_note = new ChecklistNote($note->get_title(), $note->get_owner(), $note->is_pinned(), $note->is_archived(), $note->get_weight(), $note->get_id());
+        $current_items = $checklist_note->get_list_item();
+        $new_note = clone $checklist_note;
+        $new_items = $new_note->get_list_item();
+        $string_new_items = [];
+        /** @var  ChecklistNoteItem $i*/
+        foreach ($new_items as $i) {
+            $id = $i->get_id();
             if (isset($_POST['item' . $id])) {
-                $i->set_Content($_POST['item' . $id]);
-                $stringNewItems[] = $i->get_content();
+                $i->set_content($_POST['item' . $id]);
+                $string_new_items[] = $i->get_content();
 
                 if (trim($_POST['item' . $id]) == '') {
                     $errors['item' . $id][] = "Item cannot be empty.";
                 } else {
                     $item = trim($_POST['item' . $id]);
-                    if (true !== ($duplicates = $this->is_unique($i, $newItems))) {
+                    if (!empty($test = $i->validate())) {
+                        $errors['item' . $id][] = $test[0];
+                    }
+                    if (true !== ($duplicates = $this->is_unique($i, $new_items))) {
                         foreach ($duplicates as $dup) {
                             if (empty($errors['item' . $dup])) {
                                 $errors['item' . $dup][] = "Item already exists.";
@@ -455,15 +598,15 @@ class ControllerNotes extends Controller
         return false;
     }
 
-    private function is_unique(ChecklistNoteItems $i, array $items): bool | array
+    private function is_unique(ChecklistNoteItem $i, array $items): bool | array
     {
         $count = 0;
         $res = [];
-        /** @var ChecklistNoteItems $item */
+        /** @var ChecklistNoteItem $item */
         foreach ($items as $item) {
             if ($item->get_content() === $i->get_content()) {
                 $count++;
-                $res[] = $item->get_Id();
+                $res[] = $item->get_id();
             }
         }
         if ($count < 2) {
@@ -485,7 +628,7 @@ class ControllerNotes extends Controller
 
         $note_id = $_GET['param1'];
         $user = $this->get_user_or_redirect();
-        $user_id = $user->get_Id();
+        $user_id = $user->get_id();
         $note = TextNote::get_text_note($note_id);
 
         if (!($note instanceof TextNote)) {
@@ -493,15 +636,15 @@ class ControllerNotes extends Controller
             return;
         }
 
-        $is_shared_note = NoteShare::is_Note_Shared_With_User($note_id, $user_id);
-        $can_edit = $is_shared_note ? NoteShare::can_Edit($note_id, $user_id)  : true;
+        $is_shared_note = NoteShare::is_note_shared_with_user($note_id, $user_id);
+        $can_edit = $is_shared_note ? NoteShare::can_edit($note_id, $user_id)  : true;
 
         if ($is_shared_note) {
-            $shared_note_id = $note->get_Owner()->get_Id();
+            $shared_note_id = $note->get_owner()->get_id();
         }
 
-        $canAccess = ($note->get_Owner()->get_Id() === $user_id) || ($is_shared_note && $can_edit);
-        if (!$canAccess) {
+        $can_access = ($note->get_owner()->get_id() === $user_id) || ($is_shared_note && $can_edit);
+        if (!$can_access) {
             (new View("error"))->show(["error" => "Page doesn't exist."]);
             return;
         }
@@ -510,16 +653,22 @@ class ControllerNotes extends Controller
             if (isset($_POST['title'])) {
                 $title = trim($_POST['title']);
                 $content = isset($_POST['text']) ? $_POST['text'] : "";
-                if ($title == $note->get_Title() && $content == $note->get_Content()) {
-                    $errors['title'] = "aucune modification apportée";
+                if ($title == $note->get_title() && $content == $note->get_content()) {
+                    $errors['title'] = "No modification to save.";
                 } else {
-                    $note->set_Title($title);
-                    $note->set_Content($content);
+                    $note->set_title($title);
+                    $note->set_content($content);
                     $result = $note->persist();
                     if (!($result instanceof Note)) {
                         $errors = $result;
                     } else {
-                        $this->redirect("notes", "open_note", $note->get_Id());
+                        $is_list_filter_exist = isset($_GET["param2"]);
+                        $list_filter_encoded = $is_list_filter_exist ? $_GET["param2"] : "";
+
+                        if ($is_list_filter_exist)
+                            $this->redirect("notes", "open_note", $note->get_Id(), $list_filter_encoded);
+                        else
+                            $this->redirect("notes", "open_note", $note->get_Id());
                     }
                 }
             } else {
@@ -536,40 +685,50 @@ class ControllerNotes extends Controller
 
     public function open_note(int $id = -1): void
     {
-        $noteId = $id !== -1 ? $id : filter_var($_GET['param1'], FILTER_VALIDATE_INT);
+        $note_id = isset($_GET['param1']) ? filter_var($_GET['param1'], FILTER_VALIDATE_INT) : false;
         $user = $this->get_user_or_redirect();
-        $userId = $user->get_Id();
+        $user_id = $user->get_id();
         $error = "";
+        $note = Note::get_note($note_id);
 
-        if ($noteId === false) {
-            $error = "Identifiant de note invalide.";
+        if ($note === false) $this->redirect("notes", "archives");
+
+        if ($note_id === false) {
+            $error = "Cannot find Note ID";
         } else {
-            $note = Note::get_note($noteId);
-            if (!($note instanceof Note)) {
-                $error = "Note introuvable.";
+            $is_checklist_note = $note->is_checklist_note();
+            $note = null;
+            if ($is_checklist_note) {
+                $note = ChecklistNote::get_note($note_id);
             } else {
-                $isSharedNote = NoteShare::is_Note_Shared_With_User($noteId, $userId);
-                $canEdit = True;
-                if ($isSharedNote) {
-                    $canEdit = NoteShare::can_Edit($noteId, $userId);
+                $note = TextNote::get_note($note_id);
+            }
+
+            if (!($note instanceof Note)) {
+                $error = "Cannot find this Note.";
+            } else {
+                $is_shared_note = NoteShare::is_note_shared_with_user($note_id, $user_id);
+                $can_edit = True;
+                if ($is_shared_note) {
+                    $can_edit = NoteShare::can_edit($note_id, $user_id);
                 }
 
-                $canAccess = ($note->get_Owner()->get_Id() === $userId) || $isSharedNote;
-                if (!$canAccess) {
-                    $error = "Accès non autorisé.";
+                $can_access = ($note->get_owner()->get_id() === $user_id) || $is_shared_note;
+                if (!$can_access) {
+                    $error = "Unauthorized access.";
                 } else {
-                    $id_sender = $note->get_Owner()->get_Id();
-                    $isChecklistNote = Note::is_checklist_note($noteId);
-                    if ($isChecklistNote) {
-                        $checklistItems = ChecklistNoteItems::get_items_by_checklist_note_id($noteId);
+                    $id_sender = $note->get_owner()->get_id();
+                    if ($is_checklist_note) {
+                        $note->fetch_list_item();
+                        $checklist_items = $note->get_list_item();
                     } else {
-                        $text = TextNote::get_text_note($noteId);
+                        $text = TextNote::get_text_note($note_id);
                     }
-                    $headerType = 'notes';
-                    if ($isSharedNote) {
-                        $headerType = 'shared_by';
-                    } elseif ($note->is_Archived()) {
-                        $headerType = 'archives';
+                    $header_type = 'notes';
+                    if ($is_shared_note) {
+                        $header_type = 'shared_by';
+                    } elseif ($note->is_archived()) {
+                        $header_type = 'archives';
                     }
                 }
             }
@@ -577,69 +736,69 @@ class ControllerNotes extends Controller
         (new View("open_note"))->show([
             'error' => $error,
             'note' => $note ?? null,
-            'headerType' => $headerType ?? null,
-            'canEdit' => $canEdit ?? false,
+            'header_type' => $header_type ?? null,
+            'can_edit' => $can_edit ?? false,
             'text' => $text ?? null,
             'id_sender' => $id_sender ?? null,
-            'checklistItems' => $checklistItems ?? null,
-            'isChecklistNote' => $isChecklistNote ?? false
+            'checklist_items' => $checklist_items ?? null,
+            'is_checklist_note' => $is_checklist_note ?? false
         ]);
     }
     public function shares(): void
     {
-        $noteId = filter_var($_GET['param1'], FILTER_VALIDATE_INT);
-        $currentUser = $this->get_user_or_redirect();
-        $currentUserId = $currentUser->get_Id();
+        $note_id = $_POST['note_id'] ?? null;
+        $current_user = $this->get_user_or_redirect();
+        $current_user_id = $current_user->get_id();
         $error = "";
-        $errorAdd = "";
+        $error_add = "";
 
-        if ($noteId === false) {
-            $error = "Identifiant de note invalide.";
+        if ($note_id === false) {
+            $error = "Cannot find Note ID";
         } else {
-            $note = Note::get_note($noteId);
+            $note = Note::get_note($note_id);
             if (isset($_POST['addShare'])) {
-                $noteId = $_POST['noteId'];
-                $userId = $_POST['user'] ?? null;
+                $note_id = $_POST['noteId'];
+                $user_id = $_POST['user'] ?? null;
                 $permission = $_POST['permission'] ?? null;
-                if (!empty($userId) && $permission !== null) {
-                    NoteShare::add_Share($noteId, $userId, $permission);
-                    $this->redirect("notes", "shares/$noteId");
+                if (!empty($user_id) && $permission !== null) {
+                    NoteShare::add_Share($note_id, $user_id, $permission);
+                    $this->redirect("notes", "shares/$note_id");
                     exit();
                 } else {
-                    $errorAdd = "Please select a user and a permission to share.";
+                    $error_add = "Please select a user and a permission to share.";
                 }
             }
             if (isset($_POST['changePermission'])) {
                 $user = $_POST['user'];
-                NoteShare::change_Permissions($noteId, $user);
-                $this->redirect("notes", "shares/$noteId");
+                NoteShare::change_permissions($note_id, $user);
+                $this->redirect("notes", "shares/$note_id");
                 exit();
             }
             if (isset($_POST['removeShare'])) {
                 $user = $_POST['user'];
-                NoteShare::remove_Share($noteId, $user);
+                NoteShare::remove_share($note_id, $user);
 
-                $this->redirect("notes", "shares/$noteId");
+                $this->redirect("notes", "shares/$note_id");
                 exit();
             }
             if (!($note instanceof Note)) {
-                $error = "Note introuvable.";
+                $error = "Cannot find this Note";
             } else {
-                $canAccess = ($note->get_Owner()->get_Id() === $currentUserId);
-                if (!$canAccess) {
-                    $error = "Accès non autorisé.";
+                $can_access = ($note->get_Owner()->get_Id() === $current_user_id);
+                if (!$can_access) {
+                    $error = "Unauthorized access.";
                 } else {
-                    $existingShares = NoteShare::get_Shared_With_User($currentUserId, $noteId);
-                    $sharedUserIds = [];
-                    foreach ($existingShares as $share) {
-                        $sharedUserIds[] = $share['id'];
+                    $existing_shares = NoteShare::get_shared_with_user($current_user_id, $note_id);
+                    $shared_user_ids = [];
+                    foreach ($existing_shares as $share) {
+                        $shared_user_ids[] = $share['id'];
                     }
 
-                    $allUsers = User::get_users();
-                    $usersToShareWith = [];
-                    foreach ($allUsers as $user) {
-                        if ($user->get_Id() !== $currentUserId && !in_array($user->get_Id(), $sharedUserIds)) {
-                            $usersToShareWith[] = $user;
+                    $all_users = User::get_users();
+                    $users_to_share_with = [];
+                    foreach ($all_users as $user) {
+                        if ($user->get_id() !== $current_user_id && !in_array($user->get_id(), $shared_user_ids)) {
+                            $users_to_share_with[] = $user;
                         }
                     }
                 }
@@ -647,52 +806,52 @@ class ControllerNotes extends Controller
         }
 
         (new View("shares"))->show([
-            'usersToShareWith' => $usersToShareWith ?? null,
-            'existingShares' => $existingShares ?? null,
-            'noteId' => $noteId,
+            'users_to_share_with' => $users_to_share_with ?? null,
+            'existing_shares' => $existing_shares ?? null,
+            'note_id' => $note_id,
             'note' => $note ?? null,
-            'currentUser' => $currentUser ?? null,
+            'current_user' => $current_user ?? null,
             'error' => $error,
-            'errorAdd' => $errorAdd
+            'error_add' => $error_add
         ]);
     }
-    public function refresh_share_ajax(int $noteId): void
+    public function refresh_share_service(int $note_id): void
     {
-        $currentUser = $this->get_user_or_redirect();
-        $currentUserId = $currentUser->get_Id();
+        $current_user = $this->get_user_or_redirect();
+        $current_user_id = $current_user->get_id();
 
-        $existingShares = NoteShare::get_Shared_With_User($currentUserId, $noteId);
-        $sharedUserIds = [];
-        foreach ($existingShares as $share) {
-            $sharedUserIds[] = $share['id'];
+        $existing_shares = NoteShare::get_shared_with_user($current_user_id, $note_id);
+        $shared_user_ids = [];
+        foreach ($existing_shares as $share) {
+            $shared_user_ids[] = $share['id'];
         }
 
-        $allUsers = User::get_users();
-        $usersToShareWith = [];
-        foreach ($allUsers as $user) {
-            if ($user->get_Id() !== $currentUserId && !in_array($user->get_Id(), $sharedUserIds)) {
-                $usersToShareWith[$user->get_Id()] = [
-                    'full_name' => $user->get_Full_Name(),
-                    'note_id' => $noteId
+        $all_users = User::get_users();
+        $users_to_share_with = [];
+        foreach ($all_users as $user) {
+            if ($user->get_id() !== $current_user_id && !in_array($user->get_id(), $shared_user_ids)) {
+                $users_to_share_with[$user->get_id()] = [
+                    'full_name' => $user->get_full_name(),
+                    'note_id' => $note_id
                 ];
             }
         }
-        $responseData = [
-            'existingShares' => $existingShares,
-            'usersToShareWith' => $usersToShareWith
+        $response_data = [
+            'existingShares' => $existing_shares,
+            'usersToShareWith' => $users_to_share_with
         ];
 
-        echo json_encode($responseData);
+        echo json_encode($response_data);
     }
-    public function add_share_ajax(): void
+    public function add_share_service(): void
     {
-        $noteId = $_POST['noteId'] ?? null;
-        $userId = $_POST['userId'] ?? null;
+        $note_id = $_POST['noteId'] ?? null;
+        $user_id = $_POST['userId'] ?? null;
         $permission = $_POST['permission'] ?? null;
 
-        if (isset($noteId) && isset($userId) && isset($permission)) {
-            if (NoteShare::add_Share($noteId, $userId, $permission)) {
-                $this->refresh_share_ajax($noteId);
+        if (isset($note_id) && isset($user_id) && isset($permission)) {
+            if (NoteShare::add_share($note_id, $user_id, $permission)) {
+                $this->refresh_share_service($note_id);
             } else {
                 echo json_encode(["success" => false, "error" => "Failed to add share"]);
             }
@@ -700,14 +859,14 @@ class ControllerNotes extends Controller
             echo json_encode(["success" => false, "error" => "Missing parameters"]);
         }
     }
-    public function remove_share_ajax(): void
+    public function remove_share_service(): void
     {
-        $noteId = $_POST['noteId'] ?? null;
-        $userId = $_POST['userId'] ?? null;
+        $note_id = $_POST['noteId'] ?? null;
+        $user_id = $_POST['userId'] ?? null;
 
-        if (isset($noteId) && isset($userId)) {
-            if (NoteShare::remove_Share($noteId, $userId)) {
-                $this->refresh_share_ajax($noteId);
+        if (isset($note_id) && isset($user_id)) {
+            if (NoteShare::remove_share($note_id, $user_id)) {
+                $this->refresh_share_service($note_id);
             } else {
                 echo json_encode(["success" => false, "error" => "Failed to remove share"]);
             }
@@ -716,14 +875,14 @@ class ControllerNotes extends Controller
         }
     }
 
-    public function change_permission_ajax(): void
+    public function change_permission_service(): void
     {
-        $noteId = $_POST['noteId'] ?? null;
-        $userId = $_POST['userId'] ?? null;
+        $note_id = $_POST['noteId'] ?? null;
+        $user_id = $_POST['userId'] ?? null;
 
-        if (isset($noteId) && isset($userId)) {
-            if (NoteShare::change_Permissions($noteId, $userId)) {
-                $this->refresh_share_ajax($noteId);
+        if (isset($note_id) && isset($user_id)) {
+            if (NoteShare::change_permissions($note_id, $user_id)) {
+                $this->refresh_share_service($note_id);
             } else {
                 echo json_encode(["success" => false, "error" => "Failed to remove share"]);
             }
@@ -732,44 +891,47 @@ class ControllerNotes extends Controller
         }
     }
 
-    public function toggle_Pin()
+    public function toggle_pin()
     {
         $user = $this->get_user_or_redirect();
-        $noteId = $_POST['note_id'];
-        $note = Note::get_note($noteId);
-        $note->toggle_Pin();
+        $note_id = $_POST['note_id'];
+        $note = Note::get_note($note_id);
+        $note->toggle_pin();
 
-        $new_weight = $user->get_heaviest_note($note->is_Pinned()) + 1;
+        $new_weight = $user->get_heaviest_note($note->is_pinned()) + 1;
 
-        $this->move_all_note_between($note, $new_weight);
+        $this->move_all_notes_between($note, $new_weight);
 
-        $this->redirect("notes", "open_note/$noteId");
+        $this->redirect("notes", "open_note/$note_id");
     }
-    public function toggle_Checkbox()
+    public function toggle_checkbox()
     {
-        $noteId = $_POST['note_id'];
-        $itemId = $_POST['item_id'];
-        $item = ChecklistNoteItems::get_checklist_note_item_by_id($itemId);
+        $note_id = $_POST['note_id'];
+        $item_id = $_POST['item_id'];
+        $item = ChecklistNoteItem::get_checklist_note_item_by_id($item_id);
 
-        $item->toggle_Checkbox();
-        $this->redirect("notes", "open_note/$noteId");
+        $item->toggle_checkbox();
+        $this->redirect("notes", "open_note/$note_id");
     }
 
     public function toggle_checkbox_service()
     {
-        $noteId = $_POST['note_id'];
-        $itemId = $_POST['item_id'];
-        $item = ChecklistNoteItems::get_checklist_note_item_by_id($itemId);
-        $item->toggle_Checkbox();
-        $items = ChecklistNoteItems::get_items_by_checklist_note_id($noteId);
+        $note_id = $_POST['note_id'];
+        $item_id = $_POST['item_id'];
+        $cln = ChecklistNote::get_note($note_id);
+        $item = ChecklistNoteItem::get_checklist_note_item_by_id($item_id);
+        $item->toggle_checkbox();
+        $cln->fetch_list_item();
+        $items = $cln->get_list_item();
         $table = [];
-        /** @var CheckListNoteItems $i */
+        /** @var CheckListNoteItem $i */
         foreach ($items as $i) {
             $row = [];
             $row["content"] = $i->get_content();
-            $row["checked"] = $i->is_Checked();
-            $row["checklist_note"] = $i->get_ChecklistNote();
-            $row["id"] = $i->get_Id();
+            $row["checked"] = $i->is_checked();
+            $row["checklist_note"] = $i->get_checklist_note();
+            $row["id"] = $i->get_id();
+            $row["success"] = true;
             $table[] = $row;
         }
 
@@ -778,53 +940,126 @@ class ControllerNotes extends Controller
 
     public function edit_item_service()
     {
-        $noteId = $_POST['note_id'];
-        $itemId = $_POST['item_id'];
-        $note = ChecklistNote::get_note($noteId);
+        $note_id = $_POST['note_id'];
+        $item_id = $_POST['item_id'];
+        $note = ChecklistNote::get_note($note_id);
 
         $errors = $this->edit_items($note, []);
-        $item = ChecklistNoteItems::get_checklist_note_item_by_id($itemId);
+        $item = ChecklistNoteItem::get_checklist_note_item_by_id($item_id);
 
         $row = [];
         $row["content"] = $item->get_content();
-        $row["checked"] = $item->is_Checked();
-        $row["checklist_note"] = $item->get_ChecklistNote();
-        $row["id"] = $item->get_Id();
+        $row["checked"] = $item->is_checked();
+        $row["checklist_note"] = $item->get_checklist_note();
+        $row["id"] = $item->get_id();
         $row["errors"] = $errors;
-
 
         echo json_encode($row);
     }
-    public function set_Archive()
-    {
-        $user = $this->get_user_or_redirect();
-        $noteId = $_POST['note_id'];
-        $note = Note::get_note($noteId);
-        $note->set_Archive_reverse();
 
-        if ($note->is_Pinned()) {
-            $note->toggle_Pin();
+    public function check_new_item_service()
+    {
+        $content = $_POST['content'];
+        $note_id = $_POST['note_id'];
+        $new_item = new ChecklistNoteItem($content, false, $note_id);
+        $new_item_id = $new_item->get_id();
+        $note = ChecklistNote::get_by_id($note_id);
+        $errors = [];
+        $note->fetch_list_item();
+        $items = $note->get_list_item();
+
+        if (!empty($test = $new_item->validate())) {
+            $errors['new_item'] = $test[0];
+        } else {
+            /** @var $i ChecklistNoteItem */
+            foreach ($items as $i) {
+                if (strtoupper($i->get_content()) === strtoupper($content)) {
+                    $errors['new_item'] = "Item already exists.";
+                } else if (trim($content) === "") {
+                    $errors['new_item'] = "Item cannot be empty.";
+                }
+            }
         }
 
-        if ($note->is_Archived()) {
-            $new_weight = $user->get_heaviest_note(NULL, $note->is_Archived() + 1);
-            $this->move_all_archived_note_between($note, $new_weight);
+        echo json_encode($errors);
+    }
+
+    public function remove_item_service()
+    {
+        $item_id = $_POST['item_id'];
+        $note_id = $_POST['note_id'];
+        $note = ChecklistNote::get_note($note_id);
+        $item = ChecklistNoteItem::get_checklist_note_item_by_id($item_id);
+
+        $item->delete();
+    }
+
+    public function add_item_service()
+    {
+        $note_id = $_POST['note_id'];
+        $note = ChecklistNote::get_note($note_id);
+        $checklist_note = new ChecklistNote($note->get_title(), $note->get_owner(), $note->is_pinned(), $note->is_archived(), $note->get_weight(), $note->get_id());
+        $errors = [];
+        $this->add_item($checklist_note, $errors);
+        $note->fetch_list_item();
+        $items = $note->get_list_item();
+        $table = [];
+        /** @var CheckListNoteItem $i */
+        foreach ($items as $i) {
+            $row = [];
+            $row["content"] = $i->get_content();
+            $row["checked"] = $i->is_checked();
+            $row["checklist_note"] = $i->get_checklist_note();
+            $row["id"] = $i->get_id();
+            $table[] = $row;
+        }
+
+        echo json_encode($table);
+    }
+
+    public function edit_title_service()
+    {
+        $note_id = $_POST['note_id'];
+        $new_content = $_POST['title'];
+        $note = ChecklistNote::get_note($note_id);
+        $note->set_title($new_content);
+
+        $errors = [];
+        $errors = $note->validate();
+        $row = [];
+        $row["errors"] = $errors;
+
+        echo json_encode($row);
+    }
+
+    public function set_archive()
+    {
+        $user = $this->get_user_or_redirect();
+        $note_id = $_POST['note_id'];
+        $note = Note::get_note($note_id);
+        $note->set_archive_reverse();
+
+        if ($note->is_pinned()) {
+            $note->toggle_pin();
+        }
+
+        if ($note->is_archived()) {
+            $new_weight = $user->get_heaviest_note(NULL, $note->is_archived() + 1);
+            $this->move_all_archived_notes_between($note, $new_weight);
         } else {
             $new_weight =  $user->get_heaviest_note(false) + 1;
-            $this->move_all_note_between($note, $new_weight);
+            $this->move_all_notes_between($note, $new_weight);
         }
 
-        $this->redirect("notes", "open_note/$noteId");
+        $this->redirect("notes", "open_note/$note_id");
     }
-    public function delete()
+    public function delete(): void
     {
         $user = $this->get_user_or_redirect();
-
         if (isset($_POST['note_id'])) {
-            $noteId = $_POST['note_id'];
-            $note = Note::get_note($noteId);
-
-            if ($note && $note->delete_All($user)) {
+            $note_id = $_POST['note_id'];
+            $note = Note::get_note($note_id);
+            if ($note && $note->delete_all($user)) {
                 $this->redirect("notes", "archives");
             } else {
                 $this->redirect("notes");
@@ -833,99 +1068,255 @@ class ControllerNotes extends Controller
     }
     public function confirm_delete(): void
     {
-        $noteId = filter_var($_GET['param1'], FILTER_VALIDATE_INT);
+        $note_id = filter_var($_GET['param1'], FILTER_VALIDATE_INT);
         $user = $this->get_user_or_redirect();
-        $userId = $user->get_Id();
+        $user_id = $user->get_id();
         $note = null;
         $error = "";
-
-        if ($noteId === false) {
-            $error = "Identifiant de note invalide.";
+        if ($note_id === false) {
+            $error = "Cannot find Note ID.";
         } else {
-            $note = Note::get_note($noteId);
+            $note = Note::get_note($note_id);
             if (!($note instanceof Note)) {
-                $error = "Note introuvable.";
+                $error = "Cannot find this Note.";
             } else {
-                $canAccess = ($note->get_Owner()->get_Id() === $userId);
-                if (!$canAccess) {
-                    $error = "Accès non autorisé.";
-                } elseif (!$note->is_Archived()) {
-                    $error = "Note non archivée.";
+                $can_access = ($note->get_owner()->get_id() === $user_id);
+                if (!$can_access) {
+                    $error = "Unauthorized access.";
+                } elseif (!$note->is_archived()) {
+                    $error = "Note must be archived before being deleted.";
                 }
             }
         }
-        $headerType = 'login';
+        $header_type = 'login';
         (new View("confirm_delete"))->show([
             "error" => $error,
             "note" => $note,
-            "canAccess" => $canAccess,
-            "headerType" => $headerType
+            "can_access" => $can_access,
+            "header_type" => $header_type
         ]);
     }
 
     public function delete_using_js(): void
     {
-        $note_id = filter_var($_POST['idNote'], FILTER_VALIDATE_INT);
+        $note_id = filter_var($_POST['note_id'], FILTER_VALIDATE_INT);
         $user = $this->get_user_or_redirect();
-        $user_id = $user->get_Id();
+        $user_id = $user->get_id();
         $note = null;
         $error = "";
 
         if ($note_id === false) {
-            $this->error_delete(400, "Identifiant de note invalide.");
+            $this->error_delete(400, "Cannot find Note ID.");
         } else {
             $note = Note::get_note($note_id);
             if (!($note instanceof Note)) {
-                $this->error_delete(400, "Note introuvable");
+                $this->error_delete(400, "Cannot find Note.");
             } else {
-                $canAccess = ($note->get_Owner()->get_Id() === $user_id);
-                if (!$canAccess) {
-                    $this->error_delete(400, "Accès non autorisé.");
-                } elseif (!$note->is_Archived()) {
-                    $this->error_delete(400, "Note non archivée.");
+                $can_access = ($note->get_owner()->get_id() === $user_id);
+                if (!$can_access) {
+                    $this->error_delete(400, "Unauthorized access.");
+                } elseif (!$note->is_archived()) {
+                    $this->error_delete(400, "Note is not archived.");
                 }
             }
         }
 
         $this->delete($note);
-        $success = $note->delete_All($user);
-        if (!$success) $this->error_delete(500, "erreur lors de la suppression");
-        else echo "la note à bien été supprimée";
+        $success = $note->delete_all($user);
+        if (!$success) $this->error_delete(500, "Error while deleting Note.");
+        else echo "Note has been deleted successfully.";
     }
 
     private function error_delete(int $status, string $message)
     {
-        http_response_code($status); // Code d'erreur HTTP approprié
+        http_response_code($status);
         exit($message);
     }
-    public function getValidationRules(): void
+    public function get_validation_rules_checklist_note_service(): void
     {
-        $config = parse_ini_file('config/dev.ini', true);
+        $min_title_length = Configuration::get("note_title_min_length");
+        $max_title_length = Configuration::get("note_title_max_length");
+        $item_min_length = Configuration::get("item_min_length");
+        $item_max_length = Configuration::get("item_max_length");
 
-        $minTitleLength = $config['Rules']['note_title_min_length'];
-        $maxTitleLength = $config['Rules']['note_title_max_length'];
-        $minContentLength = $config['Rules']['note_min_length'];
-        $maxContentLength = $config['Rules']['note_max_length'];
 
-        $validationRules = [
-            'minTitleLength' => $minTitleLength,
-            'maxTitleLength' => $maxTitleLength,
-            'minContentLength' => $minContentLength,
-            'maxContentLength' => $maxContentLength
+        $validation_rules = [
+            'minTitleLength' => $min_title_length,
+            'maxTitleLength' => $max_title_length,
+            'itemMinLength' => $item_min_length,
+            'itemMaxLength' => $item_max_length
         ];
 
         header('Content-Type: application/json');
-        echo json_encode($validationRules);
+        echo json_encode($validation_rules);
     }
-    public function checkUniqueTitle(): void
+
+    public function get_validation_rules_service(): void
+    {
+        $min_title_length = Configuration::get("note_title_min_length");
+        $max_title_length = Configuration::get("note_title_max_length");
+        $min_content_length = Configuration::get("note_min_length");
+        $max_content_length = Configuration::get("note_max_length");
+
+        $validation_rules = [
+            'min_title_length' => $min_title_length,
+            'max_title_length' => $max_title_length,
+            'min_content_length' => $min_content_length,
+            'max_content_length' => $max_content_length
+        ];
+
+        header('Content-Type: application/json');
+        echo json_encode($validation_rules);
+    }
+
+    public function check_unique_title_service(): void
     {
         $title = $_POST['title'];
-        $noteId = $_POST['noteId'];
+        $note_id = $_POST['note_id'];
         $user = $this->get_user_or_redirect();
-        $userId = $user->get_Id();
+        $user_id = $user->get_id();
 
-        $isUnique =  Note::is_unique_title_ajax($title, $userId, $noteId);
+        $is_unique =  Note::is_unique_title_ajax($title, $user_id, $note_id);
         header('Content-Type: application/json');
-        echo json_encode(['unique' => $isUnique]);
+        echo json_encode(['unique' => $is_unique]);
+    }
+    private static function get_labels_to_suggest($labels_by_user, $labels): array
+    {
+        $res = [];
+        foreach ($labels_by_user as $label) {
+            $must_display = true;
+            foreach ($labels as $l) {
+                if ($label->get_label_name() === $l->get_label_name()) {
+                    $must_display = false;
+                    break;
+                }
+            }
+            if ($must_display) {
+                $res[] = $label->get_label_name();
+            }
+        }
+        sort($res);
+        return $res;
+    }
+
+    public function edit_labels(): void
+    {
+        $user = $this->get_user_or_redirect();
+        $note_id = isset($_GET['param1']) ? filter_var($_GET['param1'], FILTER_VALIDATE_INT) : false;
+
+        $errors = [];
+        $error = "";
+        if ($note_id === false) {
+            $error = "Note ID invalid.";
+        } else {
+            $note = Note::get_note($note_id);
+            $user_id = $user->get_id();
+            $labels = Label::get_labels_by_note_id($note_id);
+            $labels_by_user = Label::get_labels_by_user_id($user_id);
+            $labels_to_suggest = $this->get_labels_to_suggest($labels_by_user, $labels);
+            if (!($note instanceof Note)) {
+                $error = "Cannot find Note.";
+            } else {
+                $is_shared_note = NoteShare::is_note_shared_with_user($note_id, $user_id);
+                $can_edit = true;
+                if ($is_shared_note) {
+                    $can_edit = NoteShare::can_edit($note_id, $user_id);
+                }
+                $can_access = ($note->get_owner()->get_id() === $user_id) || $is_shared_note;
+                if (!$can_access || !$can_edit) {
+                    $error = "Unauthorized access.";
+                } else {
+                    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                        if (isset($_POST['remove_button'])) {
+                            $label_name = ($_POST['remove_button']);
+                            $label_to_delete = Label::get_label_by_note_id_and_label_name($note->get_id(), $label_name);
+                            $label_to_delete->delete();
+                            $labels = Label::get_labels_by_note_id($note->get_id());
+                            $labels_by_user = Label::get_labels_by_user_id($user_id);
+                            $labels_to_suggest = $this->get_labels_to_suggest($labels_by_user, $labels);
+                            $this->redirect("notes", "edit_labels", $note_id);
+                        } else if (isset($_POST['add_button']) && (trim(($_POST['new_label']) > 0) || ($_POST['new_label']) === "")) {
+                            $label_name = Label::fix_label_format($_POST['new_label']);
+                            $errors = Label::validate_label($label_name, $note_id);
+
+                            if (empty($errors['label'])) {
+                                $new_label = new Label($note_id, $label_name);
+                                $new_label->persist();
+                                $this->redirect("notes", "edit_labels", $note_id);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        (new View("edit_labels"))->show([
+            'note' => $note ?? null,
+            'user' => $user,
+            'note_id' => $note_id,
+            'labels' => $labels ?? null,
+            'labels_to_suggest' => $labels_to_suggest ?? null,
+            'errors' => $errors,
+            'error' => $error
+        ]);
+    }
+
+    public function remove_label_service(): void
+    {
+        $user = $this->get_user_or_redirect();
+        $note_id = $_POST['note_id'];
+        $label_name = $_POST['label_name'];
+        $label_to_delete = Label::get_label_by_note_id_and_label_name($note_id, $label_name);
+        $label_to_delete->delete();
+
+        $labels = Label::get_labels_by_note_id($note_id);
+        $labels_by_user = Label::get_labels_by_user_id($user->get_id());
+        $labels_to_suggest = $this->get_labels_to_suggest($labels_by_user, $labels);
+
+        $table = [];
+        /** @var Label $l */
+        foreach ($labels as $l) {
+            $table["labels"][] = $l->get_label_name();
+        }
+        foreach ($labels_to_suggest as $l) {
+            $table["suggestions"][] = $l;
+        }
+
+        echo json_encode($table);
+    }
+
+    public function add_label_service()
+    {
+        $user = $this->get_user_or_redirect();
+        $note_id = $_POST['note_id'];
+        $new_label_name = Label::fix_label_format($_POST['new_label']);
+        $label = new Label($note_id, $new_label_name);
+        $errors = Label::validate_label($new_label_name, $note_id);
+        if (empty($errors["label"])) {
+            $label->persist();
+        }
+
+        $labels_to_display = Label::get_labels_by_note_id($note_id);
+        $labels_by_user = Label::get_labels_by_user_id($user->get_id());
+        $labels_to_suggest = $this->get_labels_to_suggest($labels_by_user, $labels_to_display);
+
+        $table = [];
+        /** @var Label $l */
+        foreach ($labels_to_display as $l) {
+            $table["labels"][] = $l->get_label_name();
+        }
+        foreach ($labels_to_suggest as $l) {
+            $table["suggestions"][] = $l;
+        }
+
+        echo json_encode($table);
+    }
+
+    public function check_new_label_service()
+    {
+        $content = Label::fix_label_format($_POST['content']);
+        $note_id = $_POST['note_id'];
+        $errors = Label::validate_label($content, $note_id);
+
+        echo json_encode($errors);
     }
 }

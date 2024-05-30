@@ -246,6 +246,17 @@ a {
     border-top-left-radius: 0 !important;
     border-bottom-left-radius: 0 !important;
 }
+
+#list-label{
+    display: flex;
+    flex-wrap: wrap;
+    padding-left: 0;
+}
+
+#list-label li{
+    list-style: none;
+    padding-right: 2rem;
+}
 /* Media query pour les ordinateurs de bureau */
 @media screen and (min-width: 1024px) {
     
@@ -263,3 +274,7 @@ a {
     }
     
 }
+.check-item:disabled {
+    border-color: transparent;
+}
+

@@ -2,12 +2,12 @@
 $id_form = "form_edit_text_note";
 $title_page = "edit_text_note";
 $something_to_save = false;
-include("./utils/header_add_note.php");
+include("utils/header_add_note.php");
 
 ?>
 
 <div class="card-body">
-    <span id="idNote" value="<?= $note->get_Id() ?>" style="display: none;"></span>
+    <span id="idNote" value="<?= $note->get_id() ?>" style="display: none;"></span>
     <!-- Modal -->
     <div id="modalGoBack" class="modal fade" tabindex="-1" aria-labelledby="fullScreenModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-fullscreen-sm">
@@ -17,7 +17,7 @@ include("./utils/header_add_note.php");
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Do you really want to quit without save ?</p>
+                    <p>Do you really want to quit without saving ?</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -30,18 +30,23 @@ include("./utils/header_add_note.php");
     </div>
     <!-- fin modal -->
 
-    <form id="<?= $id_form ?>" action="notes/edit_text_note/<?= $note->get_Id() ?>" method="post">
+    <?php
+    $action_form = "notes/edit_text_note/" . $note->get_id();
+    if ($is_list_filter_exist) $action_form .= "/" . $list_filter_encoded;
+    ?>
+
+    <form id="<?= $id_form ?>" action="<?= $action_form ?>" method="post">
         <div class="card-header text-white mb-2 fst-italic fs-6">
-            <span style="font-size: 0.8em;">Created <?= Note::time_elapsed_string($note->get_Created_At()) ?> . </span>
-            <?php if ($note->get_Edited_At() !== null) : ?>
-                <span style="font-size: 0.8em;">Edited <?= Note::time_elapsed_string($note->get_Edited_At()) ?>.</span>
+            <span style="font-size: 0.8em;">Created <?= Note::time_elapsed_string($note->get_created_at()) ?> . </span>
+            <?php if ($note->get_edited_at() !== null) : ?>
+                <span style="font-size: 0.8em;">Edited <?= Note::time_elapsed_string($note->get_edited_at()) ?>.</span>
             <?php endif; ?>
         </div>
 
         <div class="mb-3 text-white">
             <div class="">
                 <label for="titleNote" class="form-label">Title</label>
-                <input required type="text" value="<?= $note->get_Title() ?>" name="title" class="form-control bg-secondary text-white bg-opacity-25 mb-2 <?= !empty($errors['title']) ? 'is-invalid' : '' ?>" id="titleNote">
+                <input required type="text" value="<?= $note->get_title() ?>" name="title" class="form-control bg-secondary text-white bg-opacity-25 mb-2 <?= !empty($errors['title']) ? 'is-invalid' : '' ?>" id="titleNote">
                 <div class="invalid-feedback" id="title_error">
                     <?php
                     if (!empty($errors['title'])) {
@@ -55,7 +60,7 @@ include("./utils/header_add_note.php");
         </div>
         <div class="mb-3 text-white">
             <label for="contentNote" class="form-label">Text</label>
-            <textarea name="text" class="form-control bg-secondary text-white bg-opacity-25 <?= !empty($errors['content']) ? 'is-invalid' : '' ?>" id="contentNote" cols="30" rows="10"><?= $note->get_Content() ?></textarea>
+            <textarea name="text" class="form-control bg-secondary text-white bg-opacity-25 <?= !empty($errors['content']) ? 'is-invalid' : '' ?>" id="contentNote" cols="30" rows="10"><?= $note->get_content() ?></textarea>
         </div>
         <div class="invalid-feedback" id="text_error">
             <?php
@@ -68,7 +73,7 @@ include("./utils/header_add_note.php");
         </div>
     </form>
 
-    <div id="noteId" data-note-id="<?= $note->get_Id() ?>"></div>
+    <div id="noteId" data-note-id="<?= $note->get_id() ?>"></div>
 </div>
 <script>
     const pageName = "editChecklistnote";
@@ -78,4 +83,4 @@ include("./utils/header_add_note.php");
 <script src="js/scriptModalEdit.js"></script>
 <script src="js/scriptValidateTextNote.js"></script>
 
-<?php include('./utils/footer.php'); ?>
+<?php include('utils/footer.php'); ?>

@@ -5,8 +5,10 @@ $(() => {
         $('.btn-submit').click(function (event) {
             event.preventDefault();
 
+
             let itemId = $(this).closest('.input-group').find('input[name="item_id"]').val();
             let noteId = $(this).closest('.input-group').find('input[name="note_id"]').val();
+            console.log("check ", itemId)
 
             $.ajax({
                 url: 'notes/toggle_checkbox_service',
@@ -18,8 +20,9 @@ $(() => {
                 let itemList = displayItems(jsonResponse);
 
                 $('#itemsDiv').html(itemList);
-
                 handleClick();
+            }).catch(e =>{
+                console.log("error ", e)
             });
         });
     }

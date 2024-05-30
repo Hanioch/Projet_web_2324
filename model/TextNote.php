@@ -1,6 +1,6 @@
 <?php
 
-class TextNote extends Note
+class TextNote extends Note implements JsonSerializable
 {
 
     public function __construct(private string $title, private User $owner, private  bool $pinned, private bool $archived, private $weight, private ?string $content, private ?int $id = NULL, private ?string $created_at = NULL, private ?string $edited_at = NULL)
@@ -8,12 +8,12 @@ class TextNote extends Note
         parent::__construct($title, $owner, $pinned, $archived, $weight, $id, $created_at, $edited_at);
     }
 
-    public function get_Content(): ?string
+    public function get_content(): ?string
     {
         return $this->content;
     }
 
-    public function set_Content(?string $content): void
+    public function set_content(?string $content): void
     {
         $this->content = $content;
     }
@@ -33,12 +33,11 @@ class TextNote extends Note
     {
         $errors = parent::validate();
 
-        $config = parse_ini_file('config/dev.ini', true);
-        $note_content_min_length = $config['Rules']['note_min_length'];
-        $note_content_max_length = $config['Rules']['note_max_length'];
+        $note_content_min_length = Configuration::get("note_min_length");
+        $note_content_max_length = Configuration::get("note_max_length");
 
-        if ($this->get_Content() !== "" && $this->get_Content() !== NULL) {
-            $content_length = strlen($this->get_Content());
+        if ($this->get_content() !== "" && $this->get_content() !== NULL) {
+            $content_length = mb_strlen($this->get_content());
             if ($content_length < $note_content_min_length || $content_length > $note_content_max_length) {
                 $errors['content'] = "Content length must be between {$note_content_min_length} and {$note_content_max_length} characters.";
             }
@@ -46,6 +45,10 @@ class TextNote extends Note
 
         return $errors;
     }
+  /*  public function get_id(): ?int
+    {
+        return $this->id;
+    }*/
     public function delete(User $initiator): Note|false
     {
         if ($this->owner == $initiator) {
@@ -62,20 +65,23 @@ class TextNote extends Note
         if (empty($errors)) {
 
             if ($this->id == NULL) {
-                $note = parent::add_note_in_DB();
+                parent::add_note_in_DB();
+                $id = self::lastInsertId();
+                $this->set_id($id);
+
                 self::execute(
                     'INSERT INTO text_notes (id,content) VALUES
                  (:id,:content)',
                     [
-                        'id' => $note->get_Id(),
-                        'content' => $this->get_Content(),
+                        'id' => $id,
+                        'content' => $this->get_content(),
                     ]
                 );
                 return $this;
             } else {
                 self::execute('UPDATE text_notes SET  content = :content WHERE id = :id', [
-                    'content' => $this->get_Content(),
-                    'id' => $this->get_Id()
+                    'content' => $this->get_content(),
+                    'id' => $this->get_id()
                 ]);
                 parent::modify_note_in_DB();
                 return $this;
@@ -83,5 +89,11 @@ class TextNote extends Note
         } else {
             return $errors;
         }
+    }
+    public function jsonSerialize(): mixed
+    {
+        $vars = get_object_vars($this);
+
+        return $vars;
     }
 }

@@ -7,7 +7,8 @@ class Tools
 
     //nettoie le string donné
     public static function sanitize(string $var) : string {
-        return trim(filter_var($var, FILTER_SANITIZE_FULL_SPECIAL_CHARS));
+        //return trim(html_entity_decode(filter_var($var, FILTER_SANITIZE_FULL_SPECIAL_CHARS)));
+        return trim(filter_var($var, FILTER_SANITIZE_SPECIAL_CHARS));
     }
 
     //dirige vers la page d'erreur

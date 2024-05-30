@@ -2,7 +2,7 @@
 require_once "tools.php";
 
 $title_page = Page::Notes->value;
-include("./utils/header.php");
+include("utils/header.php");
 
 $pinned_notes = $notes['pinned'];
 $other_notes = $notes['other'];
@@ -30,4 +30,4 @@ if (count($pinned_notes) == 0 && count($other_notes) == 0) {
 <script src="js/jquery-ui-touch-punch-master/jquery.ui.touch-punch.min.js"></script>
 <script src="js/scriptMoveNotes.js"></script>
 <?php
-include('./utils/footer.php'); ?>
+include('utils/footer.php'); ?>
