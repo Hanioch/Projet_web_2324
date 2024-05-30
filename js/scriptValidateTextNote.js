@@ -27,7 +27,7 @@ $(document).ready(function () {
     var note_id = $("#noteId").length ? $("#noteId").data("note-id") : -1;
     if (title.length === 0) {
       $("#titleNote");
-      $("#title_error").text("");
+      $("#title_error").text("Title is required.");
     } else if (title.length < minTitleLength || title.length > maxTitleLength) {
       $("#titleNote").addClass("is-invalid");
       $("#title_error").text(

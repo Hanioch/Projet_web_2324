@@ -29,14 +29,14 @@ class ControllerNotes extends Controller
         $user = $this->get_user_or_redirect();
 
         if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-            echo " erreur: methode non valide ";
+            echo "Error : invalid method.";
             return;
         }
 
         if (!(isset($_POST["idNoteMoved"])
             && isset($_POST["idReplacedNote"])
             && isset($_POST["switchedColumn"]))) {
-            echo "erreur: attributs non valide";
+            echo "Error : invalid arguments.";
             return;
         }
         //si noteMoved > alors on prend tout ce qui est plus petit jusqua replacedNote
@@ -686,7 +686,6 @@ class ControllerNotes extends Controller
     public function open_note(int $id = -1): void
     {
         $note_id = isset($_GET['param1']) ? filter_var($_GET['param1'], FILTER_VALIDATE_INT) : false;
-        //$noteId = isset($_GET['param1']) ? ($id !== -1 ? $id : filter_var($_GET['param1'], FILTER_VALIDATE_INT)) : false;
         $user = $this->get_user_or_redirect();
         $user_id = $user->get_id();
         $error = "";
@@ -695,7 +694,7 @@ class ControllerNotes extends Controller
         if ($note === false) $this->redirect("notes", "archives");
 
         if ($note_id === false) {
-            $error = "Identifiant de note invalide.";
+            $error = "Cannot find Note ID";
         } else {
             $is_checklist_note = $note->is_checklist_note();
             $note = null;
@@ -706,7 +705,7 @@ class ControllerNotes extends Controller
             }
 
             if (!($note instanceof Note)) {
-                $error = "Note introuvable.";
+                $error = "Cannot find this Note.";
             } else {
                 $is_shared_note = NoteShare::is_note_shared_with_user($note_id, $user_id);
                 $can_edit = True;
@@ -716,7 +715,7 @@ class ControllerNotes extends Controller
 
                 $can_access = ($note->get_owner()->get_id() === $user_id) || $is_shared_note;
                 if (!$can_access) {
-                    $error = "Accès non autorisé.";
+                    $error = "Unauthorized access.";
                 } else {
                     $id_sender = $note->get_owner()->get_id();
                     if ($is_checklist_note) {
@@ -754,7 +753,7 @@ class ControllerNotes extends Controller
         $error_add = "";
 
         if ($note_id === false) {
-            $error = "Identifiant de note invalide.";
+            $error = "Cannot find Note ID";
         } else {
             $note = Note::get_note($note_id);
             if (isset($_POST['addShare'])) {
@@ -783,11 +782,11 @@ class ControllerNotes extends Controller
                 exit();
             }
             if (!($note instanceof Note)) {
-                $error = "Note introuvable.";
+                $error = "Cannot find this Note";
             } else {
                 $can_access = ($note->get_Owner()->get_Id() === $current_user_id);
                 if (!$can_access) {
-                    $error = "Accès non autorisé.";
+                    $error = "Unauthorized access.";
                 } else {
                     $existing_shares = NoteShare::get_shared_with_user($current_user_id, $note_id);
                     $shared_user_ids = [];
@@ -1076,17 +1075,17 @@ class ControllerNotes extends Controller
         $note = null;
         $error = "";
         if ($note_id === false) {
-            $error = "Identifiant de note invalide.";
+            $error = "Cannot find Note ID.";
         } else {
             $note = Note::get_note($note_id);
             if (!($note instanceof Note)) {
-                $error = "Note introuvable.";
+                $error = "Cannot find this Note.";
             } else {
                 $can_access = ($note->get_owner()->get_id() === $user_id);
                 if (!$can_access) {
-                    $error = "Accès non autorisé.";
+                    $error = "Unauthorized access.";
                 } elseif (!$note->is_archived()) {
-                    $error = "Note non archivée.";
+                    $error = "Note must be archived before being deleted.";
                 }
             }
         }
