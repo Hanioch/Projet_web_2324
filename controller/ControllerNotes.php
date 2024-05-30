@@ -1038,7 +1038,8 @@ class ControllerNotes extends Controller
         $user = $this->get_user_or_redirect();
         $note_id = $_POST['note_id'];
         $note = Note::get_note($note_id);
-        $note->set_archive_reverse();
+        if (!$note) $this->redirect("notes", "archives");
+        else $note->set_archive_reverse();
 
         if ($note->is_pinned()) {
             $note->toggle_pin();
@@ -1098,7 +1099,7 @@ class ControllerNotes extends Controller
         ]);
     }
 
-    public function delete_using_js(): void
+    public function delete_service(): void
     {
         $note_id = filter_var($_POST['note_id'], FILTER_VALIDATE_INT);
         $user = $this->get_user_or_redirect();

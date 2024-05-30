@@ -5,6 +5,8 @@ class TextNote extends Note implements JsonSerializable
 
     public function __construct(private string $title, private User $owner, private  bool $pinned, private bool $archived, private $weight, private ?string $content, private ?int $id = NULL, private ?string $created_at = NULL, private ?string $edited_at = NULL)
     {
+        // var_dump("cc");
+        // var_dump($id);
         parent::__construct($title, $owner, $pinned, $archived, $weight, $id, $created_at, $edited_at);
     }
 
@@ -45,10 +47,7 @@ class TextNote extends Note implements JsonSerializable
 
         return $errors;
     }
-  /*  public function get_id(): ?int
-    {
-        return $this->id;
-    }*/
+
     public function delete(User $initiator): Note|false
     {
         if ($this->owner == $initiator) {

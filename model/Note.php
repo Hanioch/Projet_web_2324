@@ -72,7 +72,7 @@ abstract class Note extends MyModel implements JsonSerializable
         return $this->id;
     }
 
-    protected function set_id($id):void
+    protected function set_id($id): void
     {
         $this->id = $id;
     }
@@ -111,7 +111,7 @@ abstract class Note extends MyModel implements JsonSerializable
         if ($query->rowCount() == 0) {
             return new ChecklistNote($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['id'], $row['created_at'], $row['edited_at']);
         } else {
-            return new TextNote($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'],null, $row['id'], $row['created_at'], $row['edited_at']);
+            return new TextNote($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], null, $row['id'], $row['created_at'], $row['edited_at']);
         }
     }
 
@@ -135,25 +135,23 @@ abstract class Note extends MyModel implements JsonSerializable
         $owner = User::get_user_by_id($row['owner']);
 
         $query = self::execute("select * from text_notes where id = :id", ["id" => $row['id']]);
+        var_dump($row['id']);
+        //var_dump("------------------------------------------------------------------------------------------------------------------------------------------");
         if ($query->rowCount() == 0) {
-            return new ChecklistNote($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['id'], $row['created_at'], $row['edited_at']);
+            //on verifie si c'est une texte note
+
+            $note_id = filter_var($row['id'], FILTER_VALIDATE_INT);
+            return new ChecklistNote($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $note_id, $row['created_at'], $row['edited_at']);
         } else {
-            return new TextNote($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['id'], $row['created_at'], $row['edited_at']);
+            $note_id = filter_var($row['id'], FILTER_VALIDATE_INT);
+            return new TextNote($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $note_id, $row['created_at'], $row['edited_at']);
         }
     }
 
     public function validate(): array
     {
         $errors = [];
-        // TODO décommenter ce code si il est commenter: 
-
-
         $user = User::get_user_by_id($this->owner->get_id());
-        // TO DO: check si l'id de l'user correspond à l'id de l'user connnecter. 
-
-        // if ($user->id === ) {
-        //     $errors[] = "Incorrect owner";
-        // }
 
         $note_title_min_length = Configuration::get("note_title_min_length");
         $note_title_max_length = Configuration::get("note_title_max_length");
@@ -308,7 +306,6 @@ abstract class Note extends MyModel implements JsonSerializable
         $this->edited_at = $note->get_edited_at();
         return $this;
                 */
-
     }
     protected function modify_head_in_DB(): Note
     {
