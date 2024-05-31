@@ -181,6 +181,7 @@ function handleRemoveClick() {
       }).done(function () {
         $("#list_items_" + itemId).remove();
         $("#save_button").prop("disabled", false).css("opacity", "1");
+        changeEditedDate();
       });
     });
   });
@@ -199,17 +200,15 @@ function handleAddClick() {
       data: { note_id: noteId, new_item: newItem },
     }).done(function (response) {
       let jsonResponse = JSON.parse(response);
-
       let itemList = displayItems(jsonResponse);
 
       $("#list_items_ul").html(itemList);
-      //remettre le handle click ne fonctionne pas ?? le premier remove après un add fait
-      //toujours un refresh de la page
       handleRemoveClick();
 
       $("#add_item").val("");
       $("#add_item").removeClass("is-valid");
       $("#save_button").prop("disabled", false).css("opacity", "1");
+      changeEditedDate();
     });
   });
 }
@@ -303,4 +302,8 @@ function displayItems(itemsJson) {
     html += "</li>";
   }
   return html;
+}
+
+function changeEditedDate() {
+  $("#editedDate").text("Edited just now.");
 }

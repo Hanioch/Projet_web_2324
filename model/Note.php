@@ -319,7 +319,6 @@ abstract class Note extends MyModel implements JsonSerializable
     }
     protected function modify_note_in_DB(): Note
     {
-
         self::execute('UPDATE notes SET title = :title, edited_at = NOW(), pinned = :pinned, archived = :archived, weight = :weight WHERE id = :id', [
             'title' => $this->title,
             'pinned' => $this->pinned ? 1 : 0,

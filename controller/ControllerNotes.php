@@ -990,7 +990,7 @@ class ControllerNotes extends Controller
         $note_id = $_POST['note_id'];
         $note = ChecklistNote::get_note($note_id);
         $item = ChecklistNoteItem::get_checklist_note_item_by_id($item_id);
-
+        $note->persist();
         $item->delete();
     }
 

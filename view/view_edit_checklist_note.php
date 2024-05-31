@@ -39,7 +39,7 @@ include("utils/header_add_note.php");
             <div class="card-header text-white mb-2 fst-italic fs-6">
                 <span style="font-size: 0.8em;">Created <?= Note::time_elapsed_string($note->get_created_at()) ?> . </span>
                 <?php if ($note->get_edited_at() !== null) : ?>
-                    <span style="font-size: 0.8em;">Edited <?= Note::time_elapsed_string($note->get_edited_at()) ?>.</span>
+                    <span id="editedDate" style="font-size: 0.8em;">Edited <?= Note::time_elapsed_string($note->get_edited_at()) ?>.</span>
                 <?php endif; ?>
             </div>
             <div class="" id="title_div">
@@ -73,7 +73,11 @@ include("utils/header_add_note.php");
                                 <div class="input-group-text bg-primary  border-secondary ">
                                     <input class="form-check-input border align-middle " type="checkbox" name="checked" value="1" <?= $item->is_checked() ? 'checked' : '' ?> aria-label="Checkbox for following text input" disabled> <!-- onchange="this.form.submit()" -->
                                 </div>
-                                <input <?php if (!empty($errors['item' . $item->get_id()])) { echo 'value="' . ($_POST['item' . $item->get_id()]) . '"'; } else { echo 'value="' . $item->get_content() . '"';} ?> type="text" name="item<?php echo $item->get_id() ?>" class="item-editable form-control bg-secondary text-white bg-opacity-25 border-secondary" id="item<?php echo $item->get_id() ?>" value="<?php echo isset($_POST['item' . $item->get_id()]) ? $_POST['item' . $item->get_id()] : ''; ?>">
+                                <input <?php if (!empty($errors['item' . $item->get_id()])) {
+                                            echo 'value="' . ($_POST['item' . $item->get_id()]) . '"';
+                                        } else {
+                                            echo 'value="' . $item->get_content() . '"';
+                                        } ?> type="text" name="item<?php echo $item->get_id() ?>" class="item-editable form-control bg-secondary text-white bg-opacity-25 border-secondary" id="item<?php echo $item->get_id() ?>" value="<?php echo isset($_POST['item' . $item->get_id()]) ? $_POST['item' . $item->get_id()] : ''; ?>">
                                 <button name="remove_button" value="<?= $item->get_id() ?>" class="btn btn-danger btn-lg rounded-end  border-secondary" type="submit">
                                     <i class="bi bi-x"></i>
                                 </button>
