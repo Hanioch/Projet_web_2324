@@ -200,15 +200,19 @@ function handleAddClick() {
       data: { note_id: noteId, new_item: newItem },
     }).done(function (response) {
       let jsonResponse = JSON.parse(response);
-      let itemList = displayItems(jsonResponse);
+      if (jsonResponse.status === 200) {
+        let itemList = displayItems(jsonResponse.table);
 
-      $("#list_items_ul").html(itemList);
-      handleRemoveClick();
+        $("#list_items_ul").html(itemList);
+        handleRemoveClick();
 
-      $("#add_item").val("");
-      $("#add_item").removeClass("is-valid");
-      $("#save_button").prop("disabled", false).css("opacity", "1");
-      changeEditedDate();
+        $("#add_item").val("");
+        $("#add_item").removeClass("is-valid");
+        $("#save_button").prop("disabled", false).css("opacity", "1");
+        changeEditedDate();
+      } else {
+        console.error("Error " + jsonResponse.status + ": bad request");
+      }
     });
   });
 }

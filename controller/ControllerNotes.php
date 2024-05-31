@@ -1005,7 +1005,7 @@ class ControllerNotes extends Controller
         $note = ChecklistNote::get_note($note_id);
         $checklist_note = new ChecklistNote($note->get_title(), $note->get_owner(), $note->is_pinned(), $note->is_archived(), $note->get_weight(), $note->get_id());
         $errors = [];
-        $this->add_item($checklist_note, $errors);
+        $errors =  $this->add_item($checklist_note, $errors);
         $note->fetch_list_item();
         $items = $note->get_list_item();
         $table = [];
@@ -1018,8 +1018,12 @@ class ControllerNotes extends Controller
             $row["id"] = $i->get_id();
             $table[] = $row;
         }
+        $response = [];
+        $response['table'] = $table;
+        $response['status'] = sizeof($errors) > 0 ? 400 : 200;
 
-        echo json_encode($table);
+
+        echo json_encode($response);
     }
 
     public function edit_title_service()
