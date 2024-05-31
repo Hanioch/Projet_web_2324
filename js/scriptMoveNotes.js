@@ -39,7 +39,6 @@ const sendIdMovable = (idNoteMoved, idReplacedNote, switchedColumn) => {
       switchedColumn,
     },
     (res) => {
-      console.log(res);
       checkDivAreEmpty();
     }
   );

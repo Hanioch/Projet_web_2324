@@ -45,10 +45,7 @@ class TextNote extends Note implements JsonSerializable
 
         return $errors;
     }
-  /*  public function get_id(): ?int
-    {
-        return $this->id;
-    }*/
+
     public function delete(User $initiator): Note|false
     {
         if ($this->owner == $initiator) {
