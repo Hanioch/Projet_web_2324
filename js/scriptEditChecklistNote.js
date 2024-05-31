@@ -308,7 +308,6 @@ function changeEditedDate() {
   if (editedDate.length > 0) editedDate.text("Edited just now.");
   else {
     let content = $("#informationCreationNote");
-    console.log("content", content);
     let newSpan = $("<span></span>")
       .attr("id", "editedDate")
       .css("font-size", "0.8em")
