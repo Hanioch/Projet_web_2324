@@ -10,10 +10,14 @@ $list_filter_encoded = $is_list_filter_exist ? $_GET["param2"] : "";
 
             <nav class="navbar navbar-dark">
                 <?php
-                $chevron_link = "./notes";
-                if ($is_list_filter_exist) $chevron_link .= "/search/" . $list_filter_encoded;
+                $chevron_link = "./notes/";
+                $method= "POST";
+                if ($is_list_filter_exist) {
+                    $chevron_link .= "/search/" . $list_filter_encoded;
+                    $method= "GET";
+                }
                 ?>
-                <form action="<?= $chevron_link ?>" method="GET" class="navbar-brand" style="margin: 0;">
+                <form action="<?= $chevron_link ?>" method="<?=$method?>" class="navbar-brand" style="margin: 0;">
                     <button type="submit" class="btn-icon" style="background: none; border: none; color: inherit;">
                         <i class="bi bi-chevron-left"></i>
                     </button>

@@ -124,7 +124,7 @@ abstract class Note extends MyModel implements JsonSerializable
             AND archived = true
             ORDER BY ABS(weight - :weight)
             LIMIT 1
-            ", ["owner" => $this->owner->get_Id(), "weight" => $this->weight]);
+            ", ["owner" => $this->owner->get_id(), "weight" => $this->weight]);
 
         $row = $query->fetch();
 
@@ -136,15 +136,13 @@ abstract class Note extends MyModel implements JsonSerializable
 
         $query = self::execute("select * from text_notes where id = :id", ["id" => $row['id']]);
         var_dump($row['id']);
-        //var_dump("------------------------------------------------------------------------------------------------------------------------------------------");
         if ($query->rowCount() == 0) {
-            //on verifie si c'est une texte note
 
             $note_id = filter_var($row['id'], FILTER_VALIDATE_INT);
             return new ChecklistNote($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $note_id, $row['created_at'], $row['edited_at']);
         } else {
             $note_id = filter_var($row['id'], FILTER_VALIDATE_INT);
-            return new TextNote($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $note_id, $row['created_at'], $row['edited_at']);
+            return new TextNote($row['title'], $owner, $row['pinned'], $row['archived'], $row['weight'], $row['content'], $note_id, $row['created_at'], $row['edited_at']);
         }
     }
 
