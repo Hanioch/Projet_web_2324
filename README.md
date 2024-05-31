@@ -1,6 +1,6 @@
 # Projet PRWB 2324 - Groupe a04 - Google Keep
 
-## Notes de version itération 1 
+## Notes de version itération 3
 
 ### Liste des utilisateurs et mots de passes
 
@@ -8,26 +8,18 @@
   * bepenelle@epfc.eu, password "Password1,", utilisateur
   * xapigeolet@epfc.eu, password "Password1,", utilisateur
   * mamichel@epfc.eu, password "Password1,", utilisateur
-  * A compléter...
   
 ### Remarques
-	
-	* Nous n'avons pas eu le temps de créer un script fonctionnel pour ajouter nos données de test en db.
-	* Nous n'avons finalement rien factorisé dans le modèle MyModel
 
+	* Nous n'avons finalement rien factorisé dans le modèle MyModel
+    * Il y a toujours un bug lié aux accents dans la base de données : si on rajoute un label ou un item par exemple "Prive" alors qu'il existe le label "Privé" en DB, il y a violation de contrainte car les deux caractères "e" et "é" sont considérés identiques.
 
 ### Liste des bugs connus
-
+    
 	
 
 ### Liste des fonctionnalités supplémentaires
+    
+    * Ajout d'une icône label en bas de note_card à côté des pastilles Labels, pour mener directement à la page d'édition de Labels
 
 ### Divers
-
-## Notes de version itération 2
-
-...
-
-## Notes de version itération 3 
-
-...
