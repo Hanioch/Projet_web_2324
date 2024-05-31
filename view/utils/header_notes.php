@@ -25,7 +25,7 @@ $list_filter_encoded = $is_list_filter_exist ? $_GET["param2"] : "";
             </nav>
             <nav class="navbar navbar-dark ">
                 <div class="">
-                        <form action="notes/shares" method="POST" class="navbar-brand">
+                        <form action="notes/shares/<?= $note->get_id() ?>" method="POST" class="navbar-brand">
                             <input type="hidden" name="note_id" value="<?= $note->get_id() ?>">
                             <button type="submit" class="btn-icon" style="background: none; border: none; color: inherit; ">
                                 <i class="bi bi-share"></i>
