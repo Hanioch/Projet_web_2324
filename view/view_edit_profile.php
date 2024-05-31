@@ -1,5 +1,5 @@
 <?php
-$title_page = "Edit Profil";
+$title_page = "Edit Profile";
 include("utils/header_settings.php");
 ?>
 <div class="row p-3">
@@ -8,13 +8,12 @@ include("utils/header_settings.php");
             <label for="full_name" class="form-label">Edit your name</label>
             <input type="text" name="full_name" class="form-control<?php if (isset($errors) && count($errors["full_name"]) > 0): ?> is-invalid<?php endif; ?>" id="full_name" value="<?= $user->get_full_name() ?>">
             <?php if (isset($errors) && count($errors["full_name"]) > 0): ?>
-                <div class="alert alert-danger" role="alert">
+            <div class="invalid-feedback" id="text_error">
                     <ul class="list-unstyled">
                         <?php foreach ($errors["full_name"] as $error): ?>
                             <li><?= $error ?></li>
                         <?php endforeach; ?>
                     </ul>
-                </div>
             <?php endif; ?>
         </div>
 
