@@ -53,7 +53,7 @@ if (isset($error) && !empty($error)) {
                         <option value="1">Editor</option>
                         <option value="0">Reader</option>
                     </select>
-                    <input type="hidden" name="noteId" value="<?= $note_id?>" id="noteId">
+                    <input type="hidden" name="note_id" value="<?= $note_id?>" id="note_id">
                     <button id="addShare" name="addShare" class="btn btn-primary border-secondary"  type="submit" onclick="addShareOnClick()">
                         <i class="bi bi-plus"></i>
                     </button>

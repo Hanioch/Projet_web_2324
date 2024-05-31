@@ -746,7 +746,7 @@ class ControllerNotes extends Controller
     }
     public function shares(): void
     {
-        $note_id = $_POST['note_id'] ?? null;
+        $note_id = $_GET['param1'];
         $current_user = $this->get_user_or_redirect();
         $current_user_id = $current_user->get_id();
         $error = "";
@@ -757,7 +757,7 @@ class ControllerNotes extends Controller
         } else {
             $note = Note::get_note($note_id);
             if (isset($_POST['addShare'])) {
-                $note_id = $_POST['noteId'];
+                $note_id = $_POST['note_id'];
                 $user_id = $_POST['user'] ?? null;
                 $permission = $_POST['permission'] ?? null;
                 if (!empty($user_id) && $permission !== null) {
