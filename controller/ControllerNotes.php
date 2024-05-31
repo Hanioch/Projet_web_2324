@@ -24,6 +24,11 @@ class ControllerNotes extends Controller
         (new View("notes"))->show(["notes" => $notes, "users_shared_notes" => $users_shared_notes]);
     }
 
+    public function back_note_list(): void
+    {
+        $this->redirect("notes");
+    }
+
     public function move_note_service(): void
     {
         $user = $this->get_user_or_redirect();
