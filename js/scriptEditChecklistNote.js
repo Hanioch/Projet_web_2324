@@ -181,6 +181,7 @@ function handleRemoveClick() {
       }).done(function () {
         $("#list_items_" + itemId).remove();
         $("#save_button").prop("disabled", false).css("opacity", "1");
+        changeEditedDate();
       });
     });
   });
@@ -199,16 +200,15 @@ function handleAddClick() {
       data: { note_id: noteId, new_item: newItem },
     }).done(function (response) {
       let jsonResponse = JSON.parse(response);
-
       let itemList = displayItems(jsonResponse);
 
       $("#list_items_ul").html(itemList);
-
       handleRemoveClick();
 
       $("#add_item").val("");
       $("#add_item").removeClass("is-valid");
       $("#save_button").prop("disabled", false).css("opacity", "1");
+      changeEditedDate();
     });
   });
 }
@@ -301,4 +301,18 @@ function displayItems(itemsJson) {
     html += "</li>";
   }
   return html;
+}
+
+function changeEditedDate() {
+  let editedDate = $("#editedDate");
+  if (editedDate.length > 0) editedDate.text("Edited just now.");
+  else {
+    let content = $("#informationCreationNote");
+    console.log("content", content);
+    let newSpan = $("<span></span>")
+      .attr("id", "editedDate")
+      .css("font-size", "0.8em")
+      .text("Edited just now.");
+    content.append(newSpan);
+  }
 }

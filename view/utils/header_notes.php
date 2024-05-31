@@ -10,14 +10,14 @@ $list_filter_encoded = $is_list_filter_exist ? $_GET["param2"] : "";
 
             <nav class="navbar navbar-dark">
                 <?php
-                $chevron_link = "./notes/";
-                $method= "POST";
+                $chevron_link = "./notes/back_note_list";
+                $method = "POST";
                 if ($is_list_filter_exist) {
-                    $chevron_link .= "/search/" . $list_filter_encoded;
-                    $method= "GET";
+                    $chevron_link = "./notes/search/" . $list_filter_encoded;
+                    $method = "GET";
                 }
                 ?>
-                <form action="<?= $chevron_link ?>" method="<?=$method?>" class="navbar-brand" style="margin: 0;">
+                <form action="<?= $chevron_link ?>" method="<?= $method ?>" class="navbar-brand" style="margin: 0;">
                     <button type="submit" class="btn-icon" style="background: none; border: none; color: inherit;">
                         <i class="bi bi-chevron-left"></i>
                     </button>
@@ -25,12 +25,12 @@ $list_filter_encoded = $is_list_filter_exist ? $_GET["param2"] : "";
             </nav>
             <nav class="navbar navbar-dark ">
                 <div class="">
-                        <form action="notes/shares" method="POST" class="navbar-brand">
-                            <input type="hidden" name="note_id" value="<?= $note->get_id() ?>">
-                            <button type="submit" class="btn-icon" style="background: none; border: none; color: inherit; ">
-                                <i class="bi bi-share"></i>
-                            </button>
-                        </form>
+                    <form action="notes/shares/<?= $note->get_id() ?>" method="POST" class="navbar-brand">
+                        <input type="hidden" name="note_id" value="<?= $note->get_id() ?>">
+                        <button type="submit" class="btn-icon" style="background: none; border: none; color: inherit; ">
+                            <i class="bi bi-share"></i>
+                        </button>
+                    </form>
                 </div>
                 <div class="">
                     <?php

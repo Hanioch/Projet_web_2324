@@ -24,6 +24,11 @@ class ControllerNotes extends Controller
         (new View("notes"))->show(["notes" => $notes, "users_shared_notes" => $users_shared_notes]);
     }
 
+    public function back_note_list(): void
+    {
+        $this->redirect("notes");
+    }
+
     public function move_note_service(): void
     {
         $user = $this->get_user_or_redirect();
@@ -990,7 +995,7 @@ class ControllerNotes extends Controller
         $note_id = $_POST['note_id'];
         $note = ChecklistNote::get_note($note_id);
         $item = ChecklistNoteItem::get_checklist_note_item_by_id($item_id);
-
+        $note->persist();
         $item->delete();
     }
 

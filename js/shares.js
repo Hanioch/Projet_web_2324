@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 function addShareOnClick() {
-    let noteId = document.getElementById("noteId").value;
+    let noteId = document.getElementById("note_id").value;
     let userId = document.getElementById("user").options[document.getElementById("user").selectedIndex].value;
     let permission = document.getElementById("permission").options[document.getElementById("permission").selectedIndex].value;
     let errorContainer = document.getElementById("errorContainer");
@@ -151,7 +151,7 @@ function removeShares(noteId, userId) {
                             <option value="1">Editor</option>
                             <option value="0">Reader</option>
                         </select>
-                        <input type="hidden" name="noteId" value="${noteId}" id="noteId">
+                        <input type="hidden" name="noteId" value="${noteId}" id="note_id">
                         <button id="addShare" name="addShare" class="btn btn-primary border-secondary" type="button" onclick="addShareOnClick()">
                             <i class="bi bi-plus"></i>
                         </button>
