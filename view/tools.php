@@ -118,4 +118,5 @@ enum Page: string
     case Shared_by = "Shared by";
     case Settings = "Settings";
     case Search = "Search";
+    case Session1 ="Session1";
 }; ?>

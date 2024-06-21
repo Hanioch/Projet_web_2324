@@ -92,8 +92,13 @@ class User extends MyModel implements JsonSerializable
         if ($query->rowCount() == 0) {
             return false;
         } else {
-            return new User($data["mail"], $data["hashed_password"], $data["full_name"], Role::USER, $data["id"]);
+            $new_role = Role::tryFrom($data["role"]) ?: Role::USER;
+            return new User($data["mail"], $data["hashed_password"], $data["full_name"], $new_role, $data["id"]);
         }
+    }
+    public function is_admin(): bool
+    {
+        return $this->role === Role::ADMIN;
     }
     public function delete(): void
     {
@@ -578,7 +583,7 @@ class User extends MyModel implements JsonSerializable
             return false;
         } else {
             $row = $query->fetch();
-            $new_role = User::get_role_format($row["role"]);
+            $new_role = Role::tryFrom($row["role"]) ?: Role::USER;
             return new User($row['mail'], $row['hashed_password'], $row['full_name'], $new_role, $row['id']);
         }
     }

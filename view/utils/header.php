@@ -1,5 +1,5 @@
 <?php
-include('head.php')
+include('head.php');
 ?>
 
 <body class="bg-dark min-vh-100">
@@ -21,6 +21,7 @@ include('head.php')
                     $nav_list = [];
                     $base_url = "notes/";
                     $settings_url = "settings/";
+                    $session1 = "session1/";
                     $nav_list[] = array(
                         "title" => Page::Notes->value,
                         "url" => $base_url
@@ -46,7 +47,12 @@ include('head.php')
                         "title" => Page::Settings->value,
                         "url" => $settings_url . "settings"
                     );
-
+                    if ($user->is_admin()) {
+                        $nav_list[] = array(
+                            "title" => Page::Session1->value,
+                            "url" => "session1/"
+                        );
+                    }
                     foreach ($nav_list as $elem) {
                         $url = $elem["url"];
                         $title = $elem["title"];

@@ -9,7 +9,21 @@ class ChecklistNote extends Note implements JsonSerializable
         parent::__construct($title, $owner, $pinned, $archived, $weight, $id, $created_at, $edited_at);
         $this->fetch_list_item();
     }
+    public function get_checked_count(): int
+    {
+        $checkedCount = 0;
+        foreach ($this->get_list_item() as $item) {
+            if ($item->is_checked()) {
+                $checkedCount++;
+            }
+        }
+        return $checkedCount;
+    }
 
+    public function get_total_count(): int
+    {
+        return count($this->get_list_item());
+    }
     public function fetch_list_item()
     {
         $query = self::execute("SELECT cni.*, n.title, n.owner, n.pinned, n.archived, n.weight, n.created_at, n.edited_at FROM checklist_note_items cni JOIN notes n ON n.id = cni.checklist_note WHERE checklist_note = :checklist_note ORDER BY cni.checked ASC, cni.id ASC", ["checklist_note" => $this->id]);

@@ -21,7 +21,7 @@ class ControllerNotes extends Controller
         $users_shared_notes = $user->get_users_shared_note();
 
 
-        (new View("notes"))->show(["notes" => $notes, "users_shared_notes" => $users_shared_notes]);
+        (new View("notes"))->show(["notes" => $notes, "users_shared_notes" => $users_shared_notes, "user" => $user]);
     }
 
     public function back_note_list(): void
